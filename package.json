@@ -1,0 +1,30 @@
+{
+  "name": "business-system",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "build": "npm run build:server && npm run build:client",
+    "start:server": "cd server && npm start",
+    "start:client": "cd client && npm start",
+    "db:generate": "cd server && npm run db:generate",
+    "db:push": "cd server && npm run db:push",
+    "db:migrate": "cd server && npm run db:migrate",
+    "db:studio": "cd server && npm run db:studio",
+    "db:seed": "cd server && npm run db:seed",
+    "clean": "rm -rf server/node_modules client/node_modules server/dist",
+    "lint": "cd client && npm run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "workspaces": [
+    "server",
+    "client"
+  ]
+}

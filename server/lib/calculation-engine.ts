@@ -335,6 +335,98 @@ export class CalculationEngine {
         })
         break
       }
+      case 'manufacturing-labor': {
+        // Calculate individual totals for employees
+        for (let i = 1; i <= 8; i++) {
+          const unitPrice = this.getCellValue(`employee_${i}_unit_price`)
+          const count = this.getCellValue(`employee_${i}_count`)
+          results[`employee_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate employee totals
+        let employeeTotal = 0
+        let employeeCount = 0
+        for (let i = 1; i <= 8; i++) {
+          employeeTotal += this.getCellValue(`employee_${i}_total`)
+          employeeCount += this.getCellValue(`employee_${i}_count`)
+        }
+        results['employee_salary_total'] = employeeTotal
+        results['employee_count'] = employeeCount
+        
+        // Calculate individual totals for part-time workers
+        for (let i = 1; i <= 5; i++) {
+          const unitPrice = this.getCellValue(`part_${i}_unit_price`)
+          const count = this.getCellValue(`part_${i}_count`)
+          results[`part_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate individual totals for arubaito workers
+        for (let i = 1; i <= 3; i++) {
+          const unitPrice = this.getCellValue(`arubaito_${i}_unit_price`)
+          const count = this.getCellValue(`arubaito_${i}_count`)
+          results[`arubaito_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate miscellaneous totals
+        let miscTotal = 0
+        let miscCount = 0
+        for (let i = 1; i <= 5; i++) {
+          miscTotal += this.getCellValue(`part_${i}_total`)
+          miscCount += this.getCellValue(`part_${i}_count`)
+        }
+        for (let i = 1; i <= 3; i++) {
+          miscTotal += this.getCellValue(`arubaito_${i}_total`)
+          miscCount += this.getCellValue(`arubaito_${i}_count`)
+        }
+        results['misc_salary_total'] = miscTotal
+        results['misc_count'] = miscCount
+        
+        // Calculate individual totals for dispatched workers
+        for (let i = 1; i <= 6; i++) {
+          const unitPrice = this.getCellValue(`dispatched_${i}_unit_price`)
+          const count = this.getCellValue(`dispatched_${i}_count`)
+          results[`dispatched_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate individual totals for contract workers
+        for (let i = 1; i <= 2; i++) {
+          const unitPrice = this.getCellValue(`contract_${i}_unit_price`)
+          const count = this.getCellValue(`contract_${i}_count`)
+          results[`contract_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate dispatched totals
+        let dispatchedTotal = 0
+        let dispatchedCount = 0
+        for (let i = 1; i <= 6; i++) {
+          dispatchedTotal += this.getCellValue(`dispatched_${i}_total`)
+          dispatchedCount += this.getCellValue(`dispatched_${i}_count`)
+        }
+        for (let i = 1; i <= 2; i++) {
+          dispatchedTotal += this.getCellValue(`contract_${i}_total`)
+          dispatchedCount += this.getCellValue(`contract_${i}_count`)
+        }
+        results['dispatched_total'] = dispatchedTotal
+        results['dispatched_count'] = dispatchedCount
+        
+        // Calculate income increase rate
+        const futureIncome = this.getCellValue('future_avg_income')
+        const currentIncome = this.getCellValue('current_avg_income')
+        results['income_increase_rate'] = currentIncome > 0 ? (futureIncome / currentIncome) * 100 : 0
+        
+        // Keep input values
+        results['future_avg_income'] = futureIncome
+        results['current_avg_income'] = currentIncome
+        
+        // Keep current values (these would be input separately)
+        results['employee_salary_current_total'] = this.getCellValue('employee_salary_current_total')
+        results['employee_count_current'] = this.getCellValue('employee_count_current')
+        results['misc_salary_current_total'] = this.getCellValue('misc_salary_current_total')
+        results['misc_count_current'] = this.getCellValue('misc_count_current')
+        results['dispatched_current_total'] = this.getCellValue('dispatched_current_total')
+        results['dispatched_count_current'] = this.getCellValue('dispatched_count_current')
+        break
+      }
       case 'breakeven':
         results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')
         results['variable_costs_per_unit'] = this.getCellValue('material_cost_per_unit') + this.getCellValue('labor_cost_per_unit')

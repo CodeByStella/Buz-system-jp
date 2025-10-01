@@ -3,79 +3,57 @@
 import { ExcelForm } from '@/components/user/excel-form'
 
 const profitCells = [
-  // 営業利益 (Operating Profit)
   {
-    key: 'operating_profit',
-    label: '営業利益',
+    key: 'sales_revenue',
+    label: '売上高',
     value: 0,
     editable: true,
-    formula: '営業収益 - 営業費用'
+    formula: '基本売上データ'
   },
-  
-  // 営業外収益 (Non-operating Income)
   {
-    key: 'non_operating_income',
-    label: '営業外収益',
+    key: 'material_costs',
+    label: '材料費',
     value: 0,
     editable: true,
-    formula: '受取利息、配当金等'
+    formula: '材料仕入価格 × 使用量'
   },
-  
-  // 営業外費用 (Non-operating Expenses)
   {
-    key: 'non_operating_expenses',
-    label: '営業外費用',
+    key: 'labor_costs',
+    label: '人件費',
     value: 0,
     editable: true,
-    formula: '支払利息、手数料等'
+    formula: '時給 × 労働時間'
   },
-  
-  // 経常利益 (Ordinary Profit) - calculated
   {
-    key: 'ordinary_profit',
-    label: '経常利益',
+    key: 'overhead_costs',
+    label: '間接費',
+    value: 0,
+    editable: true,
+    formula: '固定費 + 変動費'
+  },
+  {
+    key: 'total_costs',
+    label: '総コスト',
     value: 0,
     editable: false,
     calculated: true,
-    formula: '営業利益 + 営業外収益 - 営業外費用'
+    formula: '材料費 + 人件費 + 間接費'
   },
-  
-  // 特別利益 (Extraordinary Income)
   {
-    key: 'extraordinary_income',
-    label: '特別利益',
-    value: 0,
-    editable: true,
-    formula: '固定資産売却益等'
-  },
-  
-  // 特別損失 (Extraordinary Loss)
-  {
-    key: 'extraordinary_loss',
-    label: '特別損失',
-    value: 0,
-    editable: true,
-    formula: '固定資産除却損等'
-  },
-  
-  // 税引前利益 (Profit Before Tax) - calculated
-  {
-    key: 'profit_before_tax',
-    label: '税引前利益',
+    key: 'gross_profit',
+    label: '粗利益',
     value: 0,
     editable: false,
     calculated: true,
-    formula: '経常利益 + 特別利益 - 特別損失'
+    formula: '売上高 - 総コスト'
   },
-  
-  // 前年対比 (Year-on-year comparison)
   {
-    key: 'year_on_year_comparison',
-    label: '前年対比',
+    key: 'profit_margin',
+    label: '利益率 (%)',
     value: 0,
     editable: false,
     calculated: true,
-    formula: '(当期税引前利益 / 前期税引前利益) × 100'
+    formula: '(粗利益 / 売上高) × 100'
   }
 ]
 

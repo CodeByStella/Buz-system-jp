@@ -569,15 +569,35 @@ export class CalculationEngine {
         
         break
       }
-      case 'breakeven':
-        results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')
-        results['variable_costs_per_unit'] = this.getCellValue('material_cost_per_unit') + this.getCellValue('labor_cost_per_unit')
-        results['selling_price_per_unit'] = this.getCellValue('price_per_unit')
-        results['contribution_margin'] = results['selling_price_per_unit'] - results['variable_costs_per_unit']
-        results['breakeven_units'] = this.calculateBreakevenPoint('fixed_costs', 'contribution_margin')
-        results['breakeven_sales'] = results['breakeven_units'] * results['selling_price_per_unit']
-        break
+      case 'breakeven': {
+        // Current period calculations
+        const currentSales = this.getCellValue('current_sales')
+        const currentVariableCosts = this.getCellValue('current_variable_costs')
+        const currentFixedCosts = this.getCellValue('current_fixed_costs')
         
+        results['current_sales'] = currentSales
+        results['current_variable_costs'] = currentVariableCosts
+        results['current_fixed_costs'] = currentFixedCosts
+        results['current_variable_cost_ratio'] = currentSales > 0 ? currentVariableCosts / currentSales : 0
+        results['current_breakeven_point'] = currentSales > 0 && results['current_variable_cost_ratio'] < 1 
+          ? currentFixedCosts / (1 - results['current_variable_cost_ratio']) 
+          : 0
+        
+        // Next period calculations
+        const nextSales = this.getCellValue('next_sales')
+        const nextVariableCosts = this.getCellValue('next_variable_costs')
+        const nextFixedCosts = this.getCellValue('next_fixed_costs')
+        
+        results['next_sales'] = nextSales
+        results['next_variable_costs'] = nextVariableCosts
+        results['next_fixed_costs'] = nextFixedCosts
+        results['next_variable_cost_ratio'] = nextSales > 0 ? nextVariableCosts / nextSales : 0
+        results['next_breakeven_point'] = nextSales > 0 && results['next_variable_cost_ratio'] < 1 
+          ? nextFixedCosts / (1 - results['next_variable_cost_ratio']) 
+          : 0
+        
+        break
+      }
       default:
         // For other sheets, return basic calculations
         Object.keys(this.context.userInputs).forEach(key => {

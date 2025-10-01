@@ -250,6 +250,91 @@ export class CalculationEngine {
         results['dispatched_count_current'] = this.getCellValue('dispatched_count_current')
         break
       }
+      case 'expenses': {
+        // Calculate fixed expenses total
+        const fixedExpensesItems = [
+          'vehicle_expenses', 'rent_land_lease', 'rental_fees', 'taxes_public_dues',
+          'entertainment_expenses', 'payment_fees', 'communication_transportation',
+          'consumables', 'office_supplies', 'other_expenses', 'miscellaneous_expenses',
+          'utilities', 'travel_transportation', 'membership_fees', 'book_expenses',
+          'repair_expenses', 'insurance_premiums', 'electricity', 'power', 'gas_heating',
+          'fuel', 'water_supply', 'sewerage', 'rd_expenses', 'research_expenses',
+          'consultant_fees', 'lease_fees', 'travel_expenses', 'decoration_expenses',
+          'sanitation_expenses', 'freight_charges', 'packing_packaging', 'management_fees',
+          'maintenance_management', 'maintenance_upkeep', 'equipment_expenses',
+          'donations', 'depreciation'
+        ]
+        
+        let fixedTotal = 0
+        fixedExpensesItems.forEach(item => {
+          fixedTotal += this.getCellValue(item)
+        })
+        results['fixed_expenses_total'] = fixedTotal
+        
+        // Calculate sales promotion total
+        const salesPromotionItems = [
+          'sales_promotion_planning', 'consumable_materials', 'advertising_publicity',
+          'recruitment_expenses', 'education_training', 'reserve_1', 'reserve_2',
+          'reserve_3', 'reserve_4'
+        ]
+        
+        let salesPromotionTotal = 0
+        salesPromotionItems.forEach(item => {
+          salesPromotionTotal += this.getCellValue(item)
+        })
+        results['sales_promotion_total'] = salesPromotionTotal
+        
+        // Calculate personnel total
+        const personnelItems = [
+          'employee_salaries', 'miscellaneous_salaries', 'dispatched_employee_costs',
+          'executive_compensation', 'welfare_expenses', 'statutory_welfare_expenses',
+          'personnel_reserve_1', 'personnel_reserve_2', 'personnel_reserve_3', 'personnel_reserve_4'
+        ]
+        
+        let personnelTotal = 0
+        personnelItems.forEach(item => {
+          personnelTotal += this.getCellValue(item)
+        })
+        results['personnel_total'] = personnelTotal
+        
+        // Calculate business expenses total
+        const businessExpensesItems = [
+          'education_training_expenses', 'business_strategy_expenses', 'royalties',
+          'planning_fees', 'business_recruitment_expenses', 'business_training_expenses',
+          'meeting_expenses', 'newspaper_book_expenses', 'business_reserve_1',
+          'business_reserve_2', 'business_reserve_3', 'business_reserve_4'
+        ]
+        
+        let businessTotal = 0
+        businessExpensesItems.forEach(item => {
+          businessTotal += this.getCellValue(item)
+        })
+        results['business_expenses_total'] = businessTotal
+        
+        // Calculate grand total
+        results['grand_total'] = fixedTotal + salesPromotionTotal + personnelTotal + businessTotal
+        
+        // Keep current values (these would be input separately)
+        results['fixed_expenses_current_total'] = this.getCellValue('fixed_expenses_current_total')
+        results['sales_promotion_current_total'] = this.getCellValue('sales_promotion_current_total')
+        results['personnel_current_total'] = this.getCellValue('personnel_current_total')
+        results['business_expenses_current_total'] = this.getCellValue('business_expenses_current_total')
+        
+        // Keep all input values
+        fixedExpensesItems.forEach(item => {
+          results[item] = this.getCellValue(item)
+        })
+        salesPromotionItems.forEach(item => {
+          results[item] = this.getCellValue(item)
+        })
+        personnelItems.forEach(item => {
+          results[item] = this.getCellValue(item)
+        })
+        businessExpensesItems.forEach(item => {
+          results[item] = this.getCellValue(item)
+        })
+        break
+      }
       case 'breakeven':
         results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')
         results['variable_costs_per_unit'] = this.getCellValue('material_cost_per_unit') + this.getCellValue('labor_cost_per_unit')

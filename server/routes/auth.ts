@@ -1,7 +1,7 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../index'
+import { authService } from '../services/auth-service'
 
 const router = express.Router()
 
@@ -16,24 +16,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'メールアドレスとパスワードが必要です' })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    if (!user) {
+    const result = await authService.login(email, password)
+    if (!result) {
       return res.status(401).json({ error: 'ユーザーが見つかりません' })
     }
-
-    const isValid = await bcrypt.compare(password, user.password)
-    if (!isValid) {
-      return res.status(401).json({ error: 'パスワードが正しくありません' })
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    )
+    const { token, user } = result
 
     // Set HTTP-only cookie
     res.cookie('auth-token', token, {
@@ -43,14 +30,7 @@ router.post('/login', async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     })
 
-    res.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role
-      }
-    })
+    res.json({ user })
   } catch (error) {
     console.error('Login error:', error)
     res.status(500).json({ error: 'ログインに失敗しました' })
@@ -74,15 +54,7 @@ router.get('/me', async (req, res) => {
 
     const payload = jwt.verify(token, JWT_SECRET) as any
 
-    const user = await prisma.user.findUnique({
-      where: { id: payload.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true
-      }
-    })
+    const user = await authService.me(payload.id)
 
     if (!user) {
       return res.status(404).json({ error: 'ユーザーが見つかりません' })

@@ -1,6 +1,6 @@
 import express from 'express'
-import { prisma } from '../index'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
+import { inputService } from '../services/input-service'
 
 const router = express.Router()
 
@@ -12,13 +12,7 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
     const { sheet } = req.query
 
-    const inputs = await prisma.userInput.findMany({
-      where: {
-        userId: req.user!.id,
-        ...(sheet && { sheet: sheet as string })
-      },
-      orderBy: { cellKey: 'asc' }
-    })
+    const inputs = await inputService.list(req.user!.id, sheet as string | undefined)
 
     res.json({ inputs })
   } catch (error) {
@@ -36,22 +30,7 @@ router.post('/inputs', async (req: AuthenticatedRequest, res) => {
       return res.status(400).json({ error: 'シート、セルキー、値が必要です' })
     }
 
-    const input = await prisma.userInput.upsert({
-      where: {
-        userId_sheet_cellKey: {
-          userId: req.user!.id,
-          sheet,
-          cellKey
-        }
-      },
-      update: { value },
-      create: {
-        userId: req.user!.id,
-        sheet,
-        cellKey,
-        value
-      }
-    })
+    const input = await inputService.upsert(req.user!.id, sheet, cellKey, value)
 
     res.json({ input })
   } catch (error) {

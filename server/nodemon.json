@@ -1,0 +1,20 @@
+{
+  "watch": [
+    "index.ts",
+    "routes",
+    "middleware",
+    "services",
+    "repositories",
+    "models",
+    "lib",
+    "config"
+  ],
+  "ext": "ts,json",
+  "ignore": [
+    "dist",
+    "node_modules"
+  ],
+  "exec": "tsx index.ts"
+}
+
+

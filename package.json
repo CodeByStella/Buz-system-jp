@@ -26,5 +26,8 @@
   "workspaces": [
     "server",
     "client"
-  ]
+  ],
+  "dependencies": {
+    "mongoose": "^8.18.3"
+  }
 }

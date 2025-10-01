@@ -16,6 +16,9 @@ import SalarySheet from '@/components/sheets/salary-sheet'
 import ExpensesSheet from '@/components/sheets/expenses-sheet'
 import ManufacturingLaborSheet from '@/components/sheets/manufacturing-labor-sheet'
 import ManufacturingExpensesSheet from '@/components/sheets/manufacturing-expenses-sheet'
+import CostDetailsSheet from '@/components/sheets/cost-details-sheet'
+import ProgressSheet from '@/components/sheets/progress-sheet'
+import SalesPlanSheet from '@/components/sheets/sales-plan-sheet'
 
 interface User {
   id: string
@@ -202,8 +205,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <ManufacturingLaborSheet />
       case 'manufacturing-expenses':
         return <ManufacturingExpensesSheet />
+      case 'cost-details':
+        return <CostDetailsSheet />
       case 'breakeven':
         return <BreakevenSheet />
+      case 'progress':
+        return <ProgressSheet />
+      case 'sales-plan':
+        return <SalesPlanSheet />
       default:
         return (
           <div className="p-6">

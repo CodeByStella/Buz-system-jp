@@ -512,15 +512,186 @@ export class CalculationEngine {
         })
         break
       }
-      case 'breakeven':
-        results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')
-        results['variable_costs_per_unit'] = this.getCellValue('material_cost_per_unit') + this.getCellValue('labor_cost_per_unit')
-        results['selling_price_per_unit'] = this.getCellValue('price_per_unit')
-        results['contribution_margin'] = results['selling_price_per_unit'] - results['variable_costs_per_unit']
-        results['breakeven_units'] = this.calculateBreakevenPoint('fixed_costs', 'contribution_margin')
-        results['breakeven_sales'] = results['breakeven_units'] * results['selling_price_per_unit']
-        break
+      case 'cost-details': {
+        // Calculate product-level totals
+        let totalGrossProfit = 0
+        let totalGrossProfitPerItem = 0
+        let totalQuantity = 0
+        let totalSales = 0
         
+        // Process products (assuming products are stored as individual fields)
+        for (let i = 0; i < 20; i++) {
+          const grossProfitAmount = this.getCellValue(`product_${i}_gross_profit_amount`)
+          const grossProfitPerItem = this.getCellValue(`product_${i}_gross_profit_per_item`)
+          const quantity = this.getCellValue(`product_${i}_quantity`)
+          const sales = this.getCellValue(`product_${i}_sales`)
+          
+          totalGrossProfit += grossProfitAmount
+          totalGrossProfitPerItem += grossProfitPerItem
+          totalQuantity += quantity
+          totalSales += sales
+        }
+        
+        results['total_gross_profit'] = totalGrossProfit
+        results['total_gross_profit_per_item'] = totalGrossProfitPerItem
+        results['total_quantity'] = totalQuantity
+        results['total_sales'] = totalSales
+        
+        // Calculate averages
+        results['average_customer_unit_price'] = totalQuantity > 0 ? totalSales / totalQuantity : 0
+        results['average_gross_profit_rate'] = totalSales > 0 ? (totalGrossProfit / totalSales) * 100 : 0
+        
+        // Calculate deficiency amount
+        const workforce = this.getCellValue('workforce')
+        const targetWorkforce = 25 // From image
+        results['deficiency_amount'] = workforce - targetWorkforce
+        
+        // Calculate profit per person
+        results['profit_per_person'] = workforce > 0 ? totalGrossProfit / workforce : 0
+        
+        // Calculate productivity per person
+        results['productivity_per_person'] = workforce > 0 ? totalSales / workforce : 0
+        
+        // Keep input values
+        results['target_gross_profit_rate'] = this.getCellValue('target_gross_profit_rate')
+        results['monthly_customers'] = this.getCellValue('monthly_customers')
+        results['customer_unit_price'] = this.getCellValue('customer_unit_price')
+        results['workforce'] = workforce
+        results['workforce_profitability_per_person'] = this.getCellValue('workforce_profitability_per_person')
+        results['workforce_productivity_per_person'] = this.getCellValue('workforce_productivity_per_person')
+        
+        // Keep gross profit amounts
+        results['gross_profit_amount_1'] = this.getCellValue('gross_profit_amount_1')
+        results['gross_profit_amount_2'] = this.getCellValue('gross_profit_amount_2')
+        results['gross_profit_amount_3'] = this.getCellValue('gross_profit_amount_3')
+        results['gross_profit_amount_4'] = this.getCellValue('gross_profit_amount_4')
+        results['gross_profit_amount_5'] = this.getCellValue('gross_profit_amount_5')
+        
+        break
+      }
+      case 'breakeven': {
+        // Current period calculations
+        const currentSales = this.getCellValue('current_sales')
+        const currentVariableCosts = this.getCellValue('current_variable_costs')
+        const currentFixedCosts = this.getCellValue('current_fixed_costs')
+        
+        results['current_sales'] = currentSales
+        results['current_variable_costs'] = currentVariableCosts
+        results['current_fixed_costs'] = currentFixedCosts
+        results['current_variable_cost_ratio'] = currentSales > 0 ? currentVariableCosts / currentSales : 0
+        results['current_breakeven_point'] = currentSales > 0 && results['current_variable_cost_ratio'] < 1 
+          ? currentFixedCosts / (1 - results['current_variable_cost_ratio']) 
+          : 0
+        
+        // Next period calculations
+        const nextSales = this.getCellValue('next_sales')
+        const nextVariableCosts = this.getCellValue('next_variable_costs')
+        const nextFixedCosts = this.getCellValue('next_fixed_costs')
+        
+        results['next_sales'] = nextSales
+        results['next_variable_costs'] = nextVariableCosts
+        results['next_fixed_costs'] = nextFixedCosts
+        results['next_variable_cost_ratio'] = nextSales > 0 ? nextVariableCosts / nextSales : 0
+        results['next_breakeven_point'] = nextSales > 0 && results['next_variable_cost_ratio'] < 1 
+          ? nextFixedCosts / (1 - results['next_variable_cost_ratio']) 
+          : 0
+        
+        break
+      }
+      case 'progress': {
+        // Target values (keep as-is)
+        const targetFields = ['period_month', 'target_sales_growth', 'target_direct_sales', 'target_gross_profit', 
+          'target_gross_profit_rate', 'target_cost_ratio', 'target_business_expenses', 'target_personnel_expenses', 
+          'target_other_expenses', 'target_sales_promotion', 'target_external_revenue', 'target_external_expenses', 
+          'target_extraordinary_items', 'target_profit', 'target_tax', 'target_retained_earnings']
+        
+        targetFields.forEach(field => {
+          results[field] = this.getCellValue(field)
+        })
+        
+        // Actual values (keep user inputs)
+        const actualFields = ['actual_direct_sales', 'actual_gross_profit', 'actual_business_expenses', 
+          'actual_personnel_expenses', 'actual_other_expenses', 'actual_sales_promotion', 
+          'actual_external_revenue', 'actual_external_expenses', 'actual_extraordinary_items', 
+          'actual_profit', 'actual_tax', 'actual_retained_earnings']
+        
+        actualFields.forEach(field => {
+          results[field] = this.getCellValue(field)
+        })
+        
+        // Calculate derived fields
+        const actualDirectSales = this.getCellValue('actual_direct_sales')
+        const actualGrossProfit = this.getCellValue('actual_gross_profit')
+        const targetDirectSales = this.getCellValue('target_direct_sales')
+        const targetGrossProfit = this.getCellValue('target_gross_profit')
+        const targetProfit = this.getCellValue('target_profit')
+        const actualProfit = this.getCellValue('actual_profit')
+        
+        // Calculate actual rates
+        results['actual_gross_profit_rate'] = actualDirectSales > 0 ? (actualGrossProfit / actualDirectSales) * 100 : 0
+        results['actual_cost_ratio'] = actualDirectSales > 0 ? ((actualDirectSales - actualGrossProfit) / actualDirectSales) * 100 : 0
+        
+        // Calculate achievement rates
+        results['sales_achievement_rate'] = targetDirectSales > 0 ? (actualDirectSales / targetDirectSales) * 100 : 0
+        results['profit_achievement_rate'] = targetProfit > 0 ? (actualProfit / targetProfit) * 100 : 0
+        
+        // Calculate variances
+        results['variance_direct_sales'] = actualDirectSales - targetDirectSales
+        results['variance_gross_profit'] = actualGrossProfit - targetGrossProfit
+        results['variance_profit'] = actualProfit - targetProfit
+        
+        break
+      }
+      case 'sales-plan': {
+        // Calculate cumulative values for each category
+        const categories = Array.isArray(this.context.userInputs.categories) ? this.context.userInputs.categories : []
+        
+        categories.forEach((category: any) => {
+          let cumulativeTarget = 0
+          let cumulativeActual = 0
+          
+          for (let i = 0; i < 12; i++) {
+            const monthlyTarget = this.getCellValue(`category_${category.id}_monthly_target_${i}`) || 0
+            const monthlyActual = this.getCellValue(`category_${category.id}_monthly_actual_${i}`) || 0
+            
+            cumulativeTarget += monthlyTarget
+            cumulativeActual += monthlyActual
+            
+            results[`category_${category.id}_cumulative_target_${i}`] = cumulativeTarget
+            results[`category_${category.id}_cumulative_actual_${i}`] = cumulativeActual
+          }
+        })
+        
+        // Calculate grand totals
+        results['grand_total_target'] = this.getCellValue('grand_total_target') || 0
+        
+        // Calculate monthly totals
+        for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
+          let monthlyTargetTotal = 0
+          let monthlyActualTotal = 0
+          let cumulativeTargetTotal = 0
+          let cumulativeActualTotal = 0
+          
+          categories.forEach((category: any) => {
+            monthlyTargetTotal += this.getCellValue(`category_${category.id}_monthly_target_${monthIndex}`) || 0
+            monthlyActualTotal += this.getCellValue(`category_${category.id}_monthly_actual_${monthIndex}`) || 0
+            cumulativeTargetTotal += results[`category_${category.id}_cumulative_target_${monthIndex}`] || 0
+            cumulativeActualTotal += results[`category_${category.id}_cumulative_actual_${monthIndex}`] || 0
+          })
+          
+          results[`monthly_target_total_${monthIndex}`] = monthlyTargetTotal
+          results[`monthly_actual_total_${monthIndex}`] = monthlyActualTotal
+          results[`cumulative_target_total_${monthIndex}`] = cumulativeTargetTotal
+          results[`cumulative_actual_total_${monthIndex}`] = cumulativeActualTotal
+        }
+        
+        // Keep all input values
+        Object.keys(this.context.userInputs).forEach(key => {
+          results[key] = this.getCellValue(key)
+        })
+        
+        break
+      }
       default:
         // For other sheets, return basic calculations
         Object.keys(this.context.userInputs).forEach(key => {

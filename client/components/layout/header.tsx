@@ -73,7 +73,7 @@ export function Header() {
             aria-label="Go to dashboard"
             role="button"
           />
-          <h1 className="text-xl font-semibold text-gray-900">ビジネスシステム</h1>
+          <h1 className="text-xl font-semibold text-primary">ビジネスシステム</h1>
         </div>
         <div className="flex items-center space-x-4">
           {user?.role === 'ADMIN' && (

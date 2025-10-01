@@ -642,6 +642,56 @@ export class CalculationEngine {
         
         break
       }
+      case 'sales-plan': {
+        // Calculate cumulative values for each category
+        const categories = Array.isArray(this.context.userInputs.categories) ? this.context.userInputs.categories : []
+        
+        categories.forEach((category: any) => {
+          let cumulativeTarget = 0
+          let cumulativeActual = 0
+          
+          for (let i = 0; i < 12; i++) {
+            const monthlyTarget = this.getCellValue(`category_${category.id}_monthly_target_${i}`) || 0
+            const monthlyActual = this.getCellValue(`category_${category.id}_monthly_actual_${i}`) || 0
+            
+            cumulativeTarget += monthlyTarget
+            cumulativeActual += monthlyActual
+            
+            results[`category_${category.id}_cumulative_target_${i}`] = cumulativeTarget
+            results[`category_${category.id}_cumulative_actual_${i}`] = cumulativeActual
+          }
+        })
+        
+        // Calculate grand totals
+        results['grand_total_target'] = this.getCellValue('grand_total_target') || 0
+        
+        // Calculate monthly totals
+        for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
+          let monthlyTargetTotal = 0
+          let monthlyActualTotal = 0
+          let cumulativeTargetTotal = 0
+          let cumulativeActualTotal = 0
+          
+          categories.forEach((category: any) => {
+            monthlyTargetTotal += this.getCellValue(`category_${category.id}_monthly_target_${monthIndex}`) || 0
+            monthlyActualTotal += this.getCellValue(`category_${category.id}_monthly_actual_${monthIndex}`) || 0
+            cumulativeTargetTotal += results[`category_${category.id}_cumulative_target_${monthIndex}`] || 0
+            cumulativeActualTotal += results[`category_${category.id}_cumulative_actual_${monthIndex}`] || 0
+          })
+          
+          results[`monthly_target_total_${monthIndex}`] = monthlyTargetTotal
+          results[`monthly_actual_total_${monthIndex}`] = monthlyActualTotal
+          results[`cumulative_target_total_${monthIndex}`] = cumulativeTargetTotal
+          results[`cumulative_actual_total_${monthIndex}`] = cumulativeActualTotal
+        }
+        
+        // Keep all input values
+        Object.keys(this.context.userInputs).forEach(key => {
+          results[key] = this.getCellValue(key)
+        })
+        
+        break
+      }
       default:
         // For other sheets, return basic calculations
         Object.keys(this.context.userInputs).forEach(key => {

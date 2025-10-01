@@ -18,6 +18,7 @@ import ManufacturingLaborSheet from '@/components/sheets/manufacturing-labor-she
 import ManufacturingExpensesSheet from '@/components/sheets/manufacturing-expenses-sheet'
 import CostDetailsSheet from '@/components/sheets/cost-details-sheet'
 import ProgressSheet from '@/components/sheets/progress-sheet'
+import SalesPlanSheet from '@/components/sheets/sales-plan-sheet'
 
 interface User {
   id: string
@@ -210,6 +211,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <BreakevenSheet />
       case 'progress':
         return <ProgressSheet />
+      case 'sales-plan':
+        return <SalesPlanSheet />
       default:
         return (
           <div className="p-6">

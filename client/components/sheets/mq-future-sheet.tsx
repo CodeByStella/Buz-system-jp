@@ -7,36 +7,86 @@ import { Button } from '@/components/ui/button'
 import { api } from '@/lib/api'
 
 interface MQFutureData {
-  target_g_profit: number
-  target_f_fixed_costs: number
-  target_m_gross_profit: number
+  // PQ Results
   target_pq_sales: number
+  pq_percentage: number
+  
+  // VQ Results  
   target_vq_variable_costs: number
+  vq_percentage: number
+  
+  // M Results
   calculated_m: number
+  m_percentage: number
+  
+  // F Results
   calculated_f: number
-  calculated_p: number
-  calculated_v: number
-  unit_price_per_item: number
-  quantity: number
-  total_sales_calculated: number
+  f_percentage: number
+  
+  // G Results
+  target_g_profit: number
+  g_percentage: number
+  
+  // Difference
   difference: number
+  
+  // Target Values
+  target_value_1: number
+  target_value_2: number
+  target_value_3: number
+  target_value_4: number
+  target_value_5: number
+  
+  // Unit Price and Quantity
+  unit_price_p: number
+  quantity_q: number
+  unit_price_v: number
+  quantity_v: number
+  
+  // Calculated values
+  total_sales_calculated: number
 }
 
 export default function MQFutureSheet() {
   const [data, setData] = useState<MQFutureData>({
-    target_g_profit: 0,
-    target_f_fixed_costs: 0,
-    target_m_gross_profit: 0,
+    // PQ Results
     target_pq_sales: 0,
+    pq_percentage: 0,
+    
+    // VQ Results  
     target_vq_variable_costs: 0,
+    vq_percentage: 0,
+    
+    // M Results
     calculated_m: 0,
+    m_percentage: 0,
+    
+    // F Results
     calculated_f: 0,
-    calculated_p: 0,
-    calculated_v: 0,
-    unit_price_per_item: 0,
-    quantity: 0,
-    total_sales_calculated: 0,
-    difference: 0
+    f_percentage: 0,
+    
+    // G Results
+    target_g_profit: 0,
+    g_percentage: 0,
+    
+    // Difference
+    difference: 0,
+    
+    // Target Values
+    target_value_1: 0,
+    target_value_2: 0,
+    target_value_3: 0,
+    target_value_4: 0,
+    target_value_5: 0,
+    
+    // Unit Price and Quantity
+    unit_price_p: 0,
+    quantity_q: 0,
+    unit_price_v: 0,
+    quantity_v: 0,
+    
+    // Calculated values
+    total_sales_calculated: 0
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -114,6 +164,7 @@ export default function MQFutureSheet() {
             <CardTitle className="text-sm">MQ会計結果</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
+            {/* PQ Results */}
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs font-medium">PQ 結果 (売上)</label>
@@ -123,6 +174,7 @@ export default function MQFutureSheet() {
                   onChange={(e) => handleInputChange('target_pq_sales', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
+                <div className="text-xs text-gray-500 mt-1">{data.pq_percentage.toFixed(1)}%</div>
               </div>
               <div>
                 <label className="text-xs font-medium">VQ 結果 (変動費)</label>
@@ -132,9 +184,11 @@ export default function MQFutureSheet() {
                   onChange={(e) => handleInputChange('target_vq_variable_costs', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
+                <div className="text-xs text-gray-500 mt-1">{data.vq_percentage.toFixed(1)}%</div>
               </div>
             </div>
             
+            {/* M Results */}
             <div>
               <label className="text-xs font-medium">M 結果 (粗利)</label>
               <Input
@@ -143,8 +197,10 @@ export default function MQFutureSheet() {
                 readOnly
                 className="mt-1 h-8 text-xs bg-gray-50"
               />
+              <div className="text-xs text-gray-500 mt-1">{data.m_percentage.toFixed(1)}%</div>
             </div>
             
+            {/* F Results */}
             <div>
               <label className="text-xs font-medium">F 結果 (固定費)</label>
               <Input
@@ -153,8 +209,10 @@ export default function MQFutureSheet() {
                 readOnly
                 className="mt-1 h-8 text-xs bg-gray-50"
               />
+              <div className="text-xs text-gray-500 mt-1">{data.f_percentage.toFixed(1)}%</div>
             </div>
             
+            {/* G Results */}
             <div>
               <label className="text-xs font-medium">G 結果 (利益)</label>
               <Input
@@ -163,8 +221,10 @@ export default function MQFutureSheet() {
                 onChange={(e) => handleInputChange('target_g_profit', Number(e.target.value))}
                 className="mt-1 h-8 text-xs"
               />
+              <div className="text-xs text-gray-500 mt-1">{data.g_percentage.toFixed(1)}%</div>
             </div>
             
+            {/* Difference */}
             <div>
               <label className="text-xs font-medium">差額</label>
               <Input
@@ -173,6 +233,59 @@ export default function MQFutureSheet() {
                 readOnly
                 className="mt-1 h-8 text-xs bg-gray-50"
               />
+              <div className="text-xs text-gray-500 mt-1">0になるまで⑦を修正</div>
+            </div>
+            
+            {/* Target Values */}
+            <div className="mt-4 pt-2 border-t border-gray-200">
+              <label className="text-xs font-medium mb-2 block">目標値</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs">目標値①</label>
+                  <Input
+                    type="number"
+                    value={data.target_value_1}
+                    onChange={(e) => handleInputChange('target_value_1', Number(e.target.value))}
+                    className="mt-1 h-6 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs">目標値②</label>
+                  <Input
+                    type="number"
+                    value={data.target_value_2}
+                    onChange={(e) => handleInputChange('target_value_2', Number(e.target.value))}
+                    className="mt-1 h-6 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs">目標値③</label>
+                  <Input
+                    type="number"
+                    value={data.target_value_3}
+                    onChange={(e) => handleInputChange('target_value_3', Number(e.target.value))}
+                    className="mt-1 h-6 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs">目標値④</label>
+                  <Input
+                    type="number"
+                    value={data.target_value_4}
+                    onChange={(e) => handleInputChange('target_value_4', Number(e.target.value))}
+                    className="mt-1 h-6 text-xs"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs">目標値⑤</label>
+                  <Input
+                    type="number"
+                    value={data.target_value_5}
+                    onChange={(e) => handleInputChange('target_value_5', Number(e.target.value))}
+                    className="mt-1 h-6 text-xs"
+                  />
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -183,22 +296,51 @@ export default function MQFutureSheet() {
             <CardTitle className="text-sm">1件当たりの客単価</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
+            {/* Row P */}
+            <div className="grid grid-cols-3 gap-2 items-end">
               <div>
-                <label className="text-xs font-medium">P (プライス)</label>
+                <label className="text-xs font-medium">P</label>
                 <Input
                   type="number"
-                  value={data.unit_price_per_item}
-                  onChange={(e) => handleInputChange('unit_price_per_item', Number(e.target.value))}
+                  value={data.unit_price_p}
+                  onChange={(e) => handleInputChange('unit_price_p', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
+              <div className="text-center">
+                <div className="text-lg">×</div>
+              </div>
               <div>
-                <label className="text-xs font-medium">Q (クォンティティー)</label>
+                <label className="text-xs font-medium">Q</label>
                 <Input
                   type="number"
-                  value={data.quantity}
-                  onChange={(e) => handleInputChange('quantity', Number(e.target.value))}
+                  value={data.quantity_q}
+                  onChange={(e) => handleInputChange('quantity_q', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+            </div>
+            
+            {/* Row V */}
+            <div className="grid grid-cols-3 gap-2 items-end">
+              <div>
+                <label className="text-xs font-medium">V</label>
+                <Input
+                  type="number"
+                  value={data.unit_price_v}
+                  onChange={(e) => handleInputChange('unit_price_v', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div className="text-center">
+                <div className="text-lg">×</div>
+              </div>
+              <div>
+                <label className="text-xs font-medium">Q</label>
+                <Input
+                  type="number"
+                  value={data.quantity_v}
+                  onChange={(e) => handleInputChange('quantity_v', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>

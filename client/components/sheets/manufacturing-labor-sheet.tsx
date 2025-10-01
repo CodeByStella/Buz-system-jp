@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { api } from '@/lib/api'
 
-interface SalaryData {
-  // Employee salaries (社員1-8)
+interface ManufacturingLaborData {
+  // 人件費明細 - Personnel Cost Details (社員1-8)
   employee_1_unit_price: number
   employee_1_count: number
   employee_1_total: number
@@ -39,7 +39,7 @@ interface SalaryData {
   employee_salary_current_total: number
   employee_count_current: number
   
-  // Miscellaneous salaries (パート1-5, アルバイト1-3)
+  // 雑給料 - Miscellaneous Salaries (パート1-5, アルバイト1-3)
   part_1_unit_price: number
   part_1_count: number
   part_1_total: number
@@ -72,7 +72,7 @@ interface SalaryData {
   misc_salary_current_total: number
   misc_count_current: number
   
-  // Dispatched employees (派遣社員1-6, 契約社員1-2)
+  // 派遣社員 - Dispatched Employees (派遣社員1-6, 契約社員1-2)
   dispatched_1_unit_price: number
   dispatched_1_count: number
   dispatched_1_total: number
@@ -111,12 +111,12 @@ interface SalaryData {
   income_increase_rate: number
 }
 
-export default function SalarySheet() {
-  const [data, setData] = useState<SalaryData>({
-    // Employee salaries (社員1-8)
-    employee_1_unit_price: 0, employee_1_count: 0, employee_1_total: 0,
-    employee_2_unit_price: 0, employee_2_count: 0, employee_2_total: 0,
-    employee_3_unit_price: 0, employee_3_count: 0, employee_3_total: 0,
+export default function ManufacturingLaborSheet() {
+  const [data, setData] = useState<ManufacturingLaborData>({
+    // Employee salaries (社員1-8) - Pre-filled with image values
+    employee_1_unit_price: 4.0, employee_1_count: 3, employee_1_total: 12.0,
+    employee_2_unit_price: 3.5, employee_2_count: 4, employee_2_total: 14.0,
+    employee_3_unit_price: 3.1, employee_3_count: 6, employee_3_total: 18.6,
     employee_4_unit_price: 0, employee_4_count: 0, employee_4_total: 0,
     employee_5_unit_price: 0, employee_5_count: 0, employee_5_total: 0,
     employee_6_unit_price: 0, employee_6_count: 0, employee_6_total: 0,
@@ -124,10 +124,10 @@ export default function SalarySheet() {
     employee_8_unit_price: 0, employee_8_count: 0, employee_8_total: 0,
     
     // Employee totals (current and future)
-    employee_salary_total: 0,
-    employee_count: 0,
-    employee_salary_current_total: 0,
-    employee_count_current: 0,
+    employee_salary_total: 44.6,
+    employee_count: 13,
+    employee_salary_current_total: 35.0,
+    employee_count_current: 9,
     
     // Miscellaneous salaries (パート1-5, アルバイト1-3)
     part_1_unit_price: 0, part_1_count: 0, part_1_total: 0,
@@ -164,9 +164,9 @@ export default function SalarySheet() {
     dispatched_count_current: 0,
     
     // Average income
-    future_avg_income: 0,
-    current_avg_income: 0,
-    income_increase_rate: 0
+    future_avg_income: 3.4,
+    current_avg_income: 3.9,
+    income_increase_rate: 88.2
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -177,31 +177,31 @@ export default function SalarySheet() {
 
   const initializeData = async () => {
     try {
-      const result = await api.user.getInputs('salary')
-      const inputMap: Partial<SalaryData> = {}
+      const result = await api.user.getInputs('manufacturing-labor')
+      const inputMap: Partial<ManufacturingLaborData> = {}
       ;(result.inputs || []).forEach((i: any) => {
-        inputMap[i.cellKey as keyof SalaryData] = Number(i.value) || 0
+        inputMap[i.cellKey as keyof ManufacturingLaborData] = Number(i.value) || 0
       })
       setData(prev => ({ ...prev, ...inputMap }))
     } catch (error) {
-      console.error('Failed to load salary data:', error)
+      console.error('Failed to load manufacturing labor data:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleInputChange = async (key: keyof SalaryData, value: number) => {
+  const handleInputChange = async (key: keyof ManufacturingLaborData, value: number) => {
     const newData = { ...data, [key]: value }
     setData(newData)
 
     try {
-      await api.user.saveInput('salary', key, value)
+      await api.user.saveInput('manufacturing-labor', key, value)
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('salary', inputs)
+      const result = await api.calculate('manufacturing-labor', inputs)
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -214,7 +214,7 @@ export default function SalarySheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('salary', key, value)
+        api.user.saveInput('manufacturing-labor', key, value)
       )
       await Promise.all(promises)
     } catch (error) {
@@ -231,20 +231,19 @@ export default function SalarySheet() {
   return (
     <div className="p-3 space-y-3 text-sm">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">③ (F) 人件費を入力する</h1>
-        <Button onClick={handleSaveAll} disabled={saving} className="h-8 px-3 text-xs">
-          {saving ? '保存中...' : 'すべて保存'}
-        </Button>
-      </div>
-
-      <div className="bg-red-100 border border-red-300 p-2">
-        <p className="text-red-800 font-medium text-xs">
-          ここの数字は百万円単位で記入する事! 530万円(年収)の場合5.3と記入
-        </p>
+        <h1 className="text-lg font-semibold">⑤(v)人件費を入力する (工事職人)</h1>
+        <div className="flex items-center gap-4">
+          <div className="bg-red-100 border border-red-300 px-3 py-1 text-xs font-medium text-red-800">
+            ここの数字は百万円単位で記入する事! 530万円(年収)の場合5.3と記入
+          </div>
+          <Button onClick={handleSaveAll} disabled={saving} className="h-8 px-3 text-xs">
+            {saving ? '保存中...' : 'すべて保存'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        {/* Employee Salary Details */}
+        {/* 人件費明細 - Personnel Cost Details */}
         <Card>
           <CardHeader className="py-2">
             <CardTitle className="text-sm">人件費明細</CardTitle>
@@ -257,8 +256,8 @@ export default function SalarySheet() {
                   <Input
                     type="number"
                     step="0.1"
-                    value={data[`employee_${i}_unit_price` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`employee_${i}_unit_price` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`employee_${i}_unit_price` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`employee_${i}_unit_price` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -266,8 +265,8 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">人数</label>
                   <Input
                     type="number"
-                    value={data[`employee_${i}_count` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`employee_${i}_count` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`employee_${i}_count` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`employee_${i}_count` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -275,7 +274,7 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">合計</label>
                   <Input
                     type="number"
-                    value={data[`employee_${i}_total` as keyof SalaryData] as number}
+                    value={data[`employee_${i}_total` as keyof ManufacturingLaborData] as number}
                     readOnly
                     className="mt-1 h-8 text-xs bg-gray-50"
                   />
@@ -285,12 +284,12 @@ export default function SalarySheet() {
             
             <div className="border-t pt-2 mt-2">
               <div className="grid grid-cols-2 gap-2">
-                <div>
+                <div className="bg-gray-100 p-2">
                   <label className="text-xs font-medium">社員給料 計</label>
                   <div className="text-xs text-gray-600">人数: {data.employee_count}</div>
                   <div className="text-xs text-gray-600">合計: {data.employee_salary_total.toFixed(1)}</div>
                 </div>
-                <div>
+                <div className="bg-gray-100 p-2">
                   <label className="text-xs font-medium">給料(現状) 計</label>
                   <div className="text-xs text-gray-600">人数: {data.employee_count_current}</div>
                   <div className="text-xs text-gray-600">合計: {data.employee_salary_current_total.toFixed(1)}</div>
@@ -300,7 +299,7 @@ export default function SalarySheet() {
           </CardContent>
         </Card>
 
-        {/* Miscellaneous Salary */}
+        {/* 雑給料 - Miscellaneous Salaries */}
         <Card>
           <CardHeader className="py-2">
             <CardTitle className="text-sm">雑給料</CardTitle>
@@ -314,8 +313,8 @@ export default function SalarySheet() {
                   <Input
                     type="number"
                     step="0.1"
-                    value={data[`part_${i}_unit_price` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`part_${i}_unit_price` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`part_${i}_unit_price` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`part_${i}_unit_price` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -323,8 +322,8 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">人数</label>
                   <Input
                     type="number"
-                    value={data[`part_${i}_count` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`part_${i}_count` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`part_${i}_count` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`part_${i}_count` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -332,7 +331,7 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">合計</label>
                   <Input
                     type="number"
-                    value={data[`part_${i}_total` as keyof SalaryData] as number}
+                    value={data[`part_${i}_total` as keyof ManufacturingLaborData] as number}
                     readOnly
                     className="mt-1 h-8 text-xs bg-gray-50"
                   />
@@ -348,8 +347,8 @@ export default function SalarySheet() {
                   <Input
                     type="number"
                     step="0.1"
-                    value={data[`arubaito_${i}_unit_price` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`arubaito_${i}_unit_price` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`arubaito_${i}_unit_price` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`arubaito_${i}_unit_price` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -357,8 +356,8 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">人数</label>
                   <Input
                     type="number"
-                    value={data[`arubaito_${i}_count` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`arubaito_${i}_count` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`arubaito_${i}_count` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`arubaito_${i}_count` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -366,7 +365,7 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">合計</label>
                   <Input
                     type="number"
-                    value={data[`arubaito_${i}_total` as keyof SalaryData] as number}
+                    value={data[`arubaito_${i}_total` as keyof ManufacturingLaborData] as number}
                     readOnly
                     className="mt-1 h-8 text-xs bg-gray-50"
                   />
@@ -376,13 +375,13 @@ export default function SalarySheet() {
             
             <div className="border-t pt-2 mt-2">
               <div className="grid grid-cols-2 gap-2">
-                <div>
+                <div className="bg-gray-100 p-2">
                   <label className="text-xs font-medium">雑給料 計</label>
                   <div className="text-xs text-gray-600">人数: {data.misc_count}</div>
                   <div className="text-xs text-gray-600">合計: {data.misc_salary_total.toFixed(1)}</div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium">雑給料(現状) 計</label>
+                <div className="bg-gray-100 p-2">
+                  <label className="text-xs font-medium">給料(現状) 計</label>
                   <div className="text-xs text-gray-600">人数: {data.misc_count_current}</div>
                   <div className="text-xs text-gray-600">合計: {data.misc_salary_current_total.toFixed(1)}</div>
                 </div>
@@ -391,7 +390,7 @@ export default function SalarySheet() {
           </CardContent>
         </Card>
 
-        {/* Dispatched Employees */}
+        {/* 派遣社員 - Dispatched Employees */}
         <Card>
           <CardHeader className="py-2">
             <CardTitle className="text-sm">派遣社員</CardTitle>
@@ -405,8 +404,8 @@ export default function SalarySheet() {
                   <Input
                     type="number"
                     step="0.1"
-                    value={data[`dispatched_${i}_unit_price` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`dispatched_${i}_unit_price` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`dispatched_${i}_unit_price` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`dispatched_${i}_unit_price` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -414,8 +413,8 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">人数</label>
                   <Input
                     type="number"
-                    value={data[`dispatched_${i}_count` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`dispatched_${i}_count` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`dispatched_${i}_count` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`dispatched_${i}_count` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -423,7 +422,7 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">合計</label>
                   <Input
                     type="number"
-                    value={data[`dispatched_${i}_total` as keyof SalaryData] as number}
+                    value={data[`dispatched_${i}_total` as keyof ManufacturingLaborData] as number}
                     readOnly
                     className="mt-1 h-8 text-xs bg-gray-50"
                   />
@@ -439,8 +438,8 @@ export default function SalarySheet() {
                   <Input
                     type="number"
                     step="0.1"
-                    value={data[`contract_${i}_unit_price` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`contract_${i}_unit_price` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`contract_${i}_unit_price` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`contract_${i}_unit_price` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -448,8 +447,8 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">人数</label>
                   <Input
                     type="number"
-                    value={data[`contract_${i}_count` as keyof SalaryData] as number}
-                    onChange={(e) => handleInputChange(`contract_${i}_count` as keyof SalaryData, Number(e.target.value))}
+                    value={data[`contract_${i}_count` as keyof ManufacturingLaborData] as number}
+                    onChange={(e) => handleInputChange(`contract_${i}_count` as keyof ManufacturingLaborData, Number(e.target.value))}
                     className="mt-1 h-8 text-xs"
                   />
                 </div>
@@ -457,7 +456,7 @@ export default function SalarySheet() {
                   <label className="text-xs font-medium">合計</label>
                   <Input
                     type="number"
-                    value={data[`contract_${i}_total` as keyof SalaryData] as number}
+                    value={data[`contract_${i}_total` as keyof ManufacturingLaborData] as number}
                     readOnly
                     className="mt-1 h-8 text-xs bg-gray-50"
                   />
@@ -467,13 +466,13 @@ export default function SalarySheet() {
             
             <div className="border-t pt-2 mt-2">
               <div className="grid grid-cols-2 gap-2">
-                <div>
+                <div className="bg-gray-100 p-2">
                   <label className="text-xs font-medium">派遣社員費 計</label>
                   <div className="text-xs text-gray-600">人数: {data.dispatched_count}</div>
                   <div className="text-xs text-gray-600">合計: {data.dispatched_total.toFixed(1)}</div>
                 </div>
-                <div>
-                  <label className="text-xs font-medium">派遣社員費(現状) 計</label>
+                <div className="bg-gray-100 p-2">
+                  <label className="text-xs font-medium">給料(現状) 計</label>
                   <div className="text-xs text-gray-600">人数: {data.dispatched_count_current}</div>
                   <div className="text-xs text-gray-600">合計: {data.dispatched_current_total.toFixed(1)}</div>
                 </div>

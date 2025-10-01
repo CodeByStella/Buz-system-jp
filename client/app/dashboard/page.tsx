@@ -1,5 +1,1 @@
-import { redirect } from 'next/navigation'
-
-export default function DashboardIndexRedirect() {
-  redirect('/dashboard/start')
-}
+export { default } from '@/components/layout/dashboard-layout'

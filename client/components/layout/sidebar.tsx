@@ -4,19 +4,19 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 
 const navigationItems = [
-  { name: 'スタート', href: '/dashboard/start', key: 'start' },
-  { name: 'MQ(現状)', href: '/dashboard/mq-current', key: 'mq-current' },
-  { name: '①利益', href: '/dashboard/profit', key: 'profit' },
-  { name: '②⑧MQ(未来)', href: '/dashboard/mq-future', key: 'mq-future' },
-  { name: '③給料', href: '/dashboard/salary', key: 'salary' },
-  { name: '④経費', href: '/dashboard/expenses', key: 'expenses' },
-  { name: '⑤製造原価(人)', href: '/dashboard/manufacturing-labor', key: 'manufacturing-labor' },
-  { name: '⑥製造(経費)', href: '/dashboard/manufacturing-expenses', key: 'manufacturing-expenses' },
-  { name: '⑦原価詳細', href: '/dashboard/cost-details', key: 'cost-details' },
-  { name: '損益分岐点', href: '/dashboard/breakeven', key: 'breakeven' },
-  { name: '進捗実績値入力シート', href: '/dashboard/progress', key: 'progress' },
-  { name: '部門別販売計画', href: '/dashboard/sales-plan', key: 'sales-plan' },
-  { name: '利益計画表', href: '/dashboard/profit-plan', key: 'profit-plan' },
+  { name: 'スタート', key: 'start' },
+  { name: 'MQ(現状)', key: 'mq-current' },
+  { name: '①利益', key: 'profit' },
+  { name: '②⑧MQ(未来)', key: 'mq-future' },
+  { name: '③給料', key: 'salary' },
+  { name: '④経費', key: 'expenses' },
+  { name: '⑤製造原価(人)', key: 'manufacturing-labor' },
+  { name: '⑥製造(経費)', key: 'manufacturing-expenses' },
+  { name: '⑦原価詳細', key: 'cost-details' },
+  { name: '損益分岐点', key: 'breakeven' },
+  { name: '進捗実績値入力シート', key: 'progress' },
+  { name: '部門別販売計画', key: 'sales-plan' },
+  { name: '利益計画表', key: 'profit-plan' },
 ]
 
 interface SidebarProps {

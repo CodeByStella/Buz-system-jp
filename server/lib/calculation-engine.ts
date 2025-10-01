@@ -107,22 +107,48 @@ export class CalculationEngine {
       }
       case 'mq-future': {
         const g = this.getCellValue('target_g_profit')
-        const f = this.getCellValue('target_f_fixed_costs')
-        const m = this.getCellValue('target_m_gross_profit')
         const pq = this.getCellValue('target_pq_sales')
         const vq = this.getCellValue('target_vq_variable_costs')
-        const p = this.getCellValue('unit_price_per_item')
-        const q = this.getCellValue('quantity')
+        const unitPriceP = this.getCellValue('unit_price_p')
+        const quantityQ = this.getCellValue('quantity_q')
+        const unitPriceV = this.getCellValue('unit_price_v')
+        const quantityV = this.getCellValue('quantity_v')
 
+        // Calculate M = P - V
         results['calculated_m'] = pq - vq
-        results['calculated_f'] = m - g
-        results['calculated_p'] = m + vq
-        results['calculated_v'] = p - m
-        results['total_sales_calculated'] = p * q
-        results['difference'] = (p * q) - pq
+        
+        // Calculate F = M - G
+        results['calculated_f'] = results['calculated_m'] - g
+        
+        // Calculate percentages
+        const totalSales = pq
+        results['pq_percentage'] = totalSales > 0 ? (pq / totalSales) * 100 : 0
+        results['vq_percentage'] = totalSales > 0 ? (vq / totalSales) * 100 : 0
+        results['m_percentage'] = totalSales > 0 ? (results['calculated_m'] / totalSales) * 100 : 0
+        results['f_percentage'] = totalSales > 0 ? (results['calculated_f'] / totalSales) * 100 : 0
+        results['g_percentage'] = totalSales > 0 ? (g / totalSales) * 100 : 0
+        
+        // Calculate total sales from P×Q
+        results['total_sales_calculated'] = unitPriceP * quantityQ
+        
+        // Calculate difference
+        results['difference'] = pq - results['total_sales_calculated']
+        
+        // Keep input values
+        results['target_g_profit'] = g
         results['target_pq_sales'] = pq
         results['target_vq_variable_costs'] = vq
-        results['target_g_profit'] = g
+        results['unit_price_p'] = unitPriceP
+        results['quantity_q'] = quantityQ
+        results['unit_price_v'] = unitPriceV
+        results['quantity_v'] = quantityV
+        
+        // Keep target values
+        results['target_value_1'] = this.getCellValue('target_value_1')
+        results['target_value_2'] = this.getCellValue('target_value_2')
+        results['target_value_3'] = this.getCellValue('target_value_3')
+        results['target_value_4'] = this.getCellValue('target_value_4')
+        results['target_value_5'] = this.getCellValue('target_value_5')
         break
       }
       case 'profit':
@@ -132,6 +158,98 @@ export class CalculationEngine {
         results['profit_margin'] = this.calculateProfitMargin('total_sales', 'gross_profit')
         break
         
+      case 'salary': {
+        // Calculate individual totals for employees
+        for (let i = 1; i <= 8; i++) {
+          const unitPrice = this.getCellValue(`employee_${i}_unit_price`)
+          const count = this.getCellValue(`employee_${i}_count`)
+          results[`employee_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate employee totals
+        let employeeTotal = 0
+        let employeeCount = 0
+        for (let i = 1; i <= 8; i++) {
+          employeeTotal += this.getCellValue(`employee_${i}_total`)
+          employeeCount += this.getCellValue(`employee_${i}_count`)
+        }
+        results['employee_salary_total'] = employeeTotal
+        results['employee_count'] = employeeCount
+        
+        // Calculate individual totals for part-time workers
+        for (let i = 1; i <= 5; i++) {
+          const unitPrice = this.getCellValue(`part_${i}_unit_price`)
+          const count = this.getCellValue(`part_${i}_count`)
+          results[`part_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate individual totals for arubaito workers
+        for (let i = 1; i <= 3; i++) {
+          const unitPrice = this.getCellValue(`arubaito_${i}_unit_price`)
+          const count = this.getCellValue(`arubaito_${i}_count`)
+          results[`arubaito_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate miscellaneous totals
+        let miscTotal = 0
+        let miscCount = 0
+        for (let i = 1; i <= 5; i++) {
+          miscTotal += this.getCellValue(`part_${i}_total`)
+          miscCount += this.getCellValue(`part_${i}_count`)
+        }
+        for (let i = 1; i <= 3; i++) {
+          miscTotal += this.getCellValue(`arubaito_${i}_total`)
+          miscCount += this.getCellValue(`arubaito_${i}_count`)
+        }
+        results['misc_salary_total'] = miscTotal
+        results['misc_count'] = miscCount
+        
+        // Calculate individual totals for dispatched workers
+        for (let i = 1; i <= 6; i++) {
+          const unitPrice = this.getCellValue(`dispatched_${i}_unit_price`)
+          const count = this.getCellValue(`dispatched_${i}_count`)
+          results[`dispatched_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate individual totals for contract workers
+        for (let i = 1; i <= 2; i++) {
+          const unitPrice = this.getCellValue(`contract_${i}_unit_price`)
+          const count = this.getCellValue(`contract_${i}_count`)
+          results[`contract_${i}_total`] = unitPrice * count
+        }
+        
+        // Calculate dispatched totals
+        let dispatchedTotal = 0
+        let dispatchedCount = 0
+        for (let i = 1; i <= 6; i++) {
+          dispatchedTotal += this.getCellValue(`dispatched_${i}_total`)
+          dispatchedCount += this.getCellValue(`dispatched_${i}_count`)
+        }
+        for (let i = 1; i <= 2; i++) {
+          dispatchedTotal += this.getCellValue(`contract_${i}_total`)
+          dispatchedCount += this.getCellValue(`contract_${i}_count`)
+        }
+        results['dispatched_total'] = dispatchedTotal
+        results['dispatched_count'] = dispatchedCount
+        
+        // Calculate income increase rate
+        const futureIncome = this.getCellValue('future_avg_income')
+        const currentIncome = this.getCellValue('current_avg_income')
+        results['income_increase_rate'] = currentIncome > 0 ? (futureIncome / currentIncome) * 100 : 0
+        
+        // Keep input values
+        results['future_avg_income'] = futureIncome
+        results['current_avg_income'] = currentIncome
+        
+        // Keep current values (these would be input separately)
+        results['employee_salary_current_total'] = this.getCellValue('employee_salary_current_total')
+        results['employee_count_current'] = this.getCellValue('employee_count_current')
+        results['misc_salary_current_total'] = this.getCellValue('misc_salary_current_total')
+        results['misc_count_current'] = this.getCellValue('misc_count_current')
+        results['dispatched_current_total'] = this.getCellValue('dispatched_current_total')
+        results['dispatched_count_current'] = this.getCellValue('dispatched_count_current')
+        break
+      }
       case 'breakeven':
         results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')
         results['variable_costs_per_unit'] = this.getCellValue('material_cost_per_unit') + this.getCellValue('labor_cost_per_unit')

@@ -10,21 +10,19 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    /* Primary as brand red */
-    --primary: 356 70% 50%; /* approx #d32f2f */
-    --primary-foreground: 0 0% 100%;
-    /* Secondary can be blue for calculate */
-    --secondary: 221.2 83.2% 53.3%;
-    --secondary-foreground: 210 40% 98%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 0 71% 95%; /* pale red hover #fdecea */
-    --accent-foreground: 356 70% 30%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 356 70% 50%;
+    --ring: 221.2 83.2% 53.3%;
     --radius: 0rem;
   }
 
@@ -35,19 +33,19 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 356 70% 50%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 91.2% 59.8%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 356 30% 20%;
+    --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 356 70% 50%;
+    --ring: 224.3 76.3% 94.1%;
   }
 }
 
@@ -57,19 +55,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #fafafa;
-    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans JP", Arial, sans-serif;
-  }
-
-  /* Hide number input spinners (WebKit) */
-  input[type='number']::-webkit-outer-spin-button,
-  input[type='number']::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  /* Hide number input spinners (Firefox) */
-  input[type='number'] {
-    -moz-appearance: textfield;
-    appearance: textfield;
   }
 }

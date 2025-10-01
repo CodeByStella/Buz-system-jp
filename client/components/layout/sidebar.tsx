@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 const navigationItems = [
-  { name: 'スタート', href: '/dashboard', key: 'start' },
+  { name: 'スタート', href: '/dashboard/start', key: 'start' },
   { name: 'MQ(現状)', href: '/dashboard/mq-current', key: 'mq-current' },
   { name: '①利益', href: '/dashboard/profit', key: 'profit' },
   { name: '②③MQ(未来)', href: '/dashboard/mq-future', key: 'mq-future' },
@@ -24,11 +24,11 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 h-full">
-      <div className="p-4">
-        <h2 className="text-lg font-semibold text-gray-900">ビジネスシステム</h2>
+    <div className="w-64 bg-white border-r border-gray-200 h-full overflow-auto">
+      <div className="p-4 sticky top-0 bg-white border-b border-gray-100 z-10">
+        <h2 className="text-lg font-semibold text-gray-900">メニュー</h2>
       </div>
-      <nav className="mt-4">
+      <nav className="mt-2 pb-4">
         {navigationItems.map((item) => (
           <Link
             key={item.key}

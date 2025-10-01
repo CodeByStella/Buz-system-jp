@@ -63,14 +63,20 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex">
-        <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <main className="flex-1 p-6">
-            {children}
-          </main>
+    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+      <Header />
+      <div className="flex-1 overflow-hidden flex justify-center">
+        <div className="w-full max-w-[1440px] h-full p-4">
+          <div className="h-full border border-gray-200 bg-white overflow-hidden">
+            <div className="flex h-full">
+              <Sidebar />
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <main className="flex-1 p-6 overflow-auto">
+                  {children}
+                </main>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

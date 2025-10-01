@@ -20,6 +20,7 @@ import CostDetailsSheet from '@/components/sheets/cost-details-sheet'
 import ProgressSheet from '@/components/sheets/progress-sheet'
 import SalesPlanSheet from '@/components/sheets/sales-plan-sheet'
 import ProfitPlanSheet from '@/components/sheets/profit-plan-sheet'
+import StartSheet from '@/components/sheets/start-sheet'
 
 interface User {
   id: string
@@ -145,7 +146,7 @@ const startSheetCells = [
   { key: 'check_profit_before_tax', label: 'チェック欄: 税引前利益', value: 0, editable: false, calculated: true },
 ]
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('start') // State for active tab
@@ -169,29 +170,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const renderContent = () => {
     switch (activeTab) {
       case 'start':
-        return (
-          <div className="h-full flex flex-col space-y-4 overflow-hidden">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
-              <p className="text-gray-600">このページで元データを入力します（画像の項目に対応）。</p>
-            </div>
-            <div className="flex-1 min-h-0">
-              <ExcelForm
-                sheetName="start"
-                sheetTitle="スタート入力シート"
-                cells={startSheetCells as any}
-                dense
-                showDescription={false}
-                showGuide
-                guideContent={
-                  <div>
-                    決算書を見ながら一つ一つ直近の数字を入力してください。製造原価を別に集計していない決算書であれば製造原価は未入力で構いません。期末の棚卸・仕掛はマイナスで入力してください。
-                  </div>
-                }
-              />
-            </div>
-          </div>
-        )
+        return <StartSheet />
       case 'mq-current':
         return <MQCurrentSheet />
       case 'profit':
@@ -257,7 +236,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
-      <Header />
+          <Header />
       <div className="flex-1 overflow-hidden flex justify-center">
         <div className="w-full max-w-[1440px] h-full p-4">
           <div className="h-full border border-gray-200 bg-white overflow-hidden">
@@ -266,7 +245,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <div className="flex-1 flex flex-col overflow-hidden">
                 <main className="flex-1 p-6 overflow-auto">
                   {renderContent()}
-                </main>
+          </main>
               </div>
             </div>
           </div>

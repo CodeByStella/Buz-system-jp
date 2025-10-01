@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
-import { prisma } from '../index'
+import { User } from '../models/user'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret'
 
@@ -22,21 +22,13 @@ export const authenticateToken = async (req: AuthenticatedRequest, res: Response
 
     const payload = jwt.verify(token, JWT_SECRET) as any
 
-    const user = await prisma.user.findUnique({
-      where: { id: payload.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true
-      }
-    })
+    const user = await User.findById(payload.id).select('email name role').lean()
 
     if (!user) {
       return res.status(404).json({ error: 'ユーザーが見つかりません' })
     }
 
-    req.user = user
+    req.user = { id: String(user._id), email: user.email, role: user.role }
     next()
   } catch (error) {
     res.status(401).json({ error: '認証に失敗しました' })

@@ -1,6 +1,6 @@
 import express from 'express'
-import { prisma } from '../index'
 import { authenticateToken, requireAdmin } from '../middleware/auth'
+import { parameterService } from '../services/parameter-service'
 
 const router = express.Router()
 
@@ -10,9 +10,7 @@ router.use(authenticateToken, requireAdmin)
 // Get global parameters
 router.get('/parameters', async (req, res) => {
   try {
-    const parameters = await prisma.globalParameter.findMany({
-      orderBy: { key: 'asc' }
-    })
+    const parameters = await parameterService.listAll()
 
     res.json({ parameters })
   } catch (error) {
@@ -30,11 +28,7 @@ router.post('/parameters', async (req, res) => {
       return res.status(400).json({ error: 'キーと値が必要です' })
     }
 
-    const parameter = await prisma.globalParameter.upsert({
-      where: { key },
-      update: { value, description },
-      create: { key, value, description }
-    })
+    const parameter = await parameterService.upsert(key, value, description)
 
     res.json({ parameter })
   } catch (error) {

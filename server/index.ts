@@ -1,7 +1,8 @@
+import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import { PrismaClient } from '@prisma/client'
+import { connectToDatabase } from './lib/mongo'
 
 // Import routes
 import authRoutes from './routes/auth'
@@ -11,7 +12,6 @@ import calculateRoutes from './routes/calculate'
 import pdfRoutes from './routes/pdf'
 
 const app = express()
-const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3001
 
 // Middleware
@@ -40,10 +40,16 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: 'サーバーエラーが発生しました' })
 })
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Express server running on port ${PORT}`)
-  console.log(`📊 Health check: http://localhost:${PORT}/api/health`)
-})
-
-export { prisma }
+// Start server after DB connection
+connectToDatabase()
+  .then(() => {
+    console.log('✅ Connected to MongoDB')
+    app.listen(PORT, () => {
+      console.log(`🚀 Express server running on port ${PORT}`)
+      console.log(`📊 Health check: http://localhost:${PORT}/api/health`)
+    })
+  })
+  .catch((err) => {
+    console.error('❌ Failed to connect to MongoDB', err)
+    process.exit(1)
+  })

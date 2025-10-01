@@ -1,6 +1,7 @@
 import express from 'express'
-import { prisma } from '../index'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
+import { parameterService } from '../services/parameter-service'
+import { inputService } from '../services/input-service'
 import { createCalculationEngine } from '../lib/calculation-engine'
 
 const router = express.Router()
@@ -18,19 +19,10 @@ router.post('/', async (req: AuthenticatedRequest, res) => {
     }
 
     // Get global parameters
-    const globalParams = await prisma.globalParameter.findMany()
-    const globalParamsMap = globalParams.reduce((acc, param) => {
-      acc[param.key] = param.value
-      return acc
-    }, {} as Record<string, number>)
+    const globalParamsMap = await parameterService.listAllAsMap()
 
     // Get user inputs for this sheet
-    const userInputs = await prisma.userInput.findMany({
-      where: {
-        userId: req.user!.id,
-        sheet
-      }
-    })
+    const userInputs = await inputService.listForSheet(req.user!.id, sheet)
     const userInputsMap = userInputs.reduce((acc, input) => {
       acc[input.cellKey] = input.value
       return acc

@@ -21,7 +21,7 @@ export function LoginForm() {
 
     try {
       const data = await api.auth.login(email, password)
-      router.push('/dashboard')
+      router.push('/dashboard/start')
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'ログインに失敗しました')

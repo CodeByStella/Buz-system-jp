@@ -63,6 +63,8 @@ export function ProfitSheet() {
       sheetName="profit"
       sheetTitle="①利益"
       cells={profitCells}
+      dense
+      showDescription={false}
     />
   )
 }

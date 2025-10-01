@@ -88,68 +88,68 @@ export default function BreakevenSheet() {
   }
 
   if (loading) {
-    return <div className="p-6">読み込み中...</div>
+    return <div className="p-3 text-sm">読み込み中...</div>
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 space-y-3 text-sm">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">損益分岐点</h1>
-        <Button onClick={handleSaveAll} disabled={saving}>
+        <h1 className="text-lg font-semibold">損益分岐点</h1>
+        <Button onClick={handleSaveAll} disabled={saving} className="h-8 px-3 text-xs">
           {saving ? '保存中...' : 'すべて保存'}
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Current Period */}
         <Card>
-          <CardHeader>
-            <CardTitle>今期</CardTitle>
+          <CardHeader className="py-2">
+            <CardTitle className="text-sm">今期</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2">
             <div>
-              <label className="text-sm font-medium">売上高</label>
+              <label className="text-xs font-medium">売上高</label>
               <Input
                 type="number"
                 value={data.current_sales}
                 onChange={(e) => handleInputChange('current_sales', Number(e.target.value))}
-                className="mt-1"
+                className="mt-1 h-8 text-xs"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">変動費</label>
+              <label className="text-xs font-medium">変動費</label>
               <Input
                 type="number"
                 value={data.current_variable_costs}
                 onChange={(e) => handleInputChange('current_variable_costs', Number(e.target.value))}
-                className="mt-1"
+                className="mt-1 h-8 text-xs"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">固定費</label>
+              <label className="text-xs font-medium">固定費</label>
               <Input
                 type="number"
                 value={data.current_fixed_costs}
                 onChange={(e) => handleInputChange('current_fixed_costs', Number(e.target.value))}
-                className="mt-1"
+                className="mt-1 h-8 text-xs"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">変動率</label>
+              <label className="text-xs font-medium">変動率</label>
               <Input
                 type="number"
                 value={data.current_variable_cost_ratio.toFixed(6)}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-1 h-8 text-xs bg-gray-50"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">損益分岐点</label>
+              <label className="text-xs font-medium">損益分岐点</label>
               <Input
                 type="number"
                 value={data.current_breakeven_point.toFixed(0)}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-1 h-8 text-xs bg-gray-50"
               />
             </div>
           </CardContent>
@@ -157,53 +157,53 @@ export default function BreakevenSheet() {
 
         {/* Next Period */}
         <Card>
-          <CardHeader>
-            <CardTitle>来期</CardTitle>
+          <CardHeader className="py-2">
+            <CardTitle className="text-sm">来期</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-2">
             <div>
-              <label className="text-sm font-medium">売上高</label>
+              <label className="text-xs font-medium">売上高</label>
               <Input
                 type="number"
                 value={data.next_sales}
                 onChange={(e) => handleInputChange('next_sales', Number(e.target.value))}
-                className="mt-1"
+                className="mt-1 h-8 text-xs"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">変動費</label>
+              <label className="text-xs font-medium">変動費</label>
               <Input
                 type="number"
                 value={data.next_variable_costs}
                 onChange={(e) => handleInputChange('next_variable_costs', Number(e.target.value))}
-                className="mt-1"
+                className="mt-1 h-8 text-xs"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">固定費</label>
+              <label className="text-xs font-medium">固定費</label>
               <Input
                 type="number"
                 value={data.next_fixed_costs}
                 onChange={(e) => handleInputChange('next_fixed_costs', Number(e.target.value))}
-                className="mt-1"
+                className="mt-1 h-8 text-xs"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">変動率</label>
+              <label className="text-xs font-medium">変動率</label>
               <Input
                 type="number"
                 value={data.next_variable_cost_ratio.toFixed(6)}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-1 h-8 text-xs bg-gray-50"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">損益分岐点</label>
+              <label className="text-xs font-medium">損益分岐点</label>
               <Input
                 type="number"
                 value={data.next_breakeven_point.toFixed(0)}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-1 h-8 text-xs bg-gray-50"
               />
             </div>
           </CardContent>
@@ -212,27 +212,27 @@ export default function BreakevenSheet() {
 
       {/* Comparison */}
       <Card>
-        <CardHeader>
-          <CardTitle>比較分析</CardTitle>
+        <CardHeader className="py-2">
+          <CardTitle className="text-sm">比較分析</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <label className="text-sm font-medium">損益分岐点の差</label>
+              <label className="text-xs font-medium">損益分岐点の差</label>
               <Input
                 type="number"
                 value={(data.next_breakeven_point - data.current_breakeven_point).toFixed(0)}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-1 h-8 text-xs bg-gray-50"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">変動率の差</label>
+              <label className="text-xs font-medium">変動率の差</label>
               <Input
                 type="number"
                 value={(data.next_variable_cost_ratio - data.current_variable_cost_ratio).toFixed(6)}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-1 h-8 text-xs bg-gray-50"
               />
             </div>
           </div>
@@ -241,12 +241,12 @@ export default function BreakevenSheet() {
 
       {/* Chart Placeholder */}
       <Card>
-        <CardHeader>
-          <CardTitle>損益分岐点チャート</CardTitle>
+        <CardHeader className="py-2">
+          <CardTitle className="text-sm">損益分岐点チャート</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64 bg-gray-100 rounded-md flex items-center justify-center">
-            <p className="text-gray-500">チャート表示エリア（実装予定）</p>
+          <div className="h-48 bg-gray-100 rounded-md flex items-center justify-center">
+            <p className="text-gray-500 text-xs">チャート表示エリア（実装予定）</p>
           </div>
         </CardContent>
       </Card>

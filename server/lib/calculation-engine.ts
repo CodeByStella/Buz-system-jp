@@ -14,15 +14,15 @@ export class CalculationEngine {
 
   // Basic arithmetic operations
   sum(...values: (number | string)[]): number {
-    return values.reduce((acc, val) => {
-      const num = typeof val === 'string' ? this.getCellValue(val) : val
+    return values.reduce<number>((acc, val) => {
+      const num = typeof val === 'string' ? this.getCellValue(val) : Number(val)
       return acc + (isNaN(num) ? 0 : num)
     }, 0)
   }
 
   multiply(...values: (number | string)[]): number {
-    return values.reduce((acc, val) => {
-      const num = typeof val === 'string' ? this.getCellValue(val) : val
+    return values.reduce<number>((acc, val) => {
+      const num = typeof val === 'string' ? this.getCellValue(val) : Number(val)
       return acc * (isNaN(num) ? 1 : num)
     }, 1)
   }
@@ -85,6 +85,46 @@ export class CalculationEngine {
     const results: Record<string, number> = {}
     
     switch (sheetName) {
+      case 'mq-current': {
+        const pq = this.getCellValue('pq_sales')
+        const vq = this.getCellValue('vq_variable_costs')
+        const p = this.getCellValue('p_price')
+        const q = this.getCellValue('q_quantity')
+        const calcSales = p * q
+        results['calculated_sales'] = calcSales
+        results['m_gross_profit'] = pq - vq
+        const f = this.getCellValue('f_fixed_costs')
+        results['f_fixed_costs'] = f
+        results['g_profit'] = results['m_gross_profit'] - f
+        // If pq not provided, align pq to calc P*Q
+        if (!pq && calcSales) {
+          results['pq_sales'] = calcSales
+        } else {
+          results['pq_sales'] = pq
+        }
+        results['vq_variable_costs'] = vq
+        break
+      }
+      case 'mq-future': {
+        const g = this.getCellValue('target_g_profit')
+        const f = this.getCellValue('target_f_fixed_costs')
+        const m = this.getCellValue('target_m_gross_profit')
+        const pq = this.getCellValue('target_pq_sales')
+        const vq = this.getCellValue('target_vq_variable_costs')
+        const p = this.getCellValue('unit_price_per_item')
+        const q = this.getCellValue('quantity')
+
+        results['calculated_m'] = pq - vq
+        results['calculated_f'] = m - g
+        results['calculated_p'] = m + vq
+        results['calculated_v'] = p - m
+        results['total_sales_calculated'] = p * q
+        results['difference'] = (p * q) - pq
+        results['target_pq_sales'] = pq
+        results['target_vq_variable_costs'] = vq
+        results['target_g_profit'] = g
+        break
+      }
       case 'profit':
         results['total_sales'] = this.getCellValue('sales_revenue')
         results['total_costs'] = this.getCellValue('material_costs') + this.getCellValue('labor_costs') + this.getCellValue('overhead_costs')

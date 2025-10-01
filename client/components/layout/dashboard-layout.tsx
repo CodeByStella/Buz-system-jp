@@ -14,6 +14,7 @@ import MQFutureSheet from '@/components/sheets/mq-future-sheet'
 import BreakevenSheet from '@/components/sheets/breakeven-sheet'
 import SalarySheet from '@/components/sheets/salary-sheet'
 import ExpensesSheet from '@/components/sheets/expenses-sheet'
+import ManufacturingLaborSheet from '@/components/sheets/manufacturing-labor-sheet'
 
 interface User {
   id: string
@@ -196,6 +197,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <SalarySheet />
       case 'expenses':
         return <ExpensesSheet />
+      case 'manufacturing-labor':
+        return <ManufacturingLaborSheet />
       case 'breakeven':
         return <BreakevenSheet />
       default:

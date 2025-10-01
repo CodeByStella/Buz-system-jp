@@ -1,6 +1,7 @@
 # ビジネスシステム
 
 業務効率化のためのビジネス管理システムです。Excelベースのデータ入力と自動計算機能を提供します。
+<img width="1919" height="921" alt="image" src="https://github.com/user-attachments/assets/63822209-8d1d-4fdd-9b14-d14b1cea3094" />
 
 ## 機能
 

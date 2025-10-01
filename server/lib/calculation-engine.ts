@@ -512,6 +512,63 @@ export class CalculationEngine {
         })
         break
       }
+      case 'cost-details': {
+        // Calculate product-level totals
+        let totalGrossProfit = 0
+        let totalGrossProfitPerItem = 0
+        let totalQuantity = 0
+        let totalSales = 0
+        
+        // Process products (assuming products are stored as individual fields)
+        for (let i = 0; i < 20; i++) {
+          const grossProfitAmount = this.getCellValue(`product_${i}_gross_profit_amount`)
+          const grossProfitPerItem = this.getCellValue(`product_${i}_gross_profit_per_item`)
+          const quantity = this.getCellValue(`product_${i}_quantity`)
+          const sales = this.getCellValue(`product_${i}_sales`)
+          
+          totalGrossProfit += grossProfitAmount
+          totalGrossProfitPerItem += grossProfitPerItem
+          totalQuantity += quantity
+          totalSales += sales
+        }
+        
+        results['total_gross_profit'] = totalGrossProfit
+        results['total_gross_profit_per_item'] = totalGrossProfitPerItem
+        results['total_quantity'] = totalQuantity
+        results['total_sales'] = totalSales
+        
+        // Calculate averages
+        results['average_customer_unit_price'] = totalQuantity > 0 ? totalSales / totalQuantity : 0
+        results['average_gross_profit_rate'] = totalSales > 0 ? (totalGrossProfit / totalSales) * 100 : 0
+        
+        // Calculate deficiency amount
+        const workforce = this.getCellValue('workforce')
+        const targetWorkforce = 25 // From image
+        results['deficiency_amount'] = workforce - targetWorkforce
+        
+        // Calculate profit per person
+        results['profit_per_person'] = workforce > 0 ? totalGrossProfit / workforce : 0
+        
+        // Calculate productivity per person
+        results['productivity_per_person'] = workforce > 0 ? totalSales / workforce : 0
+        
+        // Keep input values
+        results['target_gross_profit_rate'] = this.getCellValue('target_gross_profit_rate')
+        results['monthly_customers'] = this.getCellValue('monthly_customers')
+        results['customer_unit_price'] = this.getCellValue('customer_unit_price')
+        results['workforce'] = workforce
+        results['workforce_profitability_per_person'] = this.getCellValue('workforce_profitability_per_person')
+        results['workforce_productivity_per_person'] = this.getCellValue('workforce_productivity_per_person')
+        
+        // Keep gross profit amounts
+        results['gross_profit_amount_1'] = this.getCellValue('gross_profit_amount_1')
+        results['gross_profit_amount_2'] = this.getCellValue('gross_profit_amount_2')
+        results['gross_profit_amount_3'] = this.getCellValue('gross_profit_amount_3')
+        results['gross_profit_amount_4'] = this.getCellValue('gross_profit_amount_4')
+        results['gross_profit_amount_5'] = this.getCellValue('gross_profit_amount_5')
+        
+        break
+      }
       case 'breakeven':
         results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')
         results['variable_costs_per_unit'] = this.getCellValue('material_cost_per_unit') + this.getCellValue('labor_cost_per_unit')

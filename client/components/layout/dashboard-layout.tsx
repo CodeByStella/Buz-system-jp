@@ -17,6 +17,7 @@ import ExpensesSheet from '@/components/sheets/expenses-sheet'
 import ManufacturingLaborSheet from '@/components/sheets/manufacturing-labor-sheet'
 import ManufacturingExpensesSheet from '@/components/sheets/manufacturing-expenses-sheet'
 import CostDetailsSheet from '@/components/sheets/cost-details-sheet'
+import ProgressSheet from '@/components/sheets/progress-sheet'
 
 interface User {
   id: string
@@ -207,6 +208,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <CostDetailsSheet />
       case 'breakeven':
         return <BreakevenSheet />
+      case 'progress':
+        return <ProgressSheet />
       default:
         return (
           <div className="p-6">

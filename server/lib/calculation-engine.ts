@@ -598,6 +598,50 @@ export class CalculationEngine {
         
         break
       }
+      case 'progress': {
+        // Target values (keep as-is)
+        const targetFields = ['period_month', 'target_sales_growth', 'target_direct_sales', 'target_gross_profit', 
+          'target_gross_profit_rate', 'target_cost_ratio', 'target_business_expenses', 'target_personnel_expenses', 
+          'target_other_expenses', 'target_sales_promotion', 'target_external_revenue', 'target_external_expenses', 
+          'target_extraordinary_items', 'target_profit', 'target_tax', 'target_retained_earnings']
+        
+        targetFields.forEach(field => {
+          results[field] = this.getCellValue(field)
+        })
+        
+        // Actual values (keep user inputs)
+        const actualFields = ['actual_direct_sales', 'actual_gross_profit', 'actual_business_expenses', 
+          'actual_personnel_expenses', 'actual_other_expenses', 'actual_sales_promotion', 
+          'actual_external_revenue', 'actual_external_expenses', 'actual_extraordinary_items', 
+          'actual_profit', 'actual_tax', 'actual_retained_earnings']
+        
+        actualFields.forEach(field => {
+          results[field] = this.getCellValue(field)
+        })
+        
+        // Calculate derived fields
+        const actualDirectSales = this.getCellValue('actual_direct_sales')
+        const actualGrossProfit = this.getCellValue('actual_gross_profit')
+        const targetDirectSales = this.getCellValue('target_direct_sales')
+        const targetGrossProfit = this.getCellValue('target_gross_profit')
+        const targetProfit = this.getCellValue('target_profit')
+        const actualProfit = this.getCellValue('actual_profit')
+        
+        // Calculate actual rates
+        results['actual_gross_profit_rate'] = actualDirectSales > 0 ? (actualGrossProfit / actualDirectSales) * 100 : 0
+        results['actual_cost_ratio'] = actualDirectSales > 0 ? ((actualDirectSales - actualGrossProfit) / actualDirectSales) * 100 : 0
+        
+        // Calculate achievement rates
+        results['sales_achievement_rate'] = targetDirectSales > 0 ? (actualDirectSales / targetDirectSales) * 100 : 0
+        results['profit_achievement_rate'] = targetProfit > 0 ? (actualProfit / targetProfit) * 100 : 0
+        
+        // Calculate variances
+        results['variance_direct_sales'] = actualDirectSales - targetDirectSales
+        results['variance_gross_profit'] = actualGrossProfit - targetGrossProfit
+        results['variance_profit'] = actualProfit - targetProfit
+        
+        break
+      }
       default:
         // For other sheets, return basic calculations
         Object.keys(this.context.userInputs).forEach(key => {

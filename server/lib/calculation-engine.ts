@@ -125,12 +125,31 @@ export class CalculationEngine {
         results['target_g_profit'] = g
         break
       }
-      case 'profit':
-        results['total_sales'] = this.getCellValue('sales_revenue')
-        results['total_costs'] = this.getCellValue('material_costs') + this.getCellValue('labor_costs') + this.getCellValue('overhead_costs')
-        results['gross_profit'] = this.calculateProfit('total_sales', 'total_costs')
-        results['profit_margin'] = this.calculateProfitMargin('total_sales', 'gross_profit')
+      case 'profit': {
+        const operatingProfit = this.getCellValue('operating_profit')
+        const nonOperatingIncome = this.getCellValue('non_operating_income')
+        const nonOperatingExpenses = this.getCellValue('non_operating_expenses')
+        const extraordinaryIncome = this.getCellValue('extraordinary_income')
+        const extraordinaryLoss = this.getCellValue('extraordinary_loss')
+        
+        // 経常利益 = 営業利益 + 営業外収益 - 営業外費用
+        results['ordinary_profit'] = operatingProfit + nonOperatingIncome - nonOperatingExpenses
+        
+        // 税引前利益 = 経常利益 + 特別利益 - 特別損失
+        results['profit_before_tax'] = results['ordinary_profit'] + extraordinaryIncome - extraordinaryLoss
+        
+        // 前年対比 (assuming previous year data is available)
+        const previousYearProfit = this.getCellValue('previous_year_profit_before_tax')
+        results['year_on_year_comparison'] = previousYearProfit !== 0 ? (results['profit_before_tax'] / previousYearProfit) * 100 : 0
+        
+        // Keep input values
+        results['operating_profit'] = operatingProfit
+        results['non_operating_income'] = nonOperatingIncome
+        results['non_operating_expenses'] = nonOperatingExpenses
+        results['extraordinary_income'] = extraordinaryIncome
+        results['extraordinary_loss'] = extraordinaryLoss
         break
+      }
         
       case 'breakeven':
         results['fixed_costs'] = this.getCellValue('rent') + this.getCellValue('utilities') + this.getCellValue('salaries')

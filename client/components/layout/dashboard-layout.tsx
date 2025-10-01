@@ -15,6 +15,7 @@ import BreakevenSheet from '@/components/sheets/breakeven-sheet'
 import SalarySheet from '@/components/sheets/salary-sheet'
 import ExpensesSheet from '@/components/sheets/expenses-sheet'
 import ManufacturingLaborSheet from '@/components/sheets/manufacturing-labor-sheet'
+import ManufacturingExpensesSheet from '@/components/sheets/manufacturing-expenses-sheet'
 
 interface User {
   id: string
@@ -199,6 +200,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <ExpensesSheet />
       case 'manufacturing-labor':
         return <ManufacturingLaborSheet />
+      case 'manufacturing-expenses':
+        return <ManufacturingExpensesSheet />
       case 'breakeven':
         return <BreakevenSheet />
       default:

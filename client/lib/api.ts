@@ -12,14 +12,26 @@ export const api = {
       ...options,
     }
 
-    const response = await fetch(url, config)
-    
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Network error' }))
-      throw new Error(error.error || 'Request failed')
-    }
+    try {
+      const response = await fetch(url, config)
+      
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'ネットワークエラーが発生しました' }))
+        throw new Error(error.error || 'リクエストに失敗しました')
+      }
 
-    return response.json()
+      return response.json()
+    } catch (error) {
+      // Handle network errors like "Failed to fetch"
+      if (error instanceof Error) {
+        if (error.message === 'Failed to fetch' || error.message.includes('fetch')) {
+          throw new Error('サーバーに接続できません。ネットワーク接続を確認してください。')
+        }
+        // Re-throw our custom errors (from the if (!response.ok) block above)
+        throw error
+      }
+      throw new Error('予期しないエラーが発生しました')
+    }
   },
 
   // Auth endpoints

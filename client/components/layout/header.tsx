@@ -70,7 +70,7 @@ export function Header() {
           <div
             className="w-24 h-10 bg-gray-100 border border-gray-200 cursor-pointer"
             onClick={() => router.push('/dashboard')}
-            aria-label="Go to dashboard"
+            aria-label="ダッシュボードへ移動"
             role="button"
           />
           <h1 className="text-xl font-semibold text-primary">ビジネスシステム</h1>

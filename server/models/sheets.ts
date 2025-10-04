@@ -25,7 +25,10 @@ interface SheetCell {
 
 export interface SheetDocument extends Document {
   workbookId?: string;
-  name: string;
+  sheetName: string;
+  tableName?: string;
+  tableNumber?: number;
+  tableDescription?: string;
   rows: SheetRow[];
   cols: SheetCol[];
   cells: Record<string, SheetCell>; // "rowKey:colKey" → cell data
@@ -65,7 +68,10 @@ const ColSchema = new Schema<SheetCol>(
 
 const SheetSchema = new Schema<SheetDocument>({
   workbookId: { type: String },
-  name: { type: String, required: true },
+  sheetName: { type: String },
+  tableName: { type: String },
+  tableNumber: { type: Number },
+  tableDescription: { type: String },
   rows: [RowSchema],
   cols: [ColSchema],
   cells: {

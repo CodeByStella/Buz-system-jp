@@ -20,7 +20,9 @@ const MqCurrentStatusSheetSchema = new Schema({
     grossMargin: { type: Number }, // M
     fixedFee: { type: Number }, // F
     profit: { type: Number }, // G
-  }
+  },
+
+  memo: { type: String }, // メモ欄
 }, { timestamps: true });
 
 export type MqCurrentStatusSheetDocument = InferSchemaType<

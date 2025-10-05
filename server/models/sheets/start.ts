@@ -5,6 +5,11 @@ const MainRowSchema = new Schema({
   manufacturingCostReport: { type: Number },
 });
 
+const OthersRowSchema = new Schema({
+  title: { type: Number },
+  amount: { type: Number },
+});
+
 const StartSheetSchema = new Schema({
   recent_sales: MainRowSchema, //直近売上 (Recent Sales)
   gross_profit: MainRowSchema, //売上総利益 (Gross Profit)
@@ -104,38 +109,21 @@ const StartSheetSchema = new Schema({
   ordinary_profit: MainRowSchema, //経常利益 (Ordinary Profit)
   extraordinary_gain: MainRowSchema, //特別利益・除却益 (Extraordinary Gain / Disposal Gain)
   extraordinary_loss: MainRowSchema, //特別損失・除却損 (Extraordinary Loss / Disposal Loss)
-});
 
-const OthersRowSchema = new Schema({
-  title: { type: Number },
-  amount: { type: Number },
-});
-
-const OthersTableSchema = new Schema({
   non_operating_income_name: [OthersRowSchema], //営業外収益名称 (Name of Non-operating Income)
   securities_valuation_loss: [OthersRowSchema], //有価証券評価損 (Loss on Valuation of Securities)
   extraordinary_gain_name: [OthersRowSchema], //特別利益・除却益名称 (Name of Extraordinary Gain / Disposal Gain)
   extraordinary_loss_name: [OthersRowSchema], //特別損失・除却損名称 (Name of Extraordinary Loss / Disposal Loss)
-});
 
-const SummaryTableSchema = new Schema({
   cost_of_sales_total: { type: Number }, //売上原価 合計 (Total Cost of Sales)
   general_admin_expenses_total: { type: Number }, //一般管理費 合計 (Total General and Administrative Expenses)
   operating_profit: { type: Number }, //営業利益 (Operating Profit)
   profit_before_tax: { type: Number }, //税引前利益 (Profit Before Tax)
-});
+}, { timestamps: true });
 
 export type StartSheetDocument = InferSchemaType<typeof StartSheetSchema> & {
   _id: mongoose.Types.ObjectId;
 };
-
-export type OthersTableDocument = InferSchemaType<typeof OthersTableSchema> & {
-  _id: mongoose.Types.ObjectId;
-};
-export type SummaryTableDocument = InferSchemaType<typeof SummaryTableSchema> & {
-  _id: mongoose.Types.ObjectId;
-};
-
 
 export const StartSheet: Model<StartSheetDocument> =
   mongoose.models.StartSheet ||
@@ -143,18 +131,4 @@ export const StartSheet: Model<StartSheetDocument> =
     "StartSheet",
     StartSheetSchema,
     "start_sheets"
-  );
-export const OthersTable: Model<OthersTableDocument> =
-  mongoose.models.OthersTable ||
-  mongoose.model<OthersTableDocument>(
-    "OthersTable_start",
-    OthersTableSchema,
-    "others_tables_start"
-  );
-export const SummaryTable: Model<SummaryTableDocument> =
-  mongoose.models.SummaryTable ||
-  mongoose.model<SummaryTableDocument>(
-    "SummaryTable_start",
-    SummaryTableSchema,
-    "summary_tables_start"
   );

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface SheetRow {
   key: string;
@@ -80,7 +80,5 @@ const SheetSchema = new Schema<SheetDocument>({
   },
 });
 
-export const SheetModel = mongoose.model<SheetDocument>(
-  "Sheet",
-  SheetSchema
-);
+export const Sheet: Model<SheetDocument> =
+  mongoose.models.Sheet || mongoose.model<SheetDocument>("Sheet", SheetSchema, "sheets");

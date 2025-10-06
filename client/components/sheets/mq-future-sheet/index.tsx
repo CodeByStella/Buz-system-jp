@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface MQFutureData {
   // PQ Results
@@ -115,13 +115,13 @@ export default function MQFutureSheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('mq-future', key, value)
+      await userService.saveUserInput({ sheet: 'mq-future', cellKey: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('mq-future', inputs)
+      const result = await userService.calculate({ sheet: 'mq-future', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -134,7 +134,7 @@ export default function MQFutureSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('mq-future', key, value)
+        userService.saveUserInput({ sheet: 'mq-future', cellKey: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface ManufacturingLaborData {
   // 人件費明細 - Personnel Cost Details (社員1-8)
@@ -195,13 +195,13 @@ export default function ManufacturingLaborSheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('manufacturing-labor', key, value)
+      await userService.saveUserInput({ sheet: 'manufacturing-labor', cellKey: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('manufacturing-labor', inputs)
+      const result = await userService.calculate({ sheet: 'manufacturing-labor', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -214,7 +214,7 @@ export default function ManufacturingLaborSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('manufacturing-labor', key, value)
+        userService.saveUserInput({ sheet: 'manufacturing-labor', cellKey: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

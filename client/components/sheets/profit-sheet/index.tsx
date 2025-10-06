@@ -1,6 +1,6 @@
 'use client'
 
-import { ExcelForm } from '@/components/user/excel-form'
+import { ExcelForm } from '@/components/ui/customTable'
 
 const profitCells = [
   {

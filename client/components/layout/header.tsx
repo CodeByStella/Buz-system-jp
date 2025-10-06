@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { LogOut, User } from 'lucide-react'
-import { api } from '@/lib/api'
+import { authService } from '@/lib/services'
 
 interface User {
   id: string
   email: string
-  name: string
-  role: 'ADMIN' | 'USER'
+  name?: string
+  role?: 'ADMIN' | 'USER'
 }
 
 export function Header() {
@@ -25,8 +25,8 @@ export function Header() {
 
   const fetchUser = async () => {
     try {
-      const data = await api.auth.me()
-      setUser(data.user)
+      const data = await authService.getCurrentUser()
+      setUser(data)
     } catch (error) {
       router.push('/login')
     } finally {
@@ -36,7 +36,7 @@ export function Header() {
 
   const handleLogout = async () => {
     try {
-      await api.auth.logout()
+      await authService.logout()
       router.push('/login')
     } catch (error) {
       console.error('Logout failed:', error)

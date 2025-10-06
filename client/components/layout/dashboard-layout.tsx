@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
-import { api } from "@/lib/api";
+import { authService } from "@/lib/services";
 
 // Import all sheet components
-import { ExcelForm } from "@/components/user/excel-form";
+import { ExcelForm } from "@/components/ui/customTable";
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
 import { ProfitSheet } from "@/components/sheets/profit-sheet";
 import MQFutureSheet from "@/components/sheets/mq-future-sheet";
@@ -25,8 +25,8 @@ import StartSheet from "@/components/sheets/start-sheet";
 interface User {
   id: string;
   email: string;
-  name: string;
-  role: "ADMIN" | "USER";
+  name?: string;
+  role?: "ADMIN" | "USER";
 }
 
 export default function DashboardLayout() {
@@ -41,8 +41,8 @@ export default function DashboardLayout() {
 
   const fetchUser = async () => {
     try {
-      const data = await api.auth.me();
-      setUser(data.user);
+      const data = await authService.getCurrentUser();
+      setUser(data);
     } catch (error) {
       router.push("/login");
     } finally {

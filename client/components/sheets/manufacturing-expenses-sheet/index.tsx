@@ -4,45 +4,45 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
-interface ExpensesData {
+interface ManufacturingExpensesData {
   // 経費(固定) - Fixed Expenses
+  electricity: number
+  power: number
+  gas_utilities: number
+  fuel: number
+  water_supply: number
+  sewerage: number
   vehicle_expenses: number
-  rent_land_lease: number
-  rental_fees: number
+  rent_land_rent: number
+  lease_rental_fees: number
+  rd_expenses: number
+  survey_research_expenses: number
   taxes_public_dues: number
   entertainment_expenses: number
   payment_fees: number
+  consultant_fees: number
+  lease_fees: number
   communication_transportation: number
+  travel_expenses: number
   consumables: number
   office_supplies: number
   other_expenses: number
   miscellaneous_expenses: number
-  utilities: number
-  travel_transportation: number
-  membership_fees: number
-  book_expenses: number
-  repair_expenses: number
-  insurance_premiums: number
-  electricity: number
-  power: number
-  gas_heating: number
-  fuel: number
-  water_supply: number
-  sewerage: number
-  rd_expenses: number
-  research_expenses: number
-  consultant_fees: number
-  lease_fees: number
-  travel_expenses: number
   decoration_expenses: number
   sanitation_expenses: number
-  freight_charges: number
-  packing_packaging: number
-  management_fees: number
+  freight_shipping: number
+  packing_expenses: number
+  water_utilities: number
+  travel_transportation: number
+  membership_fees: number
+  management_expenses: number
   maintenance_management: number
-  maintenance_upkeep: number
+  book_expenses: number
+  repair_expenses: number
+  repair_maintenance: number
+  insurance_premiums: number
   equipment_expenses: number
   donations: number
   depreciation: number
@@ -56,7 +56,7 @@ interface ExpensesData {
   consumable_materials: number
   advertising_publicity: number
   recruitment_expenses: number
-  education_training: number
+  training_education: number
   reserve_1: number
   reserve_2: number
   reserve_3: number
@@ -68,8 +68,8 @@ interface ExpensesData {
   
   // 人件費 - Personnel Expenses
   employee_salaries: number
-  miscellaneous_salaries: number
-  dispatched_employee_costs: number
+  temporary_wages: number
+  temporary_staffing_fees: number
   executive_compensation: number
   welfare_expenses: number
   statutory_welfare_expenses: number
@@ -77,20 +77,20 @@ interface ExpensesData {
   personnel_reserve_2: number
   personnel_reserve_3: number
   personnel_reserve_4: number
+  personnel_other: number
   
   // Personnel totals
   personnel_total: number
   personnel_current_total: number
   
   // 事業費 - Business Expenses
-  education_training_expenses: number
-  business_strategy_expenses: number
-  royalties: number
-  planning_fees: number
-  business_recruitment_expenses: number
-  business_training_expenses: number
-  meeting_expenses: number
-  newspaper_book_expenses: number
+  beginning_inventory: number
+  purchases: number
+  ending_inventory: number
+  outsourcing_fees: number
+  business_depreciation: number
+  raw_materials: number
+  outsourcing_processing_fees: number
   business_reserve_1: number
   business_reserve_2: number
   business_reserve_3: number
@@ -104,98 +104,98 @@ interface ExpensesData {
   grand_total: number
 }
 
-export default function ExpensesSheet() {
-  const [data, setData] = useState<ExpensesData>({
-    // Fixed expenses
-    vehicle_expenses: 2.5,
-    rent_land_lease: 8.0,
-    rental_fees: 4.3,
-    taxes_public_dues: 2.0,
-    entertainment_expenses: 5.0,
-    payment_fees: 5.6,
-    communication_transportation: 1.4,
-    consumables: 2.3,
-    office_supplies: 1.5,
-    other_expenses: 3.5,
-    miscellaneous_expenses: 3.0,
-    utilities: 1.7,
-    travel_transportation: 3.0,
-    membership_fees: 1.5,
-    book_expenses: 0.4,
-    repair_expenses: 1.0,
-    insurance_premiums: 3.0,
+export default function ManufacturingExpensesSheet() {
+  const [data, setData] = useState<ManufacturingExpensesData>({
+    // Fixed expenses - Pre-filled with image values
     electricity: 0,
     power: 0,
-    gas_heating: 0,
+    gas_utilities: 0,
     fuel: 0,
     water_supply: 0,
     sewerage: 0,
+    vehicle_expenses: 6.9,
+    rent_land_rent: 2.0,
+    lease_rental_fees: 0,
     rd_expenses: 0,
-    research_expenses: 0,
+    survey_research_expenses: 0,
+    taxes_public_dues: 0,
+    entertainment_expenses: 0,
+    payment_fees: 0,
     consultant_fees: 0,
     lease_fees: 0,
+    communication_transportation: 0,
     travel_expenses: 0,
+    consumables: 0,
+    office_supplies: 0,
+    other_expenses: 3.5,
+    miscellaneous_expenses: 4.0,
     decoration_expenses: 0,
     sanitation_expenses: 0,
-    freight_charges: 0,
-    packing_packaging: 0,
-    management_fees: 0,
+    freight_shipping: 0,
+    packing_expenses: 0,
+    water_utilities: 0,
+    travel_transportation: 0,
+    membership_fees: 0,
+    management_expenses: 0,
     maintenance_management: 0,
-    maintenance_upkeep: 0,
+    book_expenses: 0,
+    repair_expenses: 0,
+    repair_maintenance: 0,
+    insurance_premiums: 0,
     equipment_expenses: 0,
     donations: 0,
     depreciation: 0,
     
-    fixed_expenses_total: 49.7,
-    fixed_expenses_current_total: 46.3,
+    fixed_expenses_total: 16.4,
+    fixed_expenses_current_total: 13.4,
     
-    // Sales promotion expenses
+    // Sales promotion expenses - Pre-filled with image values
     sales_promotion_planning: 6.0,
     consumable_materials: 0,
     advertising_publicity: 0,
     recruitment_expenses: 0,
-    education_training: 0,
+    training_education: 0,
     reserve_1: 0,
     reserve_2: 0,
     reserve_3: 0,
     reserve_4: 0,
     
     sales_promotion_total: 6.0,
-    sales_promotion_current_total: 2.0,
+    sales_promotion_current_total: 0.0,
     
-    // Personnel expenses
-    employee_salaries: 31.2,
-    miscellaneous_salaries: 1.0,
-    dispatched_employee_costs: 0.0,
-    executive_compensation: 15.0,
+    // Personnel expenses - Pre-filled with image values
+    employee_salaries: 44.6,
+    temporary_wages: 0.0,
+    temporary_staffing_fees: 0.0,
+    executive_compensation: 0,
     welfare_expenses: 6.0,
-    statutory_welfare_expenses: 12.0,
+    statutory_welfare_expenses: 13.0,
     personnel_reserve_1: 0,
     personnel_reserve_2: 0,
     personnel_reserve_3: 0,
     personnel_reserve_4: 0,
+    personnel_other: 0,
     
-    personnel_total: 65.2,
-    personnel_current_total: 55.5,
+    personnel_total: 63.6,
+    personnel_current_total: 55.0,
     
-    // Business expenses
-    education_training_expenses: 4.0,
-    business_strategy_expenses: 0,
-    royalties: 0,
-    planning_fees: 0,
-    business_recruitment_expenses: 0,
-    business_training_expenses: 0,
-    meeting_expenses: 0,
-    newspaper_book_expenses: 0,
+    // Business expenses - Pre-filled with image values
+    beginning_inventory: 0.2,
+    purchases: 0,
+    ending_inventory: -5.0, // Note: マイナスを入れてから入力
+    outsourcing_fees: 0,
+    business_depreciation: 0,
+    raw_materials: 58.0,
+    outsourcing_processing_fees: 140.0,
     business_reserve_1: 0,
     business_reserve_2: 0,
     business_reserve_3: 0,
     business_reserve_4: 0,
     
-    business_expenses_total: 4.0,
-    business_expenses_current_total: 0.0,
+    business_expenses_total: 193.2,
+    business_expenses_current_total: 166.5,
     
-    grand_total: 124.9
+    grand_total: 279.2
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -206,31 +206,31 @@ export default function ExpensesSheet() {
 
   const initializeData = async () => {
     try {
-      const result = await api.user.getInputs('expenses')
-      const inputMap: Partial<ExpensesData> = {}
+      const result = await api.user.getInputs('manufacturing-expenses')
+      const inputMap: Partial<ManufacturingExpensesData> = {}
       ;(result.inputs || []).forEach((i: any) => {
-        inputMap[i.cellKey as keyof ExpensesData] = Number(i.value) || 0
+        inputMap[i.cellKey as keyof ManufacturingExpensesData] = Number(i.value) || 0
       })
       setData(prev => ({ ...prev, ...inputMap }))
     } catch (error) {
-      console.error('Failed to load expenses data:', error)
+      console.error('Failed to load manufacturing expenses data:', error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleInputChange = async (key: keyof ExpensesData, value: number) => {
+  const handleInputChange = async (key: keyof ManufacturingExpensesData, value: number) => {
     const newData = { ...data, [key]: value }
     setData(newData)
 
     try {
-      await api.user.saveInput('expenses', key, value)
+      await userService.saveUserInput({ sheet: 'manufacturing-expenses', cellKey: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('expenses', inputs)
+      const result = await userService.calculate({ sheet: 'manufacturing-expenses', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -243,7 +243,7 @@ export default function ExpensesSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('expenses', key, value)
+        userService.saveUserInput({ sheet: 'manufacturing-expenses', cellKey: key, value })
       )
       await Promise.all(promises)
     } catch (error) {
@@ -260,7 +260,7 @@ export default function ExpensesSheet() {
   return (
     <div className="p-3 space-y-3 text-sm">
       <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">④ (F) 経費を入力する</h1>
+        <h1 className="text-lg font-semibold">⑥(v)経費を入力する</h1>
         <div className="flex items-center gap-4">
           <div className="text-xs text-gray-500">(百万円)</div>
           <div className="bg-yellow-100 border border-yellow-300 px-3 py-1 text-sm font-medium">
@@ -282,7 +282,67 @@ export default function ExpensesSheet() {
             {/* Pre-filled items */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs font-medium">車輛費</label>
+                <label className="text-xs font-medium">電力費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.electricity}
+                  onChange={(e) => handleInputChange('electricity', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">動力費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.power}
+                  onChange={(e) => handleInputChange('power', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">ガス光熱費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.gas_utilities}
+                  onChange={(e) => handleInputChange('gas_utilities', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">燃料費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.fuel}
+                  onChange={(e) => handleInputChange('fuel', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">上水道費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.water_supply}
+                  onChange={(e) => handleInputChange('water_supply', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">下水道費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.sewerage}
+                  onChange={(e) => handleInputChange('sewerage', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">車輌費</label>
                 <Input
                   type="number"
                   step="0.1"
@@ -296,8 +356,8 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.rent_land_lease}
-                  onChange={(e) => handleInputChange('rent_land_lease', Number(e.target.value))}
+                  value={data.rent_land_rent}
+                  onChange={(e) => handleInputChange('rent_land_rent', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -306,8 +366,28 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.rental_fees}
-                  onChange={(e) => handleInputChange('rental_fees', Number(e.target.value))}
+                  value={data.lease_rental_fees}
+                  onChange={(e) => handleInputChange('lease_rental_fees', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">研究開発費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.rd_expenses}
+                  onChange={(e) => handleInputChange('rd_expenses', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">調査研究費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.survey_research_expenses}
+                  onChange={(e) => handleInputChange('survey_research_expenses', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -342,12 +422,42 @@ export default function ExpensesSheet() {
                 />
               </div>
               <div>
+                <label className="text-xs font-medium">顧問料</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.consultant_fees}
+                  onChange={(e) => handleInputChange('consultant_fees', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">リース料</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.lease_fees}
+                  onChange={(e) => handleInputChange('lease_fees', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
                 <label className="text-xs font-medium">通信交通費</label>
                 <Input
                   type="number"
                   step="0.1"
                   value={data.communication_transportation}
                   onChange={(e) => handleInputChange('communication_transportation', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">出張費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.travel_expenses}
+                  onChange={(e) => handleInputChange('travel_expenses', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -392,180 +502,6 @@ export default function ExpensesSheet() {
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">水道光熱費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.utilities}
-                  onChange={(e) => handleInputChange('utilities', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">旅費交通費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.travel_transportation}
-                  onChange={(e) => handleInputChange('travel_transportation', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">諸会費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.membership_fees}
-                  onChange={(e) => handleInputChange('membership_fees', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">図書費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.book_expenses}
-                  onChange={(e) => handleInputChange('book_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">修繕費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.repair_expenses}
-                  onChange={(e) => handleInputChange('repair_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">保険料</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.insurance_premiums}
-                  onChange={(e) => handleInputChange('insurance_premiums', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-            </div>
-            
-            {/* Additional items */}
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <div>
-                <label className="text-xs font-medium">電力費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.electricity}
-                  onChange={(e) => handleInputChange('electricity', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">動力費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.power}
-                  onChange={(e) => handleInputChange('power', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">ガス光熱費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.gas_heating}
-                  onChange={(e) => handleInputChange('gas_heating', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">燃料費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.fuel}
-                  onChange={(e) => handleInputChange('fuel', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">上水道費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.water_supply}
-                  onChange={(e) => handleInputChange('water_supply', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">下水道費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.sewerage}
-                  onChange={(e) => handleInputChange('sewerage', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">研究開発費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.rd_expenses}
-                  onChange={(e) => handleInputChange('rd_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">調査研究費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.research_expenses}
-                  onChange={(e) => handleInputChange('research_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">顧問料</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.consultant_fees}
-                  onChange={(e) => handleInputChange('consultant_fees', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">リース料</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.lease_fees}
-                  onChange={(e) => handleInputChange('lease_fees', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">出張費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.travel_expenses}
-                  onChange={(e) => handleInputChange('travel_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
                 <label className="text-xs font-medium">装飾費</label>
                 <Input
                   type="number"
@@ -590,8 +526,8 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.freight_charges}
-                  onChange={(e) => handleInputChange('freight_charges', Number(e.target.value))}
+                  value={data.freight_shipping}
+                  onChange={(e) => handleInputChange('freight_shipping', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -600,8 +536,38 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.packing_packaging}
-                  onChange={(e) => handleInputChange('packing_packaging', Number(e.target.value))}
+                  value={data.packing_expenses}
+                  onChange={(e) => handleInputChange('packing_expenses', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">水道光熱費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.water_utilities}
+                  onChange={(e) => handleInputChange('water_utilities', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">旅費交通費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.travel_transportation}
+                  onChange={(e) => handleInputChange('travel_transportation', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">諸会費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.membership_fees}
+                  onChange={(e) => handleInputChange('membership_fees', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -610,8 +576,8 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.management_fees}
-                  onChange={(e) => handleInputChange('management_fees', Number(e.target.value))}
+                  value={data.management_expenses}
+                  onChange={(e) => handleInputChange('management_expenses', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -626,12 +592,42 @@ export default function ExpensesSheet() {
                 />
               </div>
               <div>
+                <label className="text-xs font-medium">図書費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.book_expenses}
+                  onChange={(e) => handleInputChange('book_expenses', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">修繕費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.repair_expenses}
+                  onChange={(e) => handleInputChange('repair_expenses', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
                 <label className="text-xs font-medium">修繕維持費</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.maintenance_upkeep}
-                  onChange={(e) => handleInputChange('maintenance_upkeep', Number(e.target.value))}
+                  value={data.repair_maintenance}
+                  onChange={(e) => handleInputChange('repair_maintenance', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">保険料</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.insurance_premiums}
+                  onChange={(e) => handleInputChange('insurance_premiums', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -675,7 +671,7 @@ export default function ExpensesSheet() {
                   <div className="text-xs text-gray-600">{data.fixed_expenses_total.toFixed(1)}</div>
                 </div>
                 <div className="bg-gray-100 p-2">
-                  <label className="text-xs font-medium">現状 計</label>
+                  <label className="text-xs font-medium">現状計</label>
                   <div className="text-xs text-gray-600">{data.fixed_expenses_current_total.toFixed(1)}</div>
                 </div>
               </div>
@@ -735,8 +731,8 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.education_training}
-                  onChange={(e) => handleInputChange('education_training', Number(e.target.value))}
+                  value={data.training_education}
+                  onChange={(e) => handleInputChange('training_education', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -790,7 +786,7 @@ export default function ExpensesSheet() {
                   <div className="text-xs text-gray-600">{data.sales_promotion_total.toFixed(1)}</div>
                 </div>
                 <div className="bg-gray-100 p-2">
-                  <label className="text-xs font-medium">現状 計</label>
+                  <label className="text-xs font-medium">現状計</label>
                   <div className="text-xs text-gray-600">{data.sales_promotion_current_total.toFixed(1)}</div>
                 </div>
               </div>
@@ -820,8 +816,8 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.miscellaneous_salaries}
-                  onChange={(e) => handleInputChange('miscellaneous_salaries', Number(e.target.value))}
+                  value={data.temporary_wages}
+                  onChange={(e) => handleInputChange('temporary_wages', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -830,8 +826,8 @@ export default function ExpensesSheet() {
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.dispatched_employee_costs}
-                  onChange={(e) => handleInputChange('dispatched_employee_costs', Number(e.target.value))}
+                  value={data.temporary_staffing_fees}
+                  onChange={(e) => handleInputChange('temporary_staffing_fees', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -905,6 +901,16 @@ export default function ExpensesSheet() {
                   className="mt-1 h-8 text-xs"
                 />
               </div>
+              <div>
+                <label className="text-xs font-medium">その他</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.personnel_other}
+                  onChange={(e) => handleInputChange('personnel_other', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+              </div>
             </div>
             
             {/* Totals */}
@@ -915,7 +921,7 @@ export default function ExpensesSheet() {
                   <div className="text-xs text-gray-600">{data.personnel_total.toFixed(1)}</div>
                 </div>
                 <div className="bg-gray-100 p-2">
-                  <label className="text-xs font-medium">現状 計</label>
+                  <label className="text-xs font-medium">現状計</label>
                   <div className="text-xs text-gray-600">{data.personnel_current_total.toFixed(1)}</div>
                 </div>
               </div>
@@ -931,82 +937,73 @@ export default function ExpensesSheet() {
           <CardContent className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-xs font-medium">教育研修費</label>
+                <label className="text-xs font-medium">期首棚卸高</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.education_training_expenses}
-                  onChange={(e) => handleInputChange('education_training_expenses', Number(e.target.value))}
+                  value={data.beginning_inventory}
+                  onChange={(e) => handleInputChange('beginning_inventory', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">事業戦略費</label>
+                <label className="text-xs font-medium">仕入れ</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.business_strategy_expenses}
-                  onChange={(e) => handleInputChange('business_strategy_expenses', Number(e.target.value))}
+                  value={data.purchases}
+                  onChange={(e) => handleInputChange('purchases', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">ロイヤリティー</label>
+                <label className="text-xs font-medium">期末棚卸高</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.royalties}
-                  onChange={(e) => handleInputChange('royalties', Number(e.target.value))}
+                  value={data.ending_inventory}
+                  onChange={(e) => handleInputChange('ending_inventory', Number(e.target.value))}
+                  className="mt-1 h-8 text-xs"
+                />
+                <div className="text-xs text-gray-500 mt-1">マイナスを入れてから入力</div>
+              </div>
+              <div>
+                <label className="text-xs font-medium">外注費</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={data.outsourcing_fees}
+                  onChange={(e) => handleInputChange('outsourcing_fees', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">企画料</label>
+                <label className="text-xs font-medium">減価償却費</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.planning_fees}
-                  onChange={(e) => handleInputChange('planning_fees', Number(e.target.value))}
+                  value={data.business_depreciation}
+                  onChange={(e) => handleInputChange('business_depreciation', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">募集費</label>
+                <label className="text-xs font-medium">原材料費</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.business_recruitment_expenses}
-                  onChange={(e) => handleInputChange('business_recruitment_expenses', Number(e.target.value))}
+                  value={data.raw_materials}
+                  onChange={(e) => handleInputChange('raw_materials', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">研修費</label>
+                <label className="text-xs font-medium">外注加工費</label>
                 <Input
                   type="number"
                   step="0.1"
-                  value={data.business_training_expenses}
-                  onChange={(e) => handleInputChange('business_training_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">会議費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.meeting_expenses}
-                  onChange={(e) => handleInputChange('meeting_expenses', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">新聞図書費</label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  value={data.newspaper_book_expenses}
-                  onChange={(e) => handleInputChange('newspaper_book_expenses', Number(e.target.value))}
+                  value={data.outsourcing_processing_fees}
+                  onChange={(e) => handleInputChange('outsourcing_processing_fees', Number(e.target.value))}
                   className="mt-1 h-8 text-xs"
                 />
               </div>
@@ -1060,7 +1057,7 @@ export default function ExpensesSheet() {
                   <div className="text-xs text-gray-600">{data.business_expenses_total.toFixed(1)}</div>
                 </div>
                 <div className="bg-gray-100 p-2">
-                  <label className="text-xs font-medium">現状 計</label>
+                  <label className="text-xs font-medium">現状計</label>
                   <div className="text-xs text-gray-600">{data.business_expenses_current_total.toFixed(1)}</div>
                 </div>
               </div>
@@ -1072,11 +1069,8 @@ export default function ExpensesSheet() {
       {/* Instructions */}
       <div className="bg-yellow-50 border border-yellow-200 p-3">
         <div className="text-xs text-yellow-800 space-y-1">
-          <p>売上が上がれば経費・人件費も上がります。</p>
-          <p>必要な経費を使い、不要な経費は圧縮しましょう。</p>
-          <p>前期より多くの経費を入れる事、理想は105%~115%です。</p>
-          <p>項目は自由に追加・修正できます。</p>
-          <p>常に現状より高い数字になるよう調整してください。</p>
+          <p>売上が増えれば経費も人件費も増えます。必要な経費は使い、無駄な費用は圧縮させます。基本的には前年度よりも多く経費を記入する事です。105%~115%が望ましい。</p>
+          <p>※項目は自由に書き足し、訂正可能。現状よりも必ず上げるように調整しましょう。</p>
         </div>
       </div>
     </div>

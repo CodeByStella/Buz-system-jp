@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { api } from '@/lib/api'
+import { adminService } from '@/lib/services'
 
 interface GlobalParameter {
   id: string
@@ -26,8 +26,8 @@ export function ParametersTable() {
 
   const fetchParameters = async () => {
     try {
-      const data = await api.admin.getParameters()
-      setParameters(data.parameters)
+      const data = await adminService.getParameters()
+      setParameters(data)
     } catch (error) {
       console.error('Failed to fetch parameters:', error)
     } finally {
@@ -48,12 +48,12 @@ export function ParametersTable() {
   const handleSave = async (param: GlobalParameter) => {
     try {
       const editValue = editValues[param.id]
-      const data = await api.admin.updateParameter(
-        param.key,
-        editValue.value,
-        editValue.description
+      const data = await adminService.updateParameter(
+        {key: param.key,
+        value: editValue.value,
+        description: editValue.description}
       )
-      setParameters(parameters.map(p => p.id === param.id ? data.parameter : p))
+      setParameters(parameters.map(p => p.id === param.id ? data : p))
       setEditing(null)
     } catch (error) {
       console.error('Failed to save parameter:', error)

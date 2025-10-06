@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { api } from '@/lib/api'
+import { authService } from '@/lib/services'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
@@ -20,7 +20,7 @@ export function LoginForm() {
     setError('')
 
     try {
-      const data = await api.auth.login(email, password)
+      const data = await authService.login({email, password})
       router.push('/dashboard')
       router.refresh()
     } catch (err) {

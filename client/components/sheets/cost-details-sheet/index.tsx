@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface ProductData {
   product_name: string
@@ -148,9 +148,9 @@ export default function CostDetailsSheet() {
 
   const initializeData = async () => {
     try {
-      const result = await api.user.getInputs('cost-details')
+      const result = await userService.getUserInputs('cost-details')
       const inputMap: Partial<CostDetailsData> = {}
-      ;(result.inputs || []).forEach((i: any) => {
+      ;(result || []).forEach((i: any) => {
         if (i.cellKey.startsWith('product_')) {
           // Handle product data
           const productIndex = parseInt(i.cellKey.split('_')[1])
@@ -206,7 +206,7 @@ export default function CostDetailsSheet() {
     try {
       // Only save numeric values to the API
       if (field !== 'product_name') {
-        await api.user.saveInput('cost-details', `product_${productIndex}_${field}`, Number(value))
+        await userService.saveUserInput({ sheet: 'cost-details', cellKey: `product_${productIndex}_${field}`, value: Number(value) })
       }
       
       // Trigger recalculation
@@ -216,7 +216,7 @@ export default function CostDetailsSheet() {
           inputs[k] = v
         }
       })
-      const result = await api.calculate('cost-details', inputs)
+      const result = await userService.calculate({ sheet: 'cost-details', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -230,7 +230,7 @@ export default function CostDetailsSheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('cost-details', key, value)
+      await userService.saveUserInput({ sheet: 'cost-details', cellKey: key, value })
       
       // Trigger recalculation
       const inputs: Record<string, number> = {}
@@ -239,7 +239,7 @@ export default function CostDetailsSheet() {
           inputs[k] = v
         }
       })
-      const result = await api.calculate('cost-details', inputs)
+      const result = await userService.calculate({ sheet: 'cost-details', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -256,14 +256,14 @@ export default function CostDetailsSheet() {
       // Save product data
       data.products.forEach((product, index) => {
         Object.entries(product).forEach(([field, value]) => {
-          promises.push(api.user.saveInput('cost-details', `product_${index}_${field}`, value))
+          promises.push(userService.saveUserInput({ sheet: 'cost-details', cellKey: `product_${index}_${field}`, value }))
         })
       })
       
       // Save other data
       Object.entries(data).forEach(([key, value]) => {
         if (key !== 'products') {
-          promises.push(api.user.saveInput('cost-details', key, value))
+          promises.push(userService.saveUserInput({ sheet: 'cost-details', cellKey: key, value }))
         }
       })
       

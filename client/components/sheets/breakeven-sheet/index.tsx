@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { authService, userService } from '@/lib/services'
 
 interface BreakevenData {
   // Current Period (今期)
@@ -47,9 +47,9 @@ export default function BreakevenSheet() {
 
   const initializeData = async () => {
     try {
-      const result = await api.user.getInputs('breakeven')
+      const result = await userService.getUserInputs('breakeven')
       const inputMap: Partial<BreakevenData> = {}
-      ;(result.inputs || []).forEach((i: any) => {
+      ;(result || []).forEach((i: any) => {
         inputMap[i.cellKey as keyof BreakevenData] = Number(i.value) || 0
       })
       setData(prev => ({ ...prev, ...inputMap }))
@@ -65,13 +65,13 @@ export default function BreakevenSheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('breakeven', key, value)
+      await userService.saveUserInput({sheet:'breakeven', cellKey: key, value})
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('breakeven', inputs)
+      const result = await userService.calculate({sheet:'breakeven', inputs})
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -84,7 +84,7 @@ export default function BreakevenSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('breakeven', key, value)
+        userService.saveUserInput({sheet:'breakeven', cellKey: key, value})
       )
       await Promise.all(promises)
     } catch (error) {

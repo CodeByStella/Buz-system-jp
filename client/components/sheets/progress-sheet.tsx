@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface ProgressData {
   // Period and Growth
@@ -123,9 +123,9 @@ export default function ProgressSheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('progress', key, value)
+      await userService.saveUserInput({ sheet: 'progress', cellKey: key, value })
       const inputs = Object.fromEntries(Object.entries(newData).map(([k, v]) => [k, v]))
-      const result = await api.calculate('progress', inputs)
+      const result = await userService.calculate({ sheet: 'progress', inputs })
       setData(prev => ({ ...prev, ...(result.results || {}) }))
     } catch (error) {
       console.error('Failed to save input:', error)
@@ -136,7 +136,7 @@ export default function ProgressSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('progress', key, value)
+        userService.saveUserInput({ sheet: 'progress', cellKey: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

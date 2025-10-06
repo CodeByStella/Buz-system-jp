@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface ProfitPlanInputs {
   base_sales: number
@@ -100,7 +100,7 @@ export default function ProfitPlanSheet() {
     const newData = { ...data, [key]: value }
     setData(newData)
     try {
-      await api.user.saveInput('profit-plan', key, value)
+      await userService.saveUserInput({ sheet: 'profit-plan', cellKey: key, value })
     } catch (e) {
       console.error('Failed to save input', e)
     }
@@ -110,9 +110,9 @@ export default function ProfitPlanSheet() {
     setSaving(true)
     try {
       await Promise.all([
-        api.user.saveInput('profit-plan', 'base_sales', data.base_sales),
-        api.user.saveInput('profit-plan', 'base_variable_costs', data.base_variable_costs),
-        api.user.saveInput('profit-plan', 'base_fixed_costs', data.base_fixed_costs),
+        userService.saveUserInput('profit-plan', 'base_sales', data.base_sales),
+        userService.saveUserInput('profit-plan', 'base_variable_costs', data.base_variable_costs),
+        userService.saveUserInput('profit-plan', 'base_fixed_costs', data.base_fixed_costs),
       ])
     } finally {
       setSaving(false)

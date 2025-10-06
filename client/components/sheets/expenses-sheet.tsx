@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface ExpensesData {
   // 経費(固定) - Fixed Expenses
@@ -224,13 +224,13 @@ export default function ExpensesSheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('expenses', key, value)
+      await userService.saveUserInput({ sheet: 'expenses', cellKey: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('expenses', inputs)
+      const result = await userService.calculate({ sheet: 'expenses', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -243,7 +243,7 @@ export default function ExpensesSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('expenses', key, value)
+        userService.saveUserInput({ sheet: 'expenses', cellKey: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

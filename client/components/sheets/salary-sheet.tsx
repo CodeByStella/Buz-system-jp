@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface SalaryData {
   // Employee salaries (社員1-8)
@@ -195,13 +195,13 @@ export default function SalarySheet() {
     setData(newData)
 
     try {
-      await api.user.saveInput('salary', key, value)
+      await userService.saveUserInput({ sheet: 'salary', cellKey: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
         Object.entries(newData).map(([k, v]) => [k, v])
       )
-      const result = await api.calculate('salary', inputs)
+      const result = await userService.calculate({ sheet: 'salary', inputs })
       
       // Update with calculated values
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -214,7 +214,7 @@ export default function SalarySheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        api.user.saveInput('salary', key, value)
+        userService.saveUserInput({ sheet: 'salary', cellKey: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

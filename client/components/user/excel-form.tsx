@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Save, Download } from 'lucide-react'
-import { api } from '@/lib/api'
+import { userService } from '@/lib/services'
 
 interface CellData {
   key: string
@@ -43,7 +43,7 @@ export function ExcelForm({ sheetName, sheetTitle, cells, dense = false, showDes
   const initializeData = async () => {
     try {
       // Load existing user inputs
-      const result = await api.user.getInputs(sheetName)
+      const result = await userService.getUserInputs(sheetName)
       const existingData: SheetData = {}
       
       // Initialize with default values
@@ -55,7 +55,7 @@ export function ExcelForm({ sheetName, sheetTitle, cells, dense = false, showDes
       })
 
       // Override with saved values
-      result.inputs.forEach((input: any) => {
+      result.forEach((input: any) => {
         if (existingData[input.cellKey]) {
           existingData[input.cellKey].value = input.value
         }
@@ -88,7 +88,7 @@ export function ExcelForm({ sheetName, sheetTitle, cells, dense = false, showDes
 
   const saveCell = async (cellKey: string, value: number) => {
     try {
-      await api.user.saveInput(sheetName, cellKey, value)
+      await userService.saveUserInput({ sheet: sheetName, cellKey, value })
     } catch (error) {
       console.error('Failed to save cell:', error)
     }
@@ -98,7 +98,7 @@ export function ExcelForm({ sheetName, sheetTitle, cells, dense = false, showDes
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, cell]) =>
-        api.user.saveInput(sheetName, key, cell.value)
+        userService.saveUserInput({ sheet: sheetName, cellKey: key, value: cell.value })
       )
       
       await Promise.all(promises)
@@ -115,7 +115,7 @@ export function ExcelForm({ sheetName, sheetTitle, cells, dense = false, showDes
         Object.entries(data).map(([key, cell]) => [key, cell.value])
       )
 
-      const result = await api.calculate(sheetName, inputs)
+      const result = await userService.calculate({ sheet: sheetName, inputs })
       const newData = { ...data }
       
       // Update calculated values

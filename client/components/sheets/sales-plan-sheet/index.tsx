@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { userService } from '@/lib/services'
@@ -94,9 +93,9 @@ export default function SalesPlanSheet() {
 
   const initializeData = async () => {
     try {
-      const result = await api.user.getInputs('sales-plan')
+      const result = await userService.getUserInputs('sales-plan')
       const inputMap: Partial<SalesPlanData> = {}
-      ;(result.inputs || []).forEach((i: any) => {
+      ;(result || []).forEach((i: any) => {
         if (i.cellKey === 'grand_total_target') {
           inputMap.grandTotalTarget = Number(i.value) || 0
         } else if (i.cellKey.startsWith('category_')) {
@@ -164,7 +163,7 @@ export default function SalesPlanSheet() {
         ? `category_${categoryId}_${field}_${monthIndex}`
         : `category_${categoryId}_${field}`
       
-      await userService.saveUserInput('sales-plan', cellKey, value)
+      await userService.saveUserInput({ sheet: 'sales-plan', cellKey, value })
       
       // Trigger recalculation
       const inputs: Record<string, number> = {
@@ -196,16 +195,16 @@ export default function SalesPlanSheet() {
       const promises = []
       
       // Save grand total
-      promises.push(userService.saveUserInput('sales-plan', 'grand_total_target', data.grandTotalTarget))
+      promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: 'grand_total_target', value: data.grandTotalTarget }))
       
       // Save all category data
       data.categories.forEach(category => {
-        promises.push(userService.saveUserInput('sales-plan', `category_${category.id}_sales_target`, category.salesTarget))
+        promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: `category_${category.id}_sales_target`, value: category.salesTarget }))
         category.monthlyTargets.forEach((value, index) => {
-          promises.push(userService.saveUserInput('sales-plan', `category_${category.id}_monthly_target_${index}`, value))
+          promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: `category_${category.id}_monthly_target_${index}`, value }))
         })
         category.monthlyActuals.forEach((value, index) => {
-          promises.push(userService.saveUserInput('sales-plan', `category_${category.id}_monthly_actual_${index}`, value))
+          promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: `category_${category.id}_monthly_actual_${index}`, value }))
         })
       })
       

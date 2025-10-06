@@ -7,7 +7,7 @@ import { Header } from "./header";
 import { authService } from "@/lib/services";
 
 // Import all sheet components
-import { ExcelForm } from "@/components/user/excel-form";
+import { ExcelForm } from "@/components/ui/customTable";
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
 import { ProfitSheet } from "@/components/sheets/profit-sheet";
 import MQFutureSheet from "@/components/sheets/mq-future-sheet";

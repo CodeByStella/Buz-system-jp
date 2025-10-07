@@ -60,6 +60,56 @@ export function AdvancedTableExample() {
       salary: 4500000,
       joinDate: "2021-06-10",
     },
+    {
+      id: 4,
+      name: "高橋美咲",
+      email: "takahashi@example.com",
+      age: 28,
+      status: "active",
+      department: "人事部",
+      salary: 4800000,
+      joinDate: "2020-08-12",
+    },
+    {
+      id: 5,
+      name: "山田健太",
+      email: "yamada@example.com",
+      age: 32,
+      status: "active",
+      department: "経理部",
+      salary: 5200000,
+      joinDate: "2018-11-05",
+    },
+    {
+      id: 6,
+      name: "佐々木恵",
+      email: "sasaki@example.com",
+      age: 27,
+      status: "inactive",
+      department: "総務部",
+      salary: 4200000,
+      joinDate: "2021-03-20",
+    },
+    {
+      id: 7,
+      name: "伊藤正人",
+      email: "ito@example.com",
+      age: 40,
+      status: "active",
+      department: "営業部",
+      salary: 6500000,
+      joinDate: "2015-06-01",
+    },
+    {
+      id: 8,
+      name: "渡辺真理",
+      email: "watanabe@example.com",
+      age: 29,
+      status: "active",
+      department: "開発部",
+      salary: 5800000,
+      joinDate: "2019-09-15",
+    },
   ]);
 
   const [products] = useState<Product[]>([
@@ -270,6 +320,11 @@ export function AdvancedTableExample() {
           filterable
           pagination
           pageSize={10}
+          scrollable
+          maxHeight="300px"
+          bordered
+          stickyHeader
+          stickyColumns={2}
           onRowClick={handleRowClick}
           colorSettings={{
             headerBg: "bg-blue-50",
@@ -301,6 +356,50 @@ export function AdvancedTableExample() {
             rowHover: "hover:bg-green-50",
             striped: true,
             stripedColor: "bg-green-25",
+          }}
+        />
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-bold mb-4">スティッキーヘッダーテスト</h2>
+        <div className="border border-red-200 p-4 rounded">
+          <p className="text-sm text-gray-600 mb-2">
+            このテーブルは高さ200pxに制限され、スクロール時にヘッダーが固定されるはずです。
+          </p>
+          <AdvancedTable
+            data={users}
+            columns={userColumns.slice(0, 4)}
+            title=""
+            description=""
+            scrollable
+            maxHeight="200px"
+            bordered
+            stickyHeader={true}
+            colorSettings={{
+              headerBg: "bg-red-50",
+              headerText: "text-red-700",
+              rowHover: "hover:bg-red-50",
+            }}
+          />
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-2xl font-bold mb-4">スティッキーカラムテーブル</h2>
+        <AdvancedTable
+          data={users}
+          columns={userColumns}
+          title="スティッキーカラム表示"
+          description="最初の2列が固定されたテーブル"
+          scrollable
+          maxHeight="300px"
+          bordered
+          stickyHeader
+          stickyColumns={2}
+          colorSettings={{
+            headerBg: "bg-green-50",
+            headerText: "text-green-700",
+            rowHover: "hover:bg-green-50",
           }}
         />
       </div>

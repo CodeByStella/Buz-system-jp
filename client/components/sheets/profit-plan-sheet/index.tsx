@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Input } from '@/components/ui/input'
+import { Input } from '@/components/ui/customInput'
 import { Button } from '@/components/ui/button'
 import { userService } from '@/lib/services'
 

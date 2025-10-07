@@ -1,34 +1,66 @@
-export interface RowDataType {
-    key: string;
-    no: string;
-    label: string;
-    incomeStatement: {
-      value: number;
-      editable: boolean;
-    },
-    manufacturingCostReport: {
-      value: number;
-      editable: boolean;
-    },
-    bgcolor1: string;
-    bgcolor2: string;
+export interface MainRowDataType {
+  key: string;
+  no: string;
+  label: string;
+  incomeStatement: {
+    value: number;
+    type: 0 | 1 | 2; //0 disabled, 1 editable, 2 readonly
+  };
+  manufacturingCostReport: {
+    value: number;
+    type: 0 | 1 | 2; //0 disabled, 1 editable, 2 readonly
+  };
+  bgcolor1: string;
+  bgcolor2: string;
 }
 
-export const startSheetRows_main: RowDataType[] = [
+export interface OthersRowDataType {
+  key: string;
+  no: string;
+  label: string;
+  value: number | string;
+  editable: boolean;
+}
+
+export interface SummaryRowDataType {
+  key: string;
+  label: string;
+  value: number;
+}
+const colors = {
+  yellow: "bg-yellow-400",
+  red: "bg-red-700",
+  gray: "bg-gray-400",
+  lightCyan: "bg-cyan-100",
+  lightBlue: "bg-blue-200",
+  orange: "bg-orange-500",
+  teal: "bg-teal-400",
+  purple: "bg-purple-300",
+  beige: "bg-yellow-100",
+  gold: "bg-yellow-300",
+  orangeAccent: "bg-orange-400",
+  brightRed: "bg-red-500",
+  lightGray: "bg-gray-200",
+  peach: "bg-orange-200",
+  silver: "bg-slate-200",
+  blue: "bg-blue-400",
+};
+
+export const initialStartSheet_main: MainRowDataType[] = [
   {
     key: "recentSales",
     no: "売上",
     label: "直近売上",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.lightCyan,
+    bgcolor2: colors.lightCyan,
   },
   {
     key: "grossProfit",
@@ -36,29 +68,29 @@ export const startSheetRows_main: RowDataType[] = [
     label: "売上総利益",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.lightCyan,
+    bgcolor2: colors.lightCyan,
   },
   {
     key: "profitMargin",
     no: "益率",
     label: "利益率(%)",
     incomeStatement: {
-      value: 0,
-      editable: true,
+      value: 2,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.lightCyan,
+    bgcolor2: colors.lightCyan,
   },
   {
     key: "employeeSalary",
@@ -66,14 +98,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "社員給料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "commutingAllowance",
@@ -81,14 +113,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "通勤手当",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "bonus",
@@ -96,14 +128,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "賞与",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "retirementAllowance",
@@ -111,14 +143,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "退職金",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "miscellaneousSalary",
@@ -126,14 +158,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "雑給料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "temporaryStaffCost",
@@ -141,14 +173,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "派遣社員費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "contractStaffCost",
@@ -156,14 +188,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "契約社員費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "variousExpenses",
@@ -171,14 +203,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "諸費用",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "executiveCompensation",
@@ -186,14 +218,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "役員報酬",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "recruitmentCost",
@@ -201,14 +233,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "募集費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "educationTraining",
@@ -216,14 +248,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "教育研修",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "trainingCost",
@@ -231,14 +263,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "研修費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "meetingCost",
@@ -246,14 +278,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "会議費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "reserve1",
@@ -261,14 +293,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "予備",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "reserve2",
@@ -276,14 +308,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "予備",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "welfareExpenses",
@@ -291,14 +323,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "福利厚生費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "statutoryWelfare",
@@ -306,14 +338,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "法定福利費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "businessStrategy",
@@ -321,14 +353,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "事業戦略費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "presidentStrategyA",
@@ -336,14 +368,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "社長戦略費Ａ",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "presidentStrategyB",
@@ -351,14 +383,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "社長戦略費Ｂ",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "salesCommission",
@@ -366,14 +398,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "開拓手数料(外交員)",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "consumableMaterials",
@@ -381,14 +413,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "消耗資材費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "royalty",
@@ -396,14 +428,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "ロイヤリティー",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "outsourcedProcessing",
@@ -411,14 +443,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "外注加工費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "freightAndPacking",
@@ -426,14 +458,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "運賃荷造費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "tenantFee",
@@ -441,14 +473,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "テナント料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "packagingCost",
@@ -456,14 +488,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "包装費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "salesPlanning",
@@ -471,14 +503,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "販売企画費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "sampleDmCost",
@@ -486,14 +518,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "試供品ＤＭ費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "salesPromotion",
@@ -501,14 +533,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "販売促進費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "advertising",
@@ -516,14 +548,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "広告宣伝費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.blue,
+    bgcolor2: colors.blue,
   },
   {
     key: "beginMerchInventory",
@@ -531,14 +563,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "期首商品棚卸高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.yellow,
   },
   {
     key: "beginProductInventory",
@@ -546,14 +578,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "期首製品棚卸高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.yellow,
   },
   {
     key: "merchPurchases",
@@ -561,14 +593,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "商品仕入高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.yellow,
   },
   {
     key: "productPurchases",
@@ -576,14 +608,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "製品仕入高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.yellow,
   },
   {
     key: "endMerchInventory",
@@ -591,14 +623,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "期末商品棚卸高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.yellow,
   },
   {
     key: "endProductInventory",
@@ -606,14 +638,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "期末製品棚卸高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.yellow,
   },
   {
     key: "beginRawInventory",
@@ -621,14 +653,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "期首原材料棚卸高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "rawPurchase1",
@@ -636,14 +668,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "原材料仕入高１",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "rawPurchase2",
@@ -651,14 +683,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "原材料仕入高２",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "rawPurchase3",
@@ -666,14 +698,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "原材料仕入高３",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "workInProcess",
@@ -681,14 +713,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "仕掛品",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "endRawInventory",
@@ -696,14 +728,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "期末原材料棚卸高",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "inventory",
@@ -711,14 +743,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "在庫",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "outsourcingCost",
@@ -726,14 +758,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "外注費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "laborCost",
@@ -741,14 +773,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "労務費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 2,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "outsourcedProcessingLabor",
@@ -756,14 +788,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "外注加工費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.orange,
   },
   {
     key: "laborBreakdownHeader",
@@ -771,14 +803,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "(労務費内訳）",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.teal,
   },
   {
     key: "laborEmployeeSalary",
@@ -786,14 +818,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "社員給料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.teal,
   },
   {
     key: "laborMiscSalary",
@@ -801,14 +833,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "雑給料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.teal,
   },
   {
     key: "laborContractStaff",
@@ -816,14 +848,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "契約社員費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.yellow,
+    bgcolor2: colors.teal,
   },
   {
     key: "electricityCost",
@@ -831,14 +863,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "電力費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "powerCost",
@@ -846,14 +878,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "動力費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "gasUtilities",
@@ -861,14 +893,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "ガス光熱費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "fuelCost",
@@ -876,14 +908,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "燃料費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "waterSupplyCost",
@@ -891,14 +923,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "上水道費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "sewageCost",
@@ -906,14 +938,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "下水道費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "vehicleCost",
@@ -921,14 +953,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "車輌費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "rentLand",
@@ -936,14 +968,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "家賃地代",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "rentalFee",
@@ -951,14 +983,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "賃貸料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "researchDevelopment",
@@ -966,14 +998,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "研究開発費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "researchSurvey",
@@ -981,14 +1013,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "調査研究費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "taxesAndDues",
@@ -996,14 +1028,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "租税公課",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "entertainment",
@@ -1011,14 +1043,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "接待交際費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "serviceFees",
@@ -1026,14 +1058,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "支払手数料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "advisorFees",
@@ -1041,14 +1073,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "顧問料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "leaseFees",
@@ -1056,14 +1088,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "リース料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "communicationTransport",
@@ -1071,14 +1103,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "通信交通費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "travelExpenses",
@@ -1086,14 +1118,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "出張費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "consumableSupplies",
@@ -1101,14 +1133,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "消耗品費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "officeSupplies",
@@ -1116,14 +1148,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "事務用品費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "otherExpenses",
@@ -1131,14 +1163,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "その他経費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "miscellaneousExpenses",
@@ -1146,14 +1178,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "雑費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "decorationCost",
@@ -1161,14 +1193,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "装飾費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "sanitationCost",
@@ -1176,14 +1208,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "衛生費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "freightCost",
@@ -1191,14 +1223,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "運賃",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "packingCost",
@@ -1206,14 +1238,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "荷造包装費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "utilitiesCost",
@@ -1221,14 +1253,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "水道光熱費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "travelTransport",
@@ -1236,14 +1268,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "旅費交通費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "membershipFees",
@@ -1251,14 +1283,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "諸会費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "adminExpenses",
@@ -1266,14 +1298,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "管理諸費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "maintenanceCost",
@@ -1281,14 +1313,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "保守管理費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "bookExpenses",
@@ -1296,14 +1328,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "図書費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "repairCost",
@@ -1311,14 +1343,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "修繕費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "repairMaintenance",
@@ -1326,14 +1358,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "修繕維持費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "insurancePremium",
@@ -1341,14 +1373,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "保険料",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "equipmentCost",
@@ -1356,14 +1388,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "備品費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "donation",
@@ -1371,14 +1403,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "寄付金",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.peach,
+    bgcolor2: colors.peach,
   },
   {
     key: "depreciation",
@@ -1386,14 +1418,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "減価償却費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 1,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.beige,
+    bgcolor2: colors.beige,
   },
   {
     key: "headOfficeCost",
@@ -1401,14 +1433,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "本社費",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type:0,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.orange,
+    bgcolor2: colors.orange,
   },
   {
     key: "nonOperatingIncome",
@@ -1416,14 +1448,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "営業外収益",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.purple,
+    bgcolor2: colors.purple,
   },
   {
     key: "nonOperatingExpenses",
@@ -1431,14 +1463,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "営業外費用",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.purple,
+    bgcolor2: colors.purple,
   },
   {
     key: "ordinaryProfit",
@@ -1446,14 +1478,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "経常利益",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.purple,
+    bgcolor2: colors.purple,
   },
   {
     key: "extraordinaryGain",
@@ -1461,14 +1493,14 @@ export const startSheetRows_main: RowDataType[] = [
     label: "特別利益・除却益",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.purple,
+    bgcolor2: colors.purple,
   },
   {
     key: "extraordinaryLoss",
@@ -1476,13 +1508,65 @@ export const startSheetRows_main: RowDataType[] = [
     label: "特別損失・除却損",
     incomeStatement: {
       value: 0,
-      editable: true,
+      type: 1,
     },
     manufacturingCostReport: {
       value: 0,
-      editable: true,
+      type: 0,
     },
-    bgcolor1: "",
-    bgcolor2: "",
+    bgcolor1: colors.purple,
+    bgcolor2: colors.purple,
+  },
+];
+export const initialStartSheet_others: OthersRowDataType[] = [
+  {
+    key: "non_operating_income_name",
+    no: "",
+    label: "営業外収益名称",
+    value: "金額",
+    editable: false,
+  },
+  {
+    key: "securities_valuation_loss",
+    no: "",
+    label: "営業外費用名称",
+    value: "金額",
+    editable: false,
+  },
+  {
+    key: "extraordinary_gain_name",
+    no: "",
+    label: "特別利益・除却益名称",
+    value: "金額",
+    editable: false,
+  },
+  {
+    key: "extraordinary_loss_name",
+    no: "",
+    label: "特別損失・除却損名称",
+    value: "金額",
+    editable: false,
+  },
+];
+export const initialStartSheet_summary: SummaryRowDataType[] = [
+  {
+    key: "cost_of_sales_total",
+    label: "売上原価 合計",
+    value: 0,
+  },
+  {
+    key: "general_admin_expenses_total",
+    label: "一般管理費",
+    value: 0,
+  },
+  {
+    key: "operating_profit",
+    label: "営業利益",
+    value: 0,
+  },
+  {
+    key: "profit_before_tax",
+    label: "税引前利益",
+    value: 0,
   },
 ];

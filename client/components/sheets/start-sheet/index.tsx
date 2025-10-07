@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   MainRowDataType,
@@ -12,6 +12,7 @@ import {
 } from "./StartSheetCells";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { applyFormulas } from "./formulas";
 
 export default function StartSheet() {
   const [startSheetData_main, setStartSheetData_main] = useState(
@@ -24,8 +25,59 @@ export default function StartSheet() {
     initialStartSheet_summary
   );
 
+  // Apply formulas to readonly fields automatically
+  // Formulas can reference data from all sources (main, others, summary)
+  const calculatedData = useMemo(() => {
+    return applyFormulas({
+      main: startSheetData_main,
+      others: startSheetData_others,
+      summary: startSheetData_summary,
+    });
+  }, [startSheetData_main, startSheetData_others, startSheetData_summary]);
+
+  // Handler for updating main table data
+  const handleMainDataChange = useCallback(
+    (
+      rowKey: string,
+      field: "incomeStatement" | "manufacturingCostReport",
+      newValue: number
+    ) => {
+      setStartSheetData_main((prevData) =>
+        prevData.map((row) =>
+          row.key === rowKey
+            ? {
+                ...row,
+                [field]: {
+                  ...row[field],
+                  value: Number(newValue),
+                },
+              }
+            : row
+        )
+      );
+    },
+    []
+  );
+
+  // Handler for updating others table data
+  const handleOthersDataChange = useCallback(
+    (rowKey: string, newValue: number) => {
+      setStartSheetData_others((prevData) =>
+        prevData.map((row) =>
+          row.key === rowKey
+            ? {
+                ...row,
+                value: Number(newValue),
+              }
+            : row
+        )
+      );
+    },
+    []
+  );
+
   //コードNo	勘定科目	損益計算書	製造原価報告書
-  const startSheetCols_main: Column[] = [
+  const startSheetCols_main: Column[] = useMemo(() => [
     {
       key: "no",
       title: "コードNo",
@@ -78,9 +130,15 @@ export default function StartSheet() {
         return (
           <Input
             type="number"
-            value={value.value}
+            value={value.value||""}
             disabled={value.type === 0}
-            readOnly ={value.type === 2}
+            readOnly={value.type === 2}
+            suffix={record.key==="profitMargin"?"%":undefined}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              const newValue = inputValue === "" ? 0 : Number(inputValue);
+              handleMainDataChange(record.key, "incomeStatement", newValue);
+            }}
             className={`border-transparent h-full`}
           />
         );
@@ -100,17 +158,22 @@ export default function StartSheet() {
         return (
           <Input
             type="number"
-            value={value.value}
+            value={value.value||""}
             disabled={value.type === 0}
             readOnly={value.type === 2}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              const newValue = inputValue === "" ? 0 : Number(inputValue);
+              handleMainDataChange(record.key, "manufacturingCostReport", newValue);
+            }}
             className={`border-transparent h-full`}
           />
         );
       },
     },
-  ];
+  ], [handleMainDataChange]);
 
-  const startSheetCols_others: Column[] = [
+  const startSheetCols_others: Column[] = useMemo(() => [
     {
       key: "no",
       title: "",
@@ -140,9 +203,18 @@ export default function StartSheet() {
       width: 70,
       align: "center",
       cellClassName: "!p-0 !h-full relative",
-      render: (value: string, record: OthersRowDataType, index: number) => {
+      render: (value: string | number, record: OthersRowDataType, index: number) => {
         return record.editable ? (
-          <div>{value}</div>
+          <Input
+            type="number"
+            value={value || ""}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              const newValue = inputValue === "" ? 0 : Number(inputValue);
+              handleOthersDataChange(record.key, newValue);
+            }}
+            className={`border-transparent h-full`}
+          />
         ) : (
           <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
             {value}
@@ -150,9 +222,9 @@ export default function StartSheet() {
         );
       },
     },
-  ];
+  ], [handleOthersDataChange]);
 
-  const startSheetCols_summary: Column[] = [
+  const startSheetCols_summary: Column[] = useMemo(() => [
     {
       key: "label",
       title: "",
@@ -165,7 +237,7 @@ export default function StartSheet() {
       width: 100,
       align: "right",
     },
-  ];
+  ], []);
 
   return (
     <div className="h-full flex flex-col space-y-4 overflow-hidden ">
@@ -179,7 +251,7 @@ export default function StartSheet() {
         <div className="col-span-2 flex flex-col overflow-hidden">
           <AdvancedTable
             columns={startSheetCols_main as any}
-            data={startSheetData_main as any}
+            data={calculatedData.main as any}
             dense
             bordered
             maxHeight={"full"}
@@ -217,7 +289,7 @@ export default function StartSheet() {
             <div className="mt-auto">
               <AdvancedTable
                 columns={startSheetCols_summary as any}
-                data={startSheetData_summary as any}
+                data={calculatedData.summary as any}
                 dense
                 bordered
                 maxHeight={"full"}

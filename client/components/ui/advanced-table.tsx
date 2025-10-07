@@ -128,9 +128,6 @@ export function AdvancedTable<T = any>({
     return (record as any)[rowKey] || index.toString();
   };
 
-  // Debug sticky header
-  console.log("Sticky header enabled:", stickyHeader);
-
   // Filter data based on search term and filters
   const filteredData = useMemo(() => {
     let filtered = data;

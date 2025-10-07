@@ -19,6 +19,7 @@ export interface OthersRowDataType {
   no: string;
   label: string;
   value: number | string;
+  parent_key: string;
   editable: boolean;
 }
 
@@ -83,7 +84,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "利益率(%)",
     incomeStatement: {
       value: 2,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1448,7 +1449,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "営業外収益",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1463,7 +1464,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "営業外費用",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1478,7 +1479,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "経常利益",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1493,7 +1494,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "特別利益・除却益",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1508,7 +1509,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "特別損失・除却損",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1522,30 +1523,82 @@ export const initialStartSheet_others: OthersRowDataType[] = [
   {
     key: "non_operating_income_name",
     no: "",
+    parent_key: "",
     label: "営業外収益名称",
     value: "金額",
     editable: false,
   },
   {
-    key: "securities_valuation_loss",
+    key: "land_sales_profit",
+    no: "営01",
+    parent_key: "non_operating_income_name",
+    label: "土地売却益",
+    value: "0",
+    editable: true,
+  },
+  {
+    key: "real_estate_rental_income",
+    no: "営02",
+    parent_key: "non_operating_income_name",
+    label: "不動産賃貸",
+    value: "0",
+    editable: true,
+  },
+  {
+    key: "non_operating_expenses_name",
     no: "",
+    parent_key: "",
     label: "営業外費用名称",
     value: "金額",
     editable: false,
   },
   {
+    key: "securities_valuation_loss",
+    no: "営01",
+    parent_key: "non_operating_expenses_name",
+    label: "有価証券評価損",
+    value: "0",
+    editable: true,
+  },
+  {
     key: "extraordinary_gain_name",
     no: "",
+    parent_key: "",
     label: "特別利益・除却益名称",
     value: "金額",
     editable: false,
   },
   {
+    key: "land_sales_profit",
+    no: "営01",
+    parent_key: "extraordinary_gain_name",
+    label: "土地売却益",
+    value: "0",
+    editable: true,
+  },
+  {
+    key: "business_restructuring_assistance",
+    no: "営02",
+    parent_key: "extraordinary_gain_name",
+    label: "事業再構築補助",
+    value: "0",
+    editable: true,
+  },
+  {
     key: "extraordinary_loss_name",
     no: "",
+    parent_key: "",
     label: "特別損失・除却損名称",
     value: "金額",
     editable: false,
+  },
+  {
+    key: "land_sales_loss",
+    no: "営01",
+    parent_key: "extraordinary_loss_name",
+    label: "土地売却損",
+    value: "0",
+    editable: true,
   },
 ];
 export const initialStartSheet_summary: SummaryRowDataType[] = [

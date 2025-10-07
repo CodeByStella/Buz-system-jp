@@ -75,9 +75,12 @@ export interface AdvancedTableProps<T = any> {
   onSave?: (data: T[]) => void;
   onExport?: (data: T[]) => void;
   className?: string;
+  tableClassName?: string;
+  cellClassName?: string;
   rowKey?: string | ((record: T) => string);
   emptyText?: string;
   loadingText?: string;
+  hideHeader?: boolean;
 }
 
 export function AdvancedTable<T = any>({
@@ -102,9 +105,12 @@ export function AdvancedTable<T = any>({
   footerContent,
   onRowClick,
   className,
+  tableClassName,
+  cellClassName,
   rowKey = "id",
   emptyText = "データがありません",
   loadingText = "読み込み中...",
+  hideHeader = false,
 }: AdvancedTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
@@ -347,84 +353,87 @@ export function AdvancedTable<T = any>({
         >
           <Table className={cn(
             "pb-4",
-            bordered && "border border-gray-200"
+            bordered && "border border-gray-200",
+            tableClassName
           )}>
-            <TableHeader 
-              className={cn(
-                "bg-white",
-                stickyHeader && "shadow-sm [&_tr]:border-b-0"
-              )}
-              style={stickyHeader ? { 
-                position: 'sticky', 
-                top: 0, 
-                zIndex: 10,
-                backgroundColor: 'white'
-              } : undefined}
-            >
-              <TableRow
+            {!hideHeader && (
+              <TableHeader 
                 className={cn(
-                  dense ? "h-8" : undefined, 
-                  colors.headerBg
+                  "bg-white",
+                  stickyHeader && "shadow-sm [&_tr]:border-b-0"
                 )}
+                style={stickyHeader ? { 
+                  position: 'sticky', 
+                  top: 0, 
+                  zIndex: 10,
+                  backgroundColor: 'white'
+                } : undefined}
               >
-                {columns.map((column, columnIndex) => (
-                  <TableHead
-                    key={column.key}
-                    className={cn(
-                      dense ? "text-xs py-1" : undefined,
-                      column.headerClassName,
-                      colors.headerText,
-                      column.align === "center" && "text-center",
-                      column.align === "right" && "text-right",
-                      bordered && "border border-gray-200",
-                      stickyColumns > 0 && columnIndex < stickyColumns && "sticky bg-white z-20",
-                      sortable &&
-                        column.sortable &&
-                        "cursor-pointer hover:bg-slate-100"
-                    )}
-                    style={{ 
-                      width: column.width,
-                      left: stickyColumns > 0 && columnIndex < stickyColumns 
-                        ? `${columnIndex * (typeof column.width === 'number' ? column.width : 150)}px`
-                        : undefined
-                    }}
-                    onClick={() => handleSort(column)}
-                  >
-                    <div
+                <TableRow
+                  className={cn(
+                    dense ? "h-8" : undefined, 
+                    colors.headerBg
+                  )}
+                >
+                  {columns.map((column, columnIndex) => (
+                    <TableHead
+                      key={column.key}
                       className={cn(
-                        "flex items-center space-x-1",
-                        column.align === "center" && "justify-center",
-                        column.align === "right" && "justify-end"
+                        dense ? "text-xs py-1" : undefined,
+                        column.headerClassName,
+                        colors.headerText,
+                        column.align === "center" && "text-center",
+                        column.align === "right" && "text-right",
+                        bordered && "border border-gray-200",
+                        stickyColumns > 0 && columnIndex < stickyColumns && "sticky bg-white z-20",
+                        sortable &&
+                          column.sortable &&
+                          "cursor-pointer hover:bg-slate-100"
                       )}
+                      style={{ 
+                        width: column.width,
+                        left: stickyColumns > 0 && columnIndex < stickyColumns 
+                          ? `${columnIndex * (typeof column.width === 'number' ? column.width : 150)}px`
+                          : undefined
+                      }}
+                      onClick={() => handleSort(column)}
                     >
-                      <span>{column.title}</span>
-                      {sortable && column.sortable && (
-                        <div className="flex flex-col">
-                          <ChevronUp
-                            className={cn(
-                              "h-3 w-3",
-                              sortConfig?.key === column.key &&
-                                sortConfig.direction === "asc"
-                                ? "text-blue-600"
-                                : "text-gray-400"
-                            )}
-                          />
-                          <ChevronDown
-                            className={cn(
-                              "h-3 w-3 -mt-1",
-                              sortConfig?.key === column.key &&
-                                sortConfig.direction === "desc"
-                                ? "text-blue-600"
-                                : "text-gray-400"
-                            )}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
+                      <div
+                        className={cn(
+                          "flex items-center space-x-1",
+                          column.align === "center" && "justify-center",
+                          column.align === "right" && "justify-end"
+                        )}
+                      >
+                        <span>{column.title}</span>
+                        {sortable && column.sortable && (
+                          <div className="flex flex-col">
+                            <ChevronUp
+                              className={cn(
+                                "h-3 w-3",
+                                sortConfig?.key === column.key &&
+                                  sortConfig.direction === "asc"
+                                  ? "text-blue-600"
+                                  : "text-gray-400"
+                              )}
+                            />
+                            <ChevronDown
+                              className={cn(
+                                "h-3 w-3 -mt-1",
+                                sortConfig?.key === column.key &&
+                                  sortConfig.direction === "desc"
+                                  ? "text-blue-600"
+                                  : "text-gray-400"
+                              )}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+            )}
             <TableBody>
               {paginatedData.length === 0 ? (
                 <TableRow>
@@ -432,7 +441,8 @@ export function AdvancedTable<T = any>({
                     colSpan={columns.length}
                     className={cn(
                       "text-center py-8 text-gray-500",
-                      bordered && "border border-gray-200"
+                      bordered && "border border-gray-200",
+                      cellClassName
                     )}
                   >
                     {emptyText}
@@ -457,6 +467,7 @@ export function AdvancedTable<T = any>({
                         className={cn(
                           dense ? "py-1" : undefined,
                           column.cellClassName,
+                          cellClassName,
                           column.align === "center" && "text-center",
                           column.align === "right" && "text-right",
                           bordered && "border border-gray-200",

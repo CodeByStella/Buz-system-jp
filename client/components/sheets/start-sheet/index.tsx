@@ -79,13 +79,9 @@ export default function StartSheet() {
           <Input
             type="number"
             value={value.value}
-            disabled={value.type === 0 || value.type === 2}
-            // onChange={(e) => {
-            //   setStartSheetData_main(prev => prev.map(item => item.key === record.key? {...item, incomeStatement: {value: e.target.value, editable: true}} : item));
-            // }}
-            className={`border-transparent h-full ${
-              value.type === 2 ? "!bg-yellow-400" : ""
-            }`}
+            disabled={value.type === 0}
+            readOnly ={value.type === 2}
+            className={`border-transparent h-full`}
           />
         );
       },
@@ -105,13 +101,9 @@ export default function StartSheet() {
           <Input
             type="number"
             value={value.value}
-            disabled={value.type === 0 || value.type === 2}
-            // onChange={(e) => {
-            //   setStartSheetData_main(prev => prev.map(item => item.key === record.key? {...item, incomeStatement: {value: e.target.value, editable: true}} : item));
-            // }}
-            className={`border-transparent h-full ${
-              value.type === 2 ? "!bg-yellow-400" : ""
-            }`}
+            disabled={value.type === 0}
+            readOnly={value.type === 2}
+            className={`border-transparent h-full`}
           />
         );
       },
@@ -171,12 +163,12 @@ export default function StartSheet() {
       key: "value",
       title: "",
       width: 100,
-      align: "center",
+      align: "right",
     },
   ];
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
+    <div className="h-full flex flex-col space-y-4 overflow-hidden ">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
         <p className="text-gray-600">

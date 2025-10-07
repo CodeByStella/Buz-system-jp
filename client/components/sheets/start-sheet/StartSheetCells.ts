@@ -83,7 +83,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "利益率(%)",
     incomeStatement: {
       value: 2,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1448,7 +1448,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "営業外収益",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1463,7 +1463,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "営業外費用",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1478,7 +1478,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "経常利益",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1493,7 +1493,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "特別利益・除却益",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,
@@ -1508,7 +1508,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "特別損失・除却損",
     incomeStatement: {
       value: 0,
-      type: 1,
+      type: 2,
     },
     manufacturingCostReport: {
       value: 0,

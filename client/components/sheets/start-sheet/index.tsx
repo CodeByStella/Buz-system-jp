@@ -10,7 +10,7 @@ import {
   initialStartSheet_others,
   initialStartSheet_summary,
 } from "./StartSheetCells";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/customInput";
 import { cn } from "@/lib/utils";
 import { applyFormulas } from "./formulas";
 

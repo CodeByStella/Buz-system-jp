@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { AdvancedTable, Column } from "./advanced-table";
-import { Input } from "./input";
+import { Input } from "./customInput";
 import { Badge } from "./badge";
 
 // Example data types

@@ -19,10 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Save,
-  Download,
   Search,
-  Filter,
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
@@ -72,8 +69,6 @@ export interface AdvancedTableProps<T = any> {
   filterable?: boolean;
   pagination?: boolean;
   pageSize?: number;
-  showHeader?: boolean;
-  showFooter?: boolean;
   footerContent?: React.ReactNode;
   onRowClick?: (record: T, index: number) => void;
   onCellChange?: (value: any, record: T, column: Column<T>) => void;
@@ -104,7 +99,6 @@ export function AdvancedTable<T = any>({
   filterable = false,
   pagination = false,
   pageSize = 10,
-  showFooter = false,
   footerContent,
   onRowClick,
   className,
@@ -276,7 +270,7 @@ export function AdvancedTable<T = any>({
   }
 
   return (
-    <Card className={cn("h-full min-h-0 flex flex-col", className)}>
+    <Card className={cn("h-full min-h-0 flex flex-col cardcardcard", className)}>
       {(title || description) && (
         <CardHeader className={dense ? "py-2" : undefined}>
           <div className="flex justify-between items-center">
@@ -295,7 +289,7 @@ export function AdvancedTable<T = any>({
       <CardContent
         className={
           dense
-            ? " p-0 flex-1 min-h-0 overflow-hidden"
+            ? "p-0 flex-1 min-h-0 overflow-hidden"
             : "flex-1 min-h-0 overflow-hidden"
         }
       >
@@ -340,12 +334,11 @@ export function AdvancedTable<T = any>({
           </div>
           
         )}
-
         {/* Table */}
         <div
           className={cn(
             "h-full min-h-0",
-            scrollable ? "overflow-auto pr-2 pb-10 scroll-pb-24 border border-gray-200 rounded-md" : "overflow-hidden"
+            scrollable ? "overflow-auto scroll-pb-24 border border-gray-200 rounded-md" : "overflow-hidden"
           )}
           style={scrollable ? { 
             maxHeight,
@@ -530,8 +523,8 @@ export function AdvancedTable<T = any>({
         )}
 
         {/* Footer */}
-        {showFooter && footerContent && (
-          <div className="mt-4 pt-4 border-t">{footerContent}</div>
+        {footerContent && (
+          <div className="border-t">{footerContent}</div>
         )}
       </CardContent>
     </Card>

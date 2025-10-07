@@ -411,8 +411,6 @@ export function AdvancedTableExample() {
           columns={userColumns.slice(0, 4)}
           title="シンプル表示"
           description="基本的なテーブル表示"
-          showHeader={false}
-          showFooter={false}
           colorSettings={{
             headerBg: "bg-gray-50",
             headerText: "text-gray-700",

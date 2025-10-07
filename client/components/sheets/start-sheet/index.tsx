@@ -13,7 +13,7 @@ export default function StartSheet() {
     {
       key: "no",
       title: "コードNo",
-      width: 100,
+      width: 50,
       align: "center",
     },
     {
@@ -55,6 +55,8 @@ export default function StartSheet() {
           columns={startSheetCols_main as any}
           data={startSheetData_main as any}
           dense
+          bordered
+          stickyHeader
         />
       </div>
     </div>

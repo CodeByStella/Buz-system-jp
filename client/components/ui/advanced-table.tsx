@@ -62,6 +62,9 @@ export interface AdvancedTableProps<T = any> {
   dense?: boolean;
   scrollable?: boolean;
   maxHeight?: string | number;
+  bordered?: boolean;
+  stickyHeader?: boolean;
+  stickyColumns?: number;
   colorSettings?: ColorSettings;
   searchable?: boolean;
   searchPlaceholder?: string;
@@ -91,6 +94,9 @@ export function AdvancedTable<T = any>({
   dense = false,
   scrollable = true,
   maxHeight = "400px",
+  bordered = false,
+  stickyHeader = true,
+  stickyColumns = 0,
   colorSettings = {},
   searchable = false,
   searchPlaceholder = "検索...",
@@ -121,6 +127,9 @@ export function AdvancedTable<T = any>({
     }
     return (record as any)[rowKey] || index.toString();
   };
+
+  // Debug sticky header
+  console.log("Sticky header enabled:", stickyHeader);
 
   // Filter data based on search term and filters
   const filteredData = useMemo(() => {
@@ -329,22 +338,43 @@ export function AdvancedTable<T = any>({
               </div>
             )}
           </div>
+          
         )}
 
         {/* Table */}
         <div
           className={cn(
-            "h-full min-h-0 overflow-auto",
-            scrollable && "pr-2 pb-10 scroll-pb-24"
+            "h-full min-h-0",
+            scrollable ? "overflow-auto pr-2 pb-10 scroll-pb-24 border border-gray-200 rounded-md" : "overflow-hidden"
           )}
-          style={scrollable ? { maxHeight } : undefined}
+          style={scrollable ? { 
+            maxHeight,
+            position: 'relative'
+          } : undefined}
         >
-          <Table className="pb-4">
-            <TableHeader className="sticky top-0 z-10 bg-white">
+          <Table className={cn(
+            "pb-4",
+            bordered && "border border-gray-200"
+          )}>
+            <TableHeader 
+              className={cn(
+                "bg-white",
+                stickyHeader && "shadow-sm [&_tr]:border-b-0"
+              )}
+              style={stickyHeader ? { 
+                position: 'sticky', 
+                top: 0, 
+                zIndex: 10,
+                backgroundColor: 'white'
+              } : undefined}
+            >
               <TableRow
-                className={cn(dense ? "h-8" : undefined, colors.headerBg)}
+                className={cn(
+                  dense ? "h-8" : undefined, 
+                  colors.headerBg
+                )}
               >
-                {columns.map((column) => (
+                {columns.map((column, columnIndex) => (
                   <TableHead
                     key={column.key}
                     className={cn(
@@ -353,11 +383,18 @@ export function AdvancedTable<T = any>({
                       colors.headerText,
                       column.align === "center" && "text-center",
                       column.align === "right" && "text-right",
+                      bordered && "border border-gray-200",
+                      stickyColumns > 0 && columnIndex < stickyColumns && "sticky bg-white z-20",
                       sortable &&
                         column.sortable &&
                         "cursor-pointer hover:bg-slate-100"
                     )}
-                    style={{ width: column.width }}
+                    style={{ 
+                      width: column.width,
+                      left: stickyColumns > 0 && columnIndex < stickyColumns 
+                        ? `${columnIndex * (typeof column.width === 'number' ? column.width : 150)}px`
+                        : undefined
+                    }}
                     onClick={() => handleSort(column)}
                   >
                     <div
@@ -400,7 +437,10 @@ export function AdvancedTable<T = any>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="text-center py-8 text-gray-500"
+                    className={cn(
+                      "text-center py-8 text-gray-500",
+                      bordered && "border border-gray-200"
+                    )}
                   >
                     {emptyText}
                   </TableCell>
@@ -418,16 +458,23 @@ export function AdvancedTable<T = any>({
                     )}
                     onClick={() => onRowClick?.(record, index)}
                   >
-                    {columns.map((column) => (
+                    {columns.map((column, columnIndex) => (
                       <TableCell
                         key={column.key}
                         className={cn(
                           dense ? "py-1" : undefined,
                           column.cellClassName,
                           column.align === "center" && "text-center",
-                          column.align === "right" && "text-right"
+                          column.align === "right" && "text-right",
+                          bordered && "border border-gray-200",
+                          stickyColumns > 0 && columnIndex < stickyColumns && "sticky bg-white z-10"
                         )}
-                        style={{ width: column.width }}
+                        style={{ 
+                          width: column.width,
+                          left: stickyColumns > 0 && columnIndex < stickyColumns 
+                            ? `${columnIndex * (typeof column.width === 'number' ? column.width : 150)}px`
+                            : undefined
+                        }}
                       >
                         {renderCell(column, record, index)}
                       </TableCell>

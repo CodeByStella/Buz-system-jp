@@ -1,4 +1,4 @@
-import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import mongoose, { Schema, InferSchemaType, Model, Document } from "mongoose";
 
 const MainRowSchema = new Schema({
   incomeStatement: { type: Number },
@@ -6,11 +6,12 @@ const MainRowSchema = new Schema({
 });
 
 const OthersRowSchema = new Schema({
-  title: { type: Number },
+  title: { type: String },
   amount: { type: Number },
 });
 
 const StartSheetSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
   recentSales: MainRowSchema, // 直近売上 (Recent Sales)
   grossProfit: MainRowSchema, // 売上総利益 (Gross Profit)
   profitMargin: MainRowSchema, // 利益率(%) (Profit Margin %)
@@ -110,7 +111,7 @@ const StartSheetSchema = new Schema({
   extraordinaryLoss: MainRowSchema, // 特別損失・除却損 (Extraordinary Loss / Disposal Loss)
 
   non_operating_income_name: [OthersRowSchema], //営業外収益名称 (Name of Non-operating Income)
-  securities_valuation_loss: [OthersRowSchema], //有価証券評価損 (Loss on Valuation of Securities)
+  non_operating_expenses_name: [OthersRowSchema], //有価証券評価損 (Loss on Valuation of Securities)
   extraordinary_gain_name: [OthersRowSchema], //特別利益・除却益名称 (Name of Extraordinary Gain / Disposal Gain)
   extraordinary_loss_name: [OthersRowSchema], //特別損失・除却損名称 (Name of Extraordinary Loss / Disposal Loss)
 
@@ -120,7 +121,7 @@ const StartSheetSchema = new Schema({
   profit_before_tax: { type: Number }, //税引前利益 (Profit Before Tax)
 }, { timestamps: true });
 
-export type StartSheetDocument = InferSchemaType<typeof StartSheetSchema> & {
+export type StartSheetDocument = InferSchemaType<typeof StartSheetSchema> & Document & {
   _id: mongoose.Types.ObjectId;
 };
 

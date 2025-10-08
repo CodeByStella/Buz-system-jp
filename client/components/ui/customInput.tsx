@@ -1,4 +1,5 @@
 import * as React from "react"
+import * as ReactDOM from "react-dom"
 
 import { cn } from "@/lib/utils"
 
@@ -6,15 +7,28 @@ export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
+  tip?: string;
+  tipClassName?: string;
+  tipStyle?: React.CSSProperties;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, value, prefix, suffix, step, ...props }, ref) => {
+  ({ className, type, value, prefix, suffix, step, tip, tipClassName, tipStyle, ...props }, ref) => {
+    const [isFocused, setIsFocused] = React.useState(false)
+    const [tooltipPosition, setTooltipPosition] = React.useState<{ top: number; left: number } | null>(null)
+    const inputRef = React.useRef<HTMLInputElement>(null)
     const isInteractive = !props.disabled && !props.readOnly
     // If type is number, add text-right to align number to right
     const numberAlignClass = type === "number" ? "text-right" : ""
     // If value is undefined or null, show blank
     let inputValue = value === undefined || value === null ? "" : value
+    
+    // Check if the value is negative for styling
+    const isNegative = type === "number" && typeof value === "number" && value < 0
+    const negativeClass = isNegative ? "text-red-600" : ""
+    
+    // Combine refs
+    React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
     
     // Format number to 3 decimal places if it's a float
     if (type === "number" && inputValue !== "" && typeof inputValue === "number") {
@@ -34,44 +48,114 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }
     }
     
+    // Update tooltip position when focused
+    const updateTooltipPosition = React.useCallback(() => {
+      if (inputRef.current) {
+        const rect = inputRef.current.getBoundingClientRect()
+        setTooltipPosition({
+          top: rect.top + window.scrollY,
+          left: rect.left + rect.width / 2 + window.scrollX
+        })
+      }
+    }, [])
+    
+    // Handle focus events for tip display
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true)
+      updateTooltipPosition()
+      props.onFocus?.(e)
+    }
+    
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false)
+      setTooltipPosition(null)
+      props.onBlur?.(e)
+    }
+    
+    // Update position on scroll or resize
+    React.useEffect(() => {
+      if (isFocused && tip) {
+        updateTooltipPosition()
+        window.addEventListener('scroll', updateTooltipPosition, true)
+        window.addEventListener('resize', updateTooltipPosition)
+        
+        return () => {
+          window.removeEventListener('scroll', updateTooltipPosition, true)
+          window.removeEventListener('resize', updateTooltipPosition)
+        }
+      }
+    }, [isFocused, tip, updateTooltipPosition])
+    
     const inputElement = (
       <input
         type={type}
         step={defaultStep}
         onWheel={handleWheel}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         className={cn(
           "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300",
           isInteractive && "focus:border-primary",
           numberAlignClass,
+          negativeClass,
           prefix && "pl-8",
           suffix && "pr-8",
           className
         )}
-        ref={ref}
+        ref={inputRef}
         value={inputValue}
         {...props}
       />
     )
 
+    // Render tip tooltip with arrow using Portal
+    const tipElement = tip && isFocused && tooltipPosition && typeof document !== 'undefined' && ReactDOM.createPortal(
+      <div 
+        className={cn(
+          "fixed z-[99999] w-max max-w-xs bg-yellow-200 text-gray-900 text-xs px-3 py-2 rounded shadow-xl border border-yellow-400 pointer-events-none whitespace-normal text-left",
+          tipClassName
+        )}
+        style={{
+          top: `${tooltipPosition.top - 8}px`,
+          left: `${tooltipPosition.left}px`,
+          transform: 'translate(-50%, -100%)',
+          ...tipStyle
+        }}
+      >
+        {tip}
+        {/* Tooltip arrow */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-yellow-200"></div>
+      </div>,
+      document.body
+    )
+
     if (prefix || suffix) {
       return (
         <div className="absolute inset-0 w-full h-full">
-          {prefix && (
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none z-10">
-              {prefix}
-            </span>
-          )}
-          {inputElement}
-          {suffix && (
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none z-10">
-              {suffix}
-            </span>
-          )}
+          <div className="absolute inset-0 w-full h-full">
+            {prefix && (
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none z-10">
+                {prefix}
+              </span>
+            )}
+            {inputElement}
+            {suffix && (
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none z-10">
+                {suffix}
+              </span>
+            )}
+          </div>
+          {tipElement}
         </div>
       )
     }
 
-    return inputElement
+    return (
+      <div className="absolute inset-0 w-full h-full">
+        {inputElement}
+        {tipElement}
+      </div>
+    )
   }
 )
 Input.displayName = "Input"

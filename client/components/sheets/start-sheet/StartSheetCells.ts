@@ -5,10 +5,12 @@ export interface MainRowDataType {
   incomeStatement: {
     value: number;
     type: 0 | 1 | 2; //0 disabled, 1 editable, 2 readonly
+    tip?: string;
   };
   manufacturingCostReport: {
     value: number;
     type: 0 | 1 | 2; //0 disabled, 1 editable, 2 readonly
+    tip?: string;
   };
   bgcolor1: string;
   bgcolor2: string;
@@ -629,6 +631,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     manufacturingCostReport: {
       value: 0,
       type: 1,
+      tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
     bgcolor1: colors.yellow,
     bgcolor2: colors.yellow,
@@ -644,6 +647,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     manufacturingCostReport: {
       value: 0,
       type: 1,
+      tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
     bgcolor1: colors.yellow,
     bgcolor2: colors.yellow,
@@ -719,6 +723,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     manufacturingCostReport: {
       value: 0,
       type: 1,
+      tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
     bgcolor1: colors.yellow,
     bgcolor2: colors.orange,
@@ -734,6 +739,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     manufacturingCostReport: {
       value: 0,
       type: 1,
+      tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
     bgcolor1: colors.yellow,
     bgcolor2: colors.orange,
@@ -749,6 +755,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     manufacturingCostReport: {
       value: 0,
       type: 1,
+      tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
     bgcolor1: colors.yellow,
     bgcolor2: colors.orange,
@@ -1434,7 +1441,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     label: "本社費",
     incomeStatement: {
       value: 0,
-      type:0,
+      type: 0,
     },
     manufacturingCostReport: {
       value: 0,

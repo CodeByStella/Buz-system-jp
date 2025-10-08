@@ -304,6 +304,8 @@ export default function StartSheet() {
               value={value.value || ""}
               disabled={value.type === 0}
               readOnly={value.type === 2}
+              tip={record.manufacturingCostReport.tip}
+              tipClassName="text-red-500"
               onChange={(e) => {
                 const inputValue = e.target.value;
                 const newValue = inputValue === "" ? 0 : Number(inputValue);
@@ -345,7 +347,6 @@ export default function StartSheet() {
               onChange={(e) => {
                 handleOthersDataChange(record.key, "label", e.target.value);
               }}
-              tip="項目名を入力"
               className={`border-transparent h-full`}
               placeholder="項目名を入力"
             />

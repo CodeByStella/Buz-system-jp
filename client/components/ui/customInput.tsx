@@ -6,15 +6,21 @@ export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
   prefix?: React.ReactNode;
   suffix?: React.ReactNode;
+  tip?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, value, prefix, suffix, step, ...props }, ref) => {
+  ({ className, type, value, prefix, suffix, step, tip, ...props }, ref) => {
+    const [isFocused, setIsFocused] = React.useState(false)
     const isInteractive = !props.disabled && !props.readOnly
     // If type is number, add text-right to align number to right
     const numberAlignClass = type === "number" ? "text-right" : ""
     // If value is undefined or null, show blank
     let inputValue = value === undefined || value === null ? "" : value
+    
+    // Check if the value is negative for styling
+    const isNegative = type === "number" && typeof value === "number" && value < 0
+    const negativeClass = isNegative ? "text-red-600" : ""
     
     // Format number to 3 decimal places if it's a float
     if (type === "number" && inputValue !== "" && typeof inputValue === "number") {
@@ -34,15 +40,29 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }
     }
     
+    // Handle focus events for tip display
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(true)
+      props.onFocus?.(e)
+    }
+    
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setIsFocused(false)
+      props.onBlur?.(e)
+    }
+    
     const inputElement = (
       <input
         type={type}
         step={defaultStep}
         onWheel={handleWheel}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         className={cn(
           "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300",
           isInteractive && "focus:border-primary",
           numberAlignClass,
+          negativeClass,
           prefix && "pl-8",
           suffix && "pr-8",
           className

@@ -119,15 +119,19 @@ export function transformFrontendToBackend(
     };
   });
 
-  // Transform others data (only editable ones)
+  // Transform others data (only editable ones with non-empty data)
   othersData.forEach((row) => {
-    if (row.editable && typeof row.value === "number") {
+    // Filter out blank rows (empty label or zero value)
+    const hasLabel = row.label && row.label.trim() !== "";
+    const hasValue = row.value && Number(row.value) !== 0;
+    
+    if (row.editable && (hasLabel || hasValue)) {
       if (!backendData[row.parent_key]) {
         backendData[row.parent_key] = [];
       }
       (backendData[row.parent_key] as BackendOthersRow[]).push({
         title: row.label,
-        amount: row.value,
+        amount: typeof row.value === "number" ? row.value : Number(row.value),
       });
     }
   });

@@ -38,6 +38,73 @@ export default function StartSheet() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // Utility function to ensure blank rows exist at the end of each group
+  const ensureBlankRows = useCallback((data: OthersRowDataType[]) => {
+    const result = [...data];
+    const parentKeys = [
+      "non_operating_income_name",
+      "non_operating_expenses_name",
+      "extraordinary_gain_name",
+      "extraordinary_loss_name",
+    ];
+
+    parentKeys.forEach((parentKey) => {
+      // Find all rows for this parent with their indices
+      const groupRowIndices: number[] = [];
+      result.forEach((row, index) => {
+        if (row.parent_key === parentKey) {
+          groupRowIndices.push(index);
+        }
+      });
+      
+      // Find all blank rows in this group
+      const blankRowIndices = groupRowIndices.filter((index) => {
+        const row = result[index];
+        return row.editable && (!row.label || row.label.trim() === "") && (!row.value || row.value === 0 || row.value === "0");
+      });
+
+      // If there are multiple blank rows, remove the extras (keep only the last one)
+      if (blankRowIndices.length > 1) {
+        // Sort in descending order to remove from the end first (to avoid index issues)
+        const indicesToRemove = blankRowIndices.slice(0, -1).sort((a, b) => b - a);
+        indicesToRemove.forEach((index) => {
+          result.splice(index, 1);
+        });
+      }
+      // If there are no blank rows, add one
+      else if (blankRowIndices.length === 0) {
+        // Recalculate group rows after potential deletions
+        const currentGroupRows = result.filter((row) => row.parent_key === parentKey);
+        
+        // Find the position to insert (after the last row of this group)
+        const headerIndex = result.findIndex((row) => row.key === parentKey);
+        const lastGroupRowIndex = result.reduce((lastIndex, row, index) => {
+          if (row.parent_key === parentKey) return index;
+          return lastIndex;
+        }, headerIndex);
+
+        // Calculate the next number for the "no" field
+        const groupCount = currentGroupRows.length;
+        const nextNo = `営${(groupCount + 1).toString().padStart(2, "0")}`;
+
+        // Create a blank row
+        const blankRow: OthersRowDataType = {
+          key: `${parentKey}_blank_${Date.now()}`,
+          no: nextNo,
+          parent_key: parentKey,
+          label: "",
+          value: 0,
+          editable: true,
+        };
+
+        // Insert the blank row after the last group row
+        result.splice(lastGroupRowIndex + 1, 0, blankRow);
+      }
+    });
+
+    return result;
+  }, []);
+
   // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
@@ -55,7 +122,8 @@ export default function StartSheet() {
           );
 
           setStartSheetData_main(transformed.main);
-          setStartSheetData_others(transformed.others);
+          // Ensure blank rows exist when loading data
+          setStartSheetData_others(ensureBlankRows(transformed.others));
         }
       } catch (err: any) {
         console.error("Error fetching start sheet data:", err);
@@ -66,7 +134,7 @@ export default function StartSheet() {
     };
 
     fetchData();
-  }, []);
+  }, [ensureBlankRows]);
 
   // Save handler
   const handleSave = useCallback(async () => {
@@ -132,19 +200,22 @@ export default function StartSheet() {
 
   // Handler for updating others table data
   const handleOthersDataChange = useCallback(
-    (rowKey: string, newValue: number) => {
-      setStartSheetData_others((prevData) =>
-        prevData.map((row) =>
+    (rowKey: string, field: "label" | "value", newValue: string | number) => {
+      setStartSheetData_others((prevData) => {
+        const updatedData = prevData.map((row) =>
           row.key === rowKey
             ? {
                 ...row,
-                value: Number(newValue),
+                [field]: field === "value" ? Number(newValue) : newValue,
               }
             : row
-        )
-      );
+        );
+
+        // Ensure blank rows exist after update
+        return ensureBlankRows(updatedData);
+      });
     },
-    []
+    [ensureBlankRows]
   );
 
   //コードNo	勘定科目	損益計算書	製造原価報告書
@@ -268,7 +339,16 @@ export default function StartSheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: OthersRowDataType, index: number) => {
           return record.editable ? (
-            <div>{value}</div>
+            <Input
+              type="text"
+              value={value || ""}
+              onChange={(e) => {
+                handleOthersDataChange(record.key, "label", e.target.value);
+              }}
+              tip="項目名を入力"
+              className={`border-transparent h-full`}
+              placeholder="項目名を入力"
+            />
           ) : (
             <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
               {value}
@@ -294,7 +374,7 @@ export default function StartSheet() {
               onChange={(e) => {
                 const inputValue = e.target.value;
                 const newValue = inputValue === "" ? 0 : Number(inputValue);
-                handleOthersDataChange(record.key, newValue);
+                handleOthersDataChange(record.key, "value", newValue);
               }}
               className={`border-transparent h-full`}
             />

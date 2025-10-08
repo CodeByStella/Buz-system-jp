@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   MainRowDataType,
@@ -14,7 +14,12 @@ import { Input } from "@/components/ui/customInput";
 import { cn } from "@/lib/utils";
 import { applyFormulas } from "./formulas";
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, FileText, Save } from "lucide-react";
+import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { startSheetService } from "@/lib/services";
+import {
+  transformBackendToFrontend,
+  transformFrontendToBackend,
+} from "@/lib/transformers/startSheetTransformer";
 
 export default function StartSheet() {
   const [startSheetData_main, setStartSheetData_main] = useState(
@@ -26,6 +31,70 @@ export default function StartSheet() {
   const [startSheetData_summary, setStartSheetData_summary] = useState(
     initialStartSheet_summary
   );
+
+  // Loading and saving states
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await startSheetService.getStartSheet();
+
+        if (response) {
+          const transformed = transformBackendToFrontend(
+            response,
+            initialStartSheet_main,
+            initialStartSheet_others
+          );
+
+          setStartSheetData_main(transformed.main);
+          setStartSheetData_others(transformed.others);
+        }
+      } catch (err: any) {
+        console.error("Error fetching start sheet data:", err);
+        setError(err.message || "データの読み込みに失敗しました");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Save handler
+  const handleSave = useCallback(async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+      setSuccessMessage(null);
+
+      const backendData = transformFrontendToBackend(
+        startSheetData_main,
+        startSheetData_others
+      );
+
+      const response = await startSheetService.saveStartSheet(backendData);
+
+      setSuccessMessage(response.message || "データを保存しました");
+
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
+    } catch (err: any) {
+      console.error("Error saving start sheet:", err);
+      setError(err.message || "データの保存に失敗しました");
+    } finally {
+      setIsSaving(false);
+    }
+  }, [startSheetData_main, startSheetData_others]);
 
   // Apply formulas to readonly fields automatically
   // Formulas can reference data from all sources (main, others, summary)
@@ -253,13 +322,43 @@ export default function StartSheet() {
         title: "",
         width: 100,
         align: "right",
+        render: (value: string, record: SummaryRowDataType, index: number) => {
+          return parseFloat(value).toFixed(3);
+        },
       },
     ],
     []
   );
 
+  // Show loading spinner while fetching data
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+          <p className="text-gray-600">データを読み込んでいます...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col space-y-4 overflow-hidden ">
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
+          <p className="font-medium">エラー</p>
+          <p className="text-sm">{error}</p>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md">
+          <p className="text-sm">{successMessage}</p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
@@ -271,9 +370,10 @@ export default function StartSheet() {
           <Button
             variant="success"
             leftIcon={Save}
-            onClick={() => {
-              /* TODO: implement save logic */
-            }}
+            loading={isSaving}
+            loadingText="保存中..."
+            onClick={handleSave}
+            disabled={isSaving}
           >
             保存
           </Button>

@@ -100,8 +100,8 @@ export function Header() {
             size="sm"
             onClick={handleLogout}
             className="flex items-center space-x-1"
+            leftIcon={LogOut}
           >
-            <LogOut className="h-4 w-4" />
             <span>ログアウト</span>
           </Button>
         </div>

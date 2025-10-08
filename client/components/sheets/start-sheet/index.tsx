@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/customInput";
 import { cn } from "@/lib/utils";
 import { applyFormulas } from "./formulas";
+import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FileText, Save } from "lucide-react";
 
 export default function StartSheet() {
   const [startSheetData_main, setStartSheetData_main] = useState(
@@ -77,175 +79,225 @@ export default function StartSheet() {
   );
 
   //コードNo	勘定科目	損益計算書	製造原価報告書
-  const startSheetCols_main: Column[] = useMemo(() => [
-    {
-      key: "no",
-      title: "コードNo",
-      width: 50,
-      align: "center",
-      cellClassName: "!p-0 !h-full relative",
-      render: (value: string, record: MainRowDataType, index: number) => {
-        return (
-          <div
-            className={cn(
-              record.bgcolor1,
-              `flex items-center justify-center h-full w-full absolute top-0 left-0`
-            )}
-          >
-            {value}
-          </div>
-        );
+  const startSheetCols_main: Column[] = useMemo(
+    () => [
+      {
+        key: "no",
+        title: "コードNo",
+        width: 50,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: MainRowDataType, index: number) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor1,
+                `flex items-center justify-center h-full w-full absolute top-0 left-0`
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
       },
-    },
-    {
-      key: "label",
-      title: "勘定科目",
-      width: 100,
-      align: "center",
-      cellClassName: "!p-0 !h-full relative",
-      render: (value: string, record: MainRowDataType, index: number) => {
-        return (
-          <div
-            className={cn(
-              record.bgcolor2,
-              `flex items-center justify-center h-full w-full absolute top-0 left-0`
-            )}
-          >
-            {value}
-          </div>
-        );
+      {
+        key: "label",
+        title: "勘定科目",
+        width: 100,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: MainRowDataType, index: number) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor2,
+                `flex items-center justify-center h-full w-full absolute top-0 left-0`
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
       },
-    },
-    {
-      key: "incomeStatement",
-      title: "損益計算書",
-      width: 50,
-      align: "center",
-      cellClassName: "!p-0 !h-full relative",
-      render: (
-        value: { value: number; type: 0 | 1 | 2 },
-        record: MainRowDataType,
-        index: number
-      ) => {
-        return (
-          <Input
-            type="number"
-            value={value.value||""}
-            disabled={value.type === 0}
-            readOnly={value.type === 2}
-            suffix={record.key==="profitMargin"?"%":undefined}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              const newValue = inputValue === "" ? 0 : Number(inputValue);
-              handleMainDataChange(record.key, "incomeStatement", newValue);
-            }}
-            className={`border-transparent h-full`}
-          />
-        );
+      {
+        key: "incomeStatement",
+        title: "損益計算書",
+        width: 50,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (
+          value: { value: number; type: 0 | 1 | 2 },
+          record: MainRowDataType,
+          index: number
+        ) => {
+          return (
+            <Input
+              type="number"
+              value={value.value || ""}
+              disabled={value.type === 0}
+              readOnly={value.type === 2}
+              suffix={record.key === "profitMargin" ? "%" : undefined}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const newValue = inputValue === "" ? 0 : Number(inputValue);
+                handleMainDataChange(record.key, "incomeStatement", newValue);
+              }}
+              className={`border-transparent h-full`}
+            />
+          );
+        },
       },
-    },
-    {
-      key: "manufacturingCostReport",
-      title: "製造原価報告書",
-      width: 50,
-      align: "center",
-      cellClassName: "!p-0 !h-full relative",
-      render: (
-        value: { value: number; type: 0 | 1 | 2 },
-        record: MainRowDataType,
-        index: number
-      ) => {
-        return (
-          <Input
-            type="number"
-            value={value.value||""}
-            disabled={value.type === 0}
-            readOnly={value.type === 2}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              const newValue = inputValue === "" ? 0 : Number(inputValue);
-              handleMainDataChange(record.key, "manufacturingCostReport", newValue);
-            }}
-            className={`border-transparent h-full`}
-          />
-        );
+      {
+        key: "manufacturingCostReport",
+        title: "製造原価報告書",
+        width: 50,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (
+          value: { value: number; type: 0 | 1 | 2 },
+          record: MainRowDataType,
+          index: number
+        ) => {
+          return (
+            <Input
+              type="number"
+              value={value.value || ""}
+              disabled={value.type === 0}
+              readOnly={value.type === 2}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const newValue = inputValue === "" ? 0 : Number(inputValue);
+                handleMainDataChange(
+                  record.key,
+                  "manufacturingCostReport",
+                  newValue
+                );
+              }}
+              className={`border-transparent h-full`}
+            />
+          );
+        },
       },
-    },
-  ], [handleMainDataChange]);
+    ],
+    [handleMainDataChange]
+  );
 
-  const startSheetCols_others: Column[] = useMemo(() => [
-    {
-      key: "no",
-      title: "",
-      width: 50,
-      align: "center",
-      cellClassName: "!bg-violet-500",
-    },
-    {
-      key: "label",
-      title: "",
-      width: 200,
-      align: "center",
-      cellClassName: "!p-0 !h-full relative",
-      render: (value: string, record: OthersRowDataType, index: number) => {
-        return record.editable ? (
-          <div>{value}</div>
-        ) : (
-          <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
-            {value}
-          </div>
-        );
+  const startSheetCols_others: Column[] = useMemo(
+    () => [
+      {
+        key: "no",
+        title: "",
+        width: 50,
+        align: "center",
+        cellClassName: "!bg-violet-500",
       },
-    },
-    {
-      key: "value",
-      title: "",
-      width: 70,
-      align: "center",
-      cellClassName: "!p-0 !h-full relative",
-      render: (value: string | number, record: OthersRowDataType, index: number) => {
-        return record.editable ? (
-          <Input
-            type="number"
-            value={value || ""}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              const newValue = inputValue === "" ? 0 : Number(inputValue);
-              handleOthersDataChange(record.key, newValue);
-            }}
-            className={`border-transparent h-full`}
-          />
-        ) : (
-          <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
-            {value}
-          </div>
-        );
+      {
+        key: "label",
+        title: "",
+        width: 200,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: OthersRowDataType, index: number) => {
+          return record.editable ? (
+            <div>{value}</div>
+          ) : (
+            <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
+              {value}
+            </div>
+          );
+        },
       },
-    },
-  ], [handleOthersDataChange]);
+      {
+        key: "value",
+        title: "",
+        width: 70,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (
+          value: string | number,
+          record: OthersRowDataType,
+          index: number
+        ) => {
+          return record.editable ? (
+            <Input
+              type="number"
+              value={value || ""}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const newValue = inputValue === "" ? 0 : Number(inputValue);
+                handleOthersDataChange(record.key, newValue);
+              }}
+              className={`border-transparent h-full`}
+            />
+          ) : (
+            <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
+              {value}
+            </div>
+          );
+        },
+      },
+    ],
+    [handleOthersDataChange]
+  );
 
-  const startSheetCols_summary: Column[] = useMemo(() => [
-    {
-      key: "label",
-      title: "",
-      width: 100,
-      align: "center",
-    },
-    {
-      key: "value",
-      title: "",
-      width: 100,
-      align: "right",
-    },
-  ], []);
+  const startSheetCols_summary: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 100,
+        align: "center",
+      },
+      {
+        key: "value",
+        title: "",
+        width: 100,
+        align: "right",
+      },
+    ],
+    []
+  );
 
   return (
     <div className="h-full flex flex-col space-y-4 overflow-hidden ">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
-        <p className="text-gray-600">
-          このページで元データを入力します（画像の項目に対応）。
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
+          <p className="text-gray-600">
+            このページで元データを入力します（画像の項目に対応）。
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="success"
+            leftIcon={Save}
+            onClick={() => {
+              /* TODO: implement save logic */
+            }}
+          >
+            保存
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileSpreadsheet}
+            className="border-green-500 text-green-700 hover:bg-green-50"
+            onClick={() => {
+              /* TODO: implement export to Excel logic */
+            }}
+          >
+            Excel出力
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileText}
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              /* TODO: implement export to PDF logic */
+            }}
+          >
+            PDF出力
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
         <div className="col-span-2 flex flex-col overflow-hidden">

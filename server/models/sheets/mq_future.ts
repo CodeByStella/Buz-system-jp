@@ -1,41 +1,53 @@
-import mongoose, { Schema, InferSchemaType, Model } from 'mongoose'
+import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import { NumberInputSchema } from "./numberInputSchema";
 
-const MQFutureSheetSchema = new Schema({
-  // PQ: 売上 (Sales)
-  sales: {
-    PQ: { type: Number }, // 売上合計 (Total Sales)
-    pricePerUnit: { type: Number }, // 単価（P）
-    quantity: { type: Number }, // 数量（Q）
+const MQFutureSheetSchema = new Schema(
+  {
+    // PQ: 売上 (Sales)
+    sales: {
+      PQ: NumberInputSchema, // 売上合計 (Total Sales)
+      pricePerUnit: NumberInputSchema, // 単価（P）
+      quantity: NumberInputSchema, // 数量（Q）
+    },
+
+    // VQ: 変動費 (Variable Costs)
+    variableCost: {
+      VQ: NumberInputSchema,
+      variablePerUnit: NumberInputSchema, // V
+      quantity: NumberInputSchema, // 数量（Q）
+    },
+
+    // M: 粗利 (Gross Margin)
+    grossMargin: {
+      M: NumberInputSchema,
+      percentage: NumberInputSchema, // M%
+    },
+
+    // F: 固定費 (Fixed Costs)
+    fixedCost: {
+      F: NumberInputSchema,
+      percentage: NumberInputSchema, // F%
+    },
+
+    // G: 利益 (Profit)
+    profit: {
+      G: NumberInputSchema,
+      percentage: NumberInputSchema, // G%
+      targetValue: NumberInputSchema, // 目標値
+    },
+
+    memo: { type: String }, // メモ欄
   },
+  { timestamps: true }
+);
 
-  // VQ: 変動費 (Variable Costs)
-  variableCost: {
-    VQ: { type: Number },
-    variablePerUnit: { type: Number }, // V
-    quantity: { type: Number }, // 数量（Q）
-  },
-
-  // M: 粗利 (Gross Margin)
-  grossMargin: {
-    M: { type: Number },
-    percentage: { type: Number }, // M%
-  },
-
-  // F: 固定費 (Fixed Costs)
-  fixedCost: {
-    F: { type: Number },
-    percentage: { type: Number }, // F%
-  },
-
-  // G: 利益 (Profit)
-  profit: {
-    G: { type: Number },
-    percentage: { type: Number }, // G%
-    targetValue: { type: Number }, // 目標値
-  },
-
-  memo: { type: String }, // メモ欄
-}, { timestamps: true })
-
-export type MQFutureSheetDocument = InferSchemaType<typeof MQFutureSheetSchema> & { _id: mongoose.Types.ObjectId }
-export const MQFutureSheet: Model<MQFutureSheetDocument> = mongoose.models.MQFutureSheet || mongoose.model<MQFutureSheetDocument>("MQFutureSheet", MQFutureSheetSchema, "mq_future_sheets")
+export type MQFutureSheetDocument = InferSchemaType<
+  typeof MQFutureSheetSchema
+> & { _id: mongoose.Types.ObjectId };
+export const MQFutureSheet: Model<MQFutureSheetDocument> =
+  mongoose.models.MQFutureSheet ||
+  mongoose.model<MQFutureSheetDocument>(
+    "MQFutureSheet",
+    MQFutureSheetSchema,
+    "mq_future_sheets"
+  );

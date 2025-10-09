@@ -1,4 +1,5 @@
 import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import { NumberInputSchema } from "./numberInputSchema";
 
 const CostDetailSheetSchema = new Schema(
   {
@@ -6,56 +7,56 @@ const CostDetailSheetSchema = new Schema(
     products: [
       {
         name: { type: String, required: true }, // 商品名 (Product Name)
-        grossProfitAmount: { type: Number, default: 0 }, // 粗利益額 (Gross Profit Amount)
-        grossProfitPerUnit: { type: Number, default: 0 }, // 1個あたり粗利益 (Gross Profit per Unit)
-        quantity: { type: Number, default: 0 }, // 数量 (Quantity)
-        unitPrice: { type: Number, default: 0 }, // 単価 (Unit Price)
-        sales: { type: Number, default: 0 }, // 売上 (Sales)
-        grossProfitMargin: { type: Number, default: 0 }, // 粗利益率 (Gross Profit Margin %)
+        grossProfitAmount: NumberInputSchema, // 粗利益額 (Gross Profit Amount)
+        grossProfitPerUnit: NumberInputSchema, // 1個あたり粗利益 (Gross Profit per Unit)
+        quantity: NumberInputSchema, // 数量 (Quantity)
+        unitPrice: NumberInputSchema, // 単価 (Unit Price)
+        sales: NumberInputSchema, // 売上 (Sales)
+        grossProfitMargin: NumberInputSchema, // 粗利益率 (Gross Profit Margin %)
         // category: { type: String, default: "" }, // 業種・種別 (Industry/Category)
       },
     ],
 
     // 実績 (Actual Results)
     actualResults: {
-      grossProfitAmount: { type: Number, default: 0 }, // 粗利益額 (Gross Profit Amount)
-      mUnits: { type: Number, default: 0 }, // M(個) (M(Units))
-      totalQuantity: { type: Number, default: 0 }, // 数量(Q) (Quantity(Q))
-      averageCustomerUnitPrice: { type: Number, default: 0 }, // 平均客単価 (Average Customer Unit Price)
-      totalSales: { type: Number, default: 0 }, // 売上計 (Total Sales)
-      averageGrossProfit: { type: Number, default: 0 }, // 平均粗利 (Average Gross Profit %)
+      grossProfitAmount: NumberInputSchema, // 粗利益額 (Gross Profit Amount)
+      mUnits: NumberInputSchema, // M(個) (M(Units))
+      totalQuantity: NumberInputSchema, // 数量(Q) (Quantity(Q))
+      averageCustomerUnitPrice: NumberInputSchema, // 平均客単価 (Average Customer Unit Price)
+      totalSales: NumberInputSchema, // 売上計 (Total Sales)
+      averageGrossProfit: NumberInputSchema, // 平均粗利 (Average Gross Profit %)
     },
 
     // 修正・調整 (Corrections and Adjustments)
     corrections: {
-      deficiencyAmount: { type: Number, default: 0 }, // 不足額 (Deficiency Amount)
-      grossProfitMargin: { type: Number, default: 0 }, // 粗利益率(%) (Gross Profit Margin %)
-      monthlyCustomers: { type: Number, default: 0 }, // 客数(月) (Number of Customers Monthly)
-      customerUnitPrice: { type: Number, default: 0 }, // 客単価(円) (Customer Unit Price in Yen)
-      workforce: { type: Number, default: 0 }, // 戦力(人) (Workforce in People)
+      deficiencyAmount: NumberInputSchema, // 不足額 (Deficiency Amount)
+      grossProfitMargin: NumberInputSchema, // 粗利益率(%) (Gross Profit Margin %)
+      monthlyCustomers: NumberInputSchema, // 客数(月) (Number of Customers Monthly)
+      customerUnitPrice: NumberInputSchema, // 客単価(円) (Customer Unit Price in Yen)
+      workforce: NumberInputSchema, // 戦力(人) (Workforce in People)
     },
 
     // 計画との差 (Difference from Plan)
     planDifference: {
-      grossProfitAmount: { type: Number, default: 0 }, // 粗利益額 (Gross Profit Amount)
-      differenceFromPlan: { type: Number, default: 0 }, //計画との差 (Difference from Plan)
-      profitabilityPerPerson: { type: Number, default: 0 }, // 戦力(1人当たりの利益力) (Workforce Profitability per Person)
-      productivityPerPerson: { type: Number, default: 0 }, // 1人当たり生産性 (Productivity per Person)
-      profitPerPerson: { type: Number, default: 0 }, // 1人あたりの利益 (Profit per Person)
-      productivityTarget: { type: Number, default: 0 }, // 1人あたりの生産性 (Productivity per Person Target)
+      grossProfitAmount: NumberInputSchema, // 粗利益額 (Gross Profit Amount)
+      differenceFromPlan: NumberInputSchema, //計画との差 (Difference from Plan)
+      profitabilityPerPerson: NumberInputSchema, // 戦力(1人当たりの利益力) (Workforce Profitability per Person)
+      productivityPerPerson: NumberInputSchema, // 1人当たり生産性 (Productivity per Person)
+      profitPerPerson: NumberInputSchema, // 1人あたりの利益 (Profit per Person)
+      productivityTarget: NumberInputSchema, // 1人あたりの生産性 (Productivity per Person Target)
     },
 
     // その他群 (Other Group)
     otherGroup: {
-      grossProfitAmount: { type: Number, default: 0 }, // 粗利益額 (Gross Profit Amount)
-      sales: { type: Number, default: 0 }, // 売上 (Sales)
-      quantity: { type: Number, default: 0 }, // 数量 (Quantity)
-      unitPrice: { type: Number, default: 0 }, // 単価 (Unit Price)
-      grossProfitMargin: { type: Number, default: 0 }, // 粗利益率 (Gross Profit Margin %)
+      grossProfitAmount: NumberInputSchema, // 粗利益額 (Gross Profit Amount)
+      sales: NumberInputSchema, // 売上 (Sales)
+      quantity: NumberInputSchema, // 数量 (Quantity)
+      unitPrice: NumberInputSchema, // 単価 (Unit Price)
+      grossProfitMargin: NumberInputSchema, // 粗利益率 (Gross Profit Margin %)
     },
 
     // 全体合計 (Overall Totals)
-    overallTotal: { type: Number, default: 0 }, // 総合計 (Total of all expenses in millions of yen)
+    overallTotal: NumberInputSchema, // 総合計 (Total of all expenses in millions of yen)
   },
   {
     timestamps: true, // 作成日時・更新日時 (Created/Updated timestamps)

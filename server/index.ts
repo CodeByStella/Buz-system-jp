@@ -8,9 +8,7 @@ import { connectToDatabase } from './lib/mongo'
 import authRoutes from './routes/auth'
 import adminRoutes from './routes/admin'
 import userRoutes from './routes/user'
-import calculateRoutes from './routes/calculate'
 import pdfRoutes from './routes/pdf'
-import startSheetRoutes from './routes/start-sheet'
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -27,9 +25,7 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/user', userRoutes)
-app.use('/api/calculate', calculateRoutes)
 app.use('/api/pdf', pdfRoutes)
-app.use('/api/start-sheet', startSheetRoutes)
 
 // Health check
 app.get('/api/health', (req, res) => {

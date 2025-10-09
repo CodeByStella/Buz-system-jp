@@ -1,8 +1,9 @@
 import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import { NumberInputSchema } from "./numberInputSchema";
 
 const RowSchema = new Schema({
-  target: { type: Number }, //目標
-  cumulative: { type: Number }, //実績|累積
+  target: NumberInputSchema, //目標
+  cumulative: NumberInputSchema, //実績|累積
 });
 
 const SummarySchema = new Schema({
@@ -218,8 +219,8 @@ const ProgressResultInputSheetSchema = new Schema(
     expensesFixed: ExpensesFixedSchema, //経費（固定）
     expensesBreakDown: ExpensesBreakDownSchema, //経費内訳
     manufacturingCostBreakDown: ManufacturingCostBreakDownSchema, //製造原価内訳
-    finalAccountingTarget: { type: Number }, //決算目標
-    targetSalesGrowthRate: { type: Number }, //目標売上成長率
+    finalAccountingTarget: NumberInputSchema, //決算目標
+    targetSalesGrowthRate: NumberInputSchema, //目標売上成長率
   },
   {
     timestamps: true, // 作成日時・更新日時 (Created/Updated timestamps)

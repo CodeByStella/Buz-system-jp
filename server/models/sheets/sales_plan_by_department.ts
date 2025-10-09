@@ -1,10 +1,11 @@
 import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import { NumberInputSchema } from "./numberInputSchema";
 
 // Helper schema for each month (September to August)
 const MonthDataSchema = new Schema(
   {
-    currentMonth: { type: Number }, // 当月 (Current Month)
-    cumulative: { type: Number }, // 累計 (Cumulative)
+    currentMonth: NumberInputSchema, // 当月 (Current Month)
+    cumulative: NumberInputSchema, // 累計 (Cumulative)
   },
   { _id: false }
 );
@@ -14,14 +15,14 @@ const SalesPlanByDepartmentSheetSchema = new Schema(
     // 基本情報 (Basic Information)
     basicInfo: {
       fiscalYear: { type: String }, // 会計年度 (Fiscal Year) - e.g., "2024年度"
-      totalSalesTarget: { type: Number }, // 総売上目標 (Total Sales Target) - 450,000,000 from image
+      totalSalesTarget: NumberInputSchema, // 総売上目標 (Total Sales Target) - 450,000,000 from image
     },
 
     // 商品・サービスカテゴリ (Product/Service Categories)
     categories: [
       {
         name: { type: String, required: true }, // 商品名 (Product/Service Name)
-        salesTarget: { type: Number, default: 0 }, // 売上目標 (Sales Target for the category)
+        salesTarget: NumberInputSchema, // 売上目標 (Sales Target for the category)
 
         // 月別データ (Monthly Data) - September (9月) to August (8月)
         monthlyData: {
@@ -39,17 +40,17 @@ const SalesPlanByDepartmentSheetSchema = new Schema(
           december: MonthDataSchema, // 12月 (December)
         },
         annualTotals: {
-          totalTarget: { type: Number, default: 0 },
-          totalActual: { type: Number, default: 0 },
-          totalCurrentMonth: { type: Number, default: 0 },
-          totalCumulative: { type: Number, default: 0 },
+          totalTarget: NumberInputSchema,
+          totalActual: NumberInputSchema,
+          totalCurrentMonth: NumberInputSchema,
+          totalCumulative: NumberInputSchema,
         },
       },
     ],
 
     // その他詳細 (Other Details)
     otherDetails: {
-      salesTarget: { type: Number, default: 0 }, // 売上目標 (Sales Target)
+      salesTarget: NumberInputSchema, // 売上目標 (Sales Target)
       monthlyData: {
         september: MonthDataSchema,
         october: MonthDataSchema,
@@ -65,10 +66,10 @@ const SalesPlanByDepartmentSheetSchema = new Schema(
         august: MonthDataSchema,
       },
       annualTotals: {
-        totalTarget: { type: Number, default: 0 },
-        totalActual: { type: Number, default: 0 },
-        totalCurrentMonth: { type: Number, default: 0 },
-        totalCumulative: { type: Number, default: 0 },
+        totalTarget: NumberInputSchema,
+        totalActual: NumberInputSchema,
+        totalCurrentMonth: NumberInputSchema,
+        totalCumulative: NumberInputSchema,
       },
     },
   },

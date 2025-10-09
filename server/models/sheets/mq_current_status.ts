@@ -1,29 +1,33 @@
 import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import { NumberInputSchema } from "./numberInputSchema";
 
-const MqCurrentStatusSheetSchema = new Schema({
-  // PQ: 売上
-  sales: {
-    PQ: { type: Number }, // 売上合計
-    pricePerUnit: { type: Number }, // 単価（P）
-    quantity: { type: Number }, // 数量（Q）
+const MqCurrentStatusSheetSchema = new Schema(
+  {
+    // PQ: 売上
+    sales: {
+      PQ: NumberInputSchema, // 売上合計
+      pricePerUnit: NumberInputSchema, // 単価（P）
+      quantity: NumberInputSchema, // 数量（Q）
+    },
+
+    // VQ: 変動費
+    variableCost: {
+      VQ: NumberInputSchema,
+      variablePerUnit: NumberInputSchema, // V
+      quantity: NumberInputSchema, // 数量（Q）
+    },
+
+    // M: 粗利, F: 固定費, G: 利益
+    profitStructure: {
+      grossMargin: NumberInputSchema, // M
+      fixedFee: NumberInputSchema, // F
+      profit: NumberInputSchema, // G
+    },
+
+    memo: { type: String }, // メモ欄
   },
-
-  // VQ: 変動費
-  variableCost: {
-    VQ: { type: Number },
-    variablePerUnit: { type: Number }, // V
-    quantity: { type: Number }, // 数量（Q）
-  },
-
-  // M: 粗利, F: 固定費, G: 利益
-  profitStructure: {
-    grossMargin: { type: Number }, // M
-    fixedFee: { type: Number }, // F
-    profit: { type: Number }, // G
-  },
-
-  memo: { type: String }, // メモ欄
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 export type MqCurrentStatusSheetDocument = InferSchemaType<
   typeof MqCurrentStatusSheetSchema

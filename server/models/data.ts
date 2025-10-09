@@ -1,4 +1,4 @@
-import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
+import mongoose, { Schema, InferSchemaType } from "mongoose";
 
 export interface DataType {
   sheet: string;
@@ -23,4 +23,5 @@ export type DataDocument = InferSchemaType<typeof DataSchema> & {
   _id: mongoose.Types.ObjectId;
 };
 
-export const Data = mongoose.models.Data || mongoose.model("Data", DataSchema, "data");
+export const Data =
+  mongoose.models.Data || mongoose.model("Data", DataSchema, "data");

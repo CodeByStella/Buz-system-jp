@@ -54,7 +54,11 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     H13:"=start!G103",
     H18:"=start!G105+start!C102-start!C103+start!C105-start!C106",
    },
-  profit: { A1: 0 },
+  profit: { 
+    B6:"=B3+B4-B5",
+    I5:"=B6+13-14",
+    I7:"=15/start!G106"
+  },
   mq_future: { A1: 0 },
   salary: { A1: 0 },
   expenses: { A1: 0 },

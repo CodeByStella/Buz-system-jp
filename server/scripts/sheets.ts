@@ -14,153 +14,59 @@
 
 import { Data, DataType } from "@/models/data";
 
-let initialData: DataType[] = [];
-
-const buildStartSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "start",
-      cell: "A1",
-      value: 0,
-    },
-  ];
+// Helper function to build sheet data
+const buildSheetData = (
+  sheetName: string,
+  data: { [cell: string]: string | number }
+): DataType[] => {
+  return Object.entries(data).map(
+    ([cell, val]): DataType => ({
+      user: "",
+      sheet: sheetName,
+      cell,
+      value: typeof val === "number" ? val : 0,
+      formula: typeof val === "string" ? val : "",
+    })
+  );
 };
 
-const  buildMQCurrentStatusSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "mq_current_status",
-      cell: "A1",
-      value: 0,
-    },
-  ];
+// Sheet data definitions
+const sheetsData: Record<string, { [cell: string]: string | number }> = {
+  start: {
+    A1: 0,
+    A2: 0,
+    A3: 0,
+    A4: 0,
+    A5: 0,
+  },
+  mq_current_status: { A1: 0 },
+  profit: { A1: 0 },
+  mq_future: { A1: 0 },
+  salary: { A1: 0 },
+  expenses: { A1: 0 },
+  manufacturing_labor: { A1: 0 },
+  manufacturing_expenses: { A1: 0 },
+  manufacturing_income: { A1: 0 },
+  break_even_point: { A1: 0 },
+  progress_result_input: { A1: 0 },
+  sales_plan_by_department: { A1: 0 },
+  profit_planing_table: { A1: 0 },
 };
 
-const buildProfitSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "profit",
-      cell: "A1",
-      value: 0,
+export const seedAllSheets = async () => {
+  // Build all sheet data
+  const allData: DataType[] = Object.entries(sheetsData).flatMap(
+    ([sheetName, data]) => buildSheetData(sheetName, data)
+  );
+
+  // Use bulkWrite for efficient upsert operations
+  const bulkOps = allData.map((item) => ({
+    updateOne: {
+      filter: { user: item.user, sheet: item.sheet, cell: item.cell },
+      update: { $set: item },
+      upsert: true,
     },
-  ];
-};
+  }));
 
-const buildMQFutureSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "mq_future",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildSalarySheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "salary",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildExpensesSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "expenses",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildManufacturingCostPersonSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "manufacturing_labor",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildManufacturingExpensesSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "manufacturing_expenses",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildCostDetailSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "manufacturing_income",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildBreakEvenPointSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "break_even_point",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildProgressResultInputSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "progress_result_input",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildSalesPlanByDepartmentSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "sales_plan_by_department",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-const buildProfitPlaningTableSheetData = () => {
-  initialData = [
-    {
-      user:"",
-      sheet: "profit_planing_table",
-      cell: "A1",
-      value: 0,
-    },
-  ];
-};
-
-
-
-export const startDataSeed = async () => {
-  await Data.updateOne({}, { $set: initialData }, { upsert: true });
+  await Data.bulkWrite(bulkOps);
 };

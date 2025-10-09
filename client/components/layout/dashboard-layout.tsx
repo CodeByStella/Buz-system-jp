@@ -20,6 +20,7 @@ import ProgressSheet from "@/components/sheets/progress-sheet";
 import SalesPlanSheet from "@/components/sheets/sales-plan-sheet";
 import ProfitPlanSheet from "@/components/sheets/profit-plan-sheet";
 import StartSheet from "@/components/sheets/start-sheet";
+import { transformBe2Fe, transformFe2Be } from "@/lib/transformers/dataTransformer";
 
 interface User {
   id: string;
@@ -53,7 +54,7 @@ export default function DashboardLayout() {
   const fetchUserInputs = async () => {
     try {
       const data = await userService.getUserInputs();
-      console.log(data);
+      console.log(transformBe2Fe(data), transformFe2Be(transformBe2Fe(data)));
     } catch (error) {
       console.error("Failed to fetch user inputs:", error);
     }

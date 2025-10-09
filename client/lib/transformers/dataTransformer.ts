@@ -21,22 +21,22 @@ const cellToIndices = (cell: string): { row: number; col: number } => {
   const colStr = match[1];
   const rowStr = match[2];
 
-  // Convert column letters to index (A=0, B=1, ..., Z=25, AA=26, etc.)
+  // Convert column letters to index (A=1, B=2, ..., Z=26, AA=27, etc.)
   let col = 0;
   for (let i = 0; i < colStr.length; i++) {
     col = col * 26 + (colStr.charCodeAt(i) - 65 + 1);
   }
-  col -= 1; // Convert to 0-based index
+  // Keep as 1-based index (A=1, B=2, etc.)
 
-  const row = parseInt(rowStr) - 1; // Convert to 0-based index
+  const row = parseInt(rowStr); // Keep as 1-based index (1, 2, 3, etc.)
 
   return { row, col };
 };
 
-// Helper function to convert row and column indices to cell reference (e.g., 6, 2 => "C7")
+// Helper function to convert row and column indices to cell reference (e.g., 1, 1 => "A1")
 const indicesToCell = (row: number, col: number): string => {
   let colStr = "";
-  let c = col + 1; // Convert to 1-based
+  let c = col; // Already 1-based (A=1, B=2, etc.)
 
   while (c > 0) {
     const remainder = (c - 1) % 26;
@@ -44,7 +44,7 @@ const indicesToCell = (row: number, col: number): string => {
     c = Math.floor((c - 1) / 26);
   }
 
-  const rowStr = (row + 1).toString(); // Convert to 1-based
+  const rowStr = row.toString(); // Already 1-based
 
   return colStr + rowStr;
 };

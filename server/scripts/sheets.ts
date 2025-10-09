@@ -178,22 +178,22 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     E18: "=C18/C19",
   },
   manufacturing_expenses: { 
-    C43: "",
-    C44: "",
+    C43: "=SUM(C5:C42)",
+    C44: "=SUM(start!D63:D100)",
 
-    F13: "",
-    F14: "",
+    F13: "=SUM(F4:F12)",
+    F14: "=SUM(start!D35:D42)",
 
-    I5: "",
-    I6: "",
-    I7: "",
-    I16: "",
-    I17: "",
+    I5: "=start!D60",
+    I6: "=start!D61",
+    I7: "=start!D62",
+    I16: "=SUM(I5:I15)",
+    I17: "=SUM(start!D13:D28)+SUM(start!D60:D62)",
 
-    L20: "",
-    L21: "",
+    L20: "=SUM(L5:L19)",
+    L21: "=SUM(start!D43:D56)",
 
-    I2: "",
+    I2: "=L20+116+F13+C43",
   },
   manufacturing_income: { 
     G2: "",

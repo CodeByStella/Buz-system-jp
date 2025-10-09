@@ -1,14 +1,14 @@
 import { Schema } from "mongoose";
 
 export const NumberInputSchema = new Schema({
-  value: { type: Number },
+  value: { type: Number, default: 0 },
   formula: {
     type: String,
     default: "",
   },
   sheet: {
     type: String,
-    defalut: "",
+    default: "",
   },
   absolutePath: {
     type: String,

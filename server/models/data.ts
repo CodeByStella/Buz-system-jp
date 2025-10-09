@@ -14,7 +14,7 @@ const DataSchema = new Schema<DataType & Document>(
     cell: { type: String, required: true },
     value: { type: Number, default: 0 },
     formula: { type: String, default: "" },
-    user: { type: String, required: true },
+    user: { type: String, default: "" },
   },
   { timestamps: true }
 );

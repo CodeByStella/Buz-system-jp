@@ -106,7 +106,7 @@ export function ExcelForm({
 
   const saveCell = async (cellKey: string, value: number) => {
     try {
-      await userService.saveUserInput({ sheet: sheetName, cellKey, value });
+      await userService.saveUserInput({ sheet: sheetName, cell: cellKey, value });
     } catch (error) {
       console.error("Failed to save cell:", error);
     }
@@ -118,7 +118,7 @@ export function ExcelForm({
       const promises = Object.entries(data).map(([key, cell]) =>
         userService.saveUserInput({
           sheet: sheetName,
-          cellKey: key,
+          cell: key,
           value: cell.value,
         })
       );

@@ -100,7 +100,7 @@ export default function ProfitPlanSheet() {
     const newData = { ...data, [key]: value }
     setData(newData)
     try {
-      await userService.saveUserInput({ sheet: 'profit-plan', cellKey: key, value })
+      await userService.saveUserInput({ sheet: 'profit-plan', cell: key, value })
     } catch (e) {
       console.error('Failed to save input', e)
     }

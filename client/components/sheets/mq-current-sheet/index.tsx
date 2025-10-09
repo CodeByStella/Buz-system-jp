@@ -56,7 +56,7 @@ export default function MQCurrentSheet() {
     setData(newData)
 
     try {
-      await userService.saveUserInput({ sheet: 'mq-current', cellKey: key, value })
+      await userService.saveUserInput({ sheet: 'mq-current', cell: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
@@ -75,7 +75,7 @@ export default function MQCurrentSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        userService.saveUserInput({ sheet: 'mq-current', cellKey: key, value })
+        userService.saveUserInput({ sheet: 'mq-current', cell: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

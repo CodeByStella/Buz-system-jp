@@ -123,7 +123,7 @@ export default function ProgressSheet() {
     setData(newData)
 
     try {
-      await userService.saveUserInput({ sheet: 'progress', cellKey: key, value })
+      await userService.saveUserInput({ sheet: 'progress', cell: key, value })
       const inputs = Object.fromEntries(Object.entries(newData).map(([k, v]) => [k, v]))
       const result = await userService.calculate({ sheet: 'progress', inputs })
       setData(prev => ({ ...prev, ...(result.results || {}) }))
@@ -136,7 +136,7 @@ export default function ProgressSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        userService.saveUserInput({ sheet: 'progress', cellKey: key, value })
+        userService.saveUserInput({ sheet: 'progress', cell: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

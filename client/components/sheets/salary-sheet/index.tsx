@@ -195,7 +195,7 @@ export default function SalarySheet() {
     setData(newData)
 
     try {
-      await userService.saveUserInput({ sheet: 'salary', cellKey: key, value })
+      await userService.saveUserInput({ sheet: 'salary', cell: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
@@ -214,7 +214,7 @@ export default function SalarySheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        userService.saveUserInput({ sheet: 'salary', cellKey: key, value })
+        userService.saveUserInput({ sheet: 'salary', cell: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

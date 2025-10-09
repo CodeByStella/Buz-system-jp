@@ -163,7 +163,7 @@ export default function SalesPlanSheet() {
         ? `category_${categoryId}_${field}_${monthIndex}`
         : `category_${categoryId}_${field}`
       
-      await userService.saveUserInput({ sheet: 'sales-plan', cellKey, value })
+      await userService.saveUserInput({ sheet: 'sales-plan', cell: cellKey, value })
       
       // Trigger recalculation
       const inputs: Record<string, number> = {
@@ -195,16 +195,16 @@ export default function SalesPlanSheet() {
       const promises = []
       
       // Save grand total
-      promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: 'grand_total_target', value: data.grandTotalTarget }))
+      promises.push(userService.saveUserInput({ sheet: 'sales-plan', cell: 'grand_total_target', value: data.grandTotalTarget }))
       
       // Save all category data
       data.categories.forEach(category => {
-        promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: `category_${category.id}_sales_target`, value: category.salesTarget }))
+        promises.push(userService.saveUserInput({ sheet: 'sales-plan', cell: `category_${category.id}_sales_target`, value: category.salesTarget }))
         category.monthlyTargets.forEach((value, index) => {
-          promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: `category_${category.id}_monthly_target_${index}`, value }))
+          promises.push(userService.saveUserInput({ sheet: 'sales-plan', cell: `category_${category.id}_monthly_target_${index}`, value }))
         })
         category.monthlyActuals.forEach((value, index) => {
-          promises.push(userService.saveUserInput({ sheet: 'sales-plan', cellKey: `category_${category.id}_monthly_actual_${index}`, value }))
+          promises.push(userService.saveUserInput({ sheet: 'sales-plan', cell: `category_${category.id}_monthly_actual_${index}`, value }))
         })
       })
       

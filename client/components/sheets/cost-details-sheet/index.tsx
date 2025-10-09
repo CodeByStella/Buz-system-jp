@@ -206,7 +206,7 @@ export default function CostDetailsSheet() {
     try {
       // Only save numeric values to the API
       if (field !== 'product_name') {
-        await userService.saveUserInput({ sheet: 'cost-details', cellKey: `product_${productIndex}_${field}`, value: Number(value) })
+        await userService.saveUserInput({ sheet: 'cost-details', cell: `product_${productIndex}_${field}`, value: Number(value) })
       }
       
       // Trigger recalculation
@@ -230,7 +230,7 @@ export default function CostDetailsSheet() {
     setData(newData)
 
     try {
-      await userService.saveUserInput({ sheet: 'cost-details', cellKey: key, value })
+      await userService.saveUserInput({ sheet: 'cost-details', cell: key, value })
       
       // Trigger recalculation
       const inputs: Record<string, number> = {}
@@ -256,14 +256,14 @@ export default function CostDetailsSheet() {
       // Save product data
       data.products.forEach((product, index) => {
         Object.entries(product).forEach(([field, value]) => {
-          promises.push(userService.saveUserInput({ sheet: 'cost-details', cellKey: `product_${index}_${field}`, value }))
+          promises.push(userService.saveUserInput({ sheet: 'cost-details', cell: `product_${index}_${field}`, value }))
         })
       })
       
       // Save other data
       Object.entries(data).forEach(([key, value]) => {
         if (key !== 'products') {
-          promises.push(userService.saveUserInput({ sheet: 'cost-details', cellKey: key, value }))
+          promises.push(userService.saveUserInput({ sheet: 'cost-details', cell: key, value }))
         }
       })
       

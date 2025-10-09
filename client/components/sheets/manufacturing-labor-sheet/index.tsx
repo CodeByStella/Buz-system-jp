@@ -195,7 +195,7 @@ export default function ManufacturingLaborSheet() {
     setData(newData)
 
     try {
-      await userService.saveUserInput({ sheet: 'manufacturing-labor', cellKey: key, value })
+      await userService.saveUserInput({ sheet: 'manufacturing-labor', cell: key, value })
       
       // Trigger recalculation
       const inputs = Object.fromEntries(
@@ -214,7 +214,7 @@ export default function ManufacturingLaborSheet() {
     setSaving(true)
     try {
       const promises = Object.entries(data).map(([key, value]) =>
-        userService.saveUserInput({ sheet: 'manufacturing-labor', cellKey: key, value })
+        userService.saveUserInput({ sheet: 'manufacturing-labor', cell: key, value })
       )
       await Promise.all(promises)
     } catch (error) {

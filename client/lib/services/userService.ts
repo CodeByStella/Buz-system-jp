@@ -3,16 +3,17 @@ import axiosService from '../axios-service';
 // User Types
 export interface UserInputRequest {
   sheet: string;
-  cellKey: string;
+  cell: string;
   value: number;
 }
 
 export interface UserInput {
-  id: string;
+  _id: string;
   sheet: string;
-  cellKey: string;
+  cell: string;
   value: number;
-  userId: string;
+  formula: string;
+  user: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,34 +32,16 @@ export interface CalculateResponse {
 // User Service
 class UserService {
   async getUserInputs(sheet?: string): Promise<UserInput[]> {
-    const params = sheet ? `?sheet=${sheet}` : '';
-    return axiosService.get<UserInput[]>(`/api/user/inputs${params}`);
+    return axiosService.get<UserInput[]>(`/api/user/inputs`);
   }
 
   async saveUserInput(input: UserInputRequest): Promise<UserInput> {
     return axiosService.post<UserInput>('/api/user/inputs', input);
   }
 
-  async updateUserInput(id: string, input: Partial<UserInputRequest>): Promise<UserInput> {
-    return axiosService.put<UserInput>(`/api/user/inputs/${id}`, input);
-  }
-
-  async deleteUserInput(id: string): Promise<void> {
-    return axiosService.delete(`/api/user/inputs/${id}`);
-  }
-
-  async calculate(params: CalculateRequest): Promise<CalculateResponse> {
-    return axiosService.post<CalculateResponse>('/api/calculate', params);
-  }
-
-  // Get inputs for specific sheet
-  async getSheetInputs(sheet: string): Promise<UserInput[]> {
-    return this.getUserInputs(sheet);
-  }
-
   // Save multiple inputs at once
   async saveMultipleInputs(inputs: UserInputRequest[]): Promise<UserInput[]> {
-    return axiosService.post<UserInput[]>('/api/user/inputs/batch', { inputs });
+    return axiosService.post<UserInput[]>('/api/user/inputs/bulk', { inputs });
   }
 }
 

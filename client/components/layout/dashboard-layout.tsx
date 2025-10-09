@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
-import { authService } from "@/lib/services";
+import { authService, userService } from "@/lib/services";
 
 // Import all sheet components
-import { ExcelForm } from "@/components/ui/customTable";
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
 import { ProfitSheet } from "@/components/sheets/profit-sheet";
 import MQFutureSheet from "@/components/sheets/mq-future-sheet";
@@ -37,6 +36,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     fetchUser();
+    fetchUserInputs();
   }, []);
 
   const fetchUser = async () => {
@@ -47,6 +47,15 @@ export default function DashboardLayout() {
       router.push("/login");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserInputs = async () => {
+    try {
+      const data = await userService.getUserInputs();
+      console.log(data);
+    } catch (error) {
+      console.error("Failed to fetch user inputs:", error);
     }
   };
 

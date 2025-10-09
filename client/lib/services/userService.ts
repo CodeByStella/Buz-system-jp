@@ -18,20 +18,10 @@ export interface UserInput {
   updatedAt: string;
 }
 
-export interface CalculateRequest {
-  sheet: string;
-  inputs: Record<string, number>;
-}
-
-export interface CalculateResponse {
-  results: Record<string, number>;
-  sheet: string;
-  calculatedAt: string;
-}
 
 // User Service
 class UserService {
-  async getUserInputs(sheet?: string): Promise<UserInput[]> {
+  async getUserInputs(): Promise<UserInput[]> {
     return axiosService.get<UserInput[]>(`/api/user/inputs`);
   }
 

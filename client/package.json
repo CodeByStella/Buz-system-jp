@@ -22,6 +22,7 @@
     "axios": "^1.12.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "hyperformula": "^3.0.1",
     "jspdf": "^2.5.1",
     "jwt-decode": "^3.1.2",
     "lucide-react": "^0.294.0",

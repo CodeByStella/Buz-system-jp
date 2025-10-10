@@ -18,7 +18,7 @@ import { cellToIndices, indicesToCell } from "../utils/cellHelpers";
 
 interface DataContextType {
   data: FrontendDataType;
-  onChange: (sheet: string, cell: string, value: number) => void;
+  onChange: (sheet: string, cell: string, value: number | string) => void;
   onSave: () => Promise<void>;
   saving: boolean;
   hasChanges: boolean;
@@ -27,6 +27,7 @@ interface DataContextType {
   errorMessage: string | null;
   successMessage: string | null;
   clearMessages: () => void;
+  retry: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -71,29 +72,54 @@ export const DataProvider: React.FC<{
     try {
       setLoading(true);
       setErrorMessage(null);
+      
+      console.log("Fetching user inputs...");
       const backendData: BackendDataType[] = await userService.getUserInputs();
+      console.log("Backend data received:", backendData.length, "items");
 
       // Store original data for change tracking
       originalDataRef.current = JSON.parse(JSON.stringify(backendData));
 
       // Transform to frontend format
+      console.log("Transforming data...");
       const frontendData = transformBe2Fe(backendData);
+      console.log("Frontend data transformed:", Object.keys(frontendData));
 
       // Initialize HyperFormula with the data
+      console.log("Initializing HyperFormula...");
       initializeHyperFormula(frontendData);
 
       // Get calculated values from HyperFormula
+      console.log("Getting calculated data...");
       const calculatedData = getCalculatedData();
+      console.log("Calculated data ready:", Object.keys(calculatedData));
 
       setUserInput(calculatedData);
+      console.log("Data loading completed successfully");
     } catch (error) {
       console.error("Failed to fetch user inputs:", error);
-      setErrorMessage("データの読み込みに失敗しました");
       
-      // Auto-clear error message after 5 seconds
+      // Provide more specific error messages
+      let errorMessage = "データの読み込みに失敗しました";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("サーバーに接続できません")) {
+          errorMessage = "サーバーに接続できません。ネットワーク接続を確認してください。";
+        } else if (error.message.includes("認証が必要です")) {
+          errorMessage = "認証が必要です。ページを再読み込みしてください。";
+        } else if (error.message.includes("timeout")) {
+          errorMessage = "リクエストがタイムアウトしました。再試行してください。";
+        } else {
+          errorMessage = `データの読み込みに失敗しました: ${error.message}`;
+        }
+      }
+      
+      setErrorMessage(errorMessage);
+      
+      // Auto-clear error message after 8 seconds for better UX
       setTimeout(() => {
         setErrorMessage(null);
-      }, 5000);
+      }, 8000);
     } finally {
       setLoading(false);
     }
@@ -116,17 +142,34 @@ export const DataProvider: React.FC<{
 
     // Add sheets from frontendData (already transformed)
     Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
-      // Add sheet to HyperFormula
-      hf.addSheet(sheetName);
-      const sheetId = hf.getSheetId(sheetName);
+      try {
+        // Add sheet to HyperFormula
+        hf.addSheet(sheetName);
+        const sheetId = hf.getSheetId(sheetName);
 
-      if (sheetId !== undefined) {
-        sheetIdsRef.current.set(sheetName, sheetId);
+        if (sheetId !== undefined) {
+          sheetIdsRef.current.set(sheetName, sheetId);
 
-        // Set sheet content directly from transformed data
-        if (sheetData && sheetData.length > 0) {
-          hf.setSheetContent(sheetId, sheetData);
+          // Set sheet content directly from transformed data
+          if (sheetData && sheetData.length > 0) {
+            // Additional sanitization before sending to HyperFormula
+            const sanitizedSheetData = sheetData.map(row => 
+              row.map(cell => {
+                // Ensure no error values slip through
+                if (typeof cell === 'string' && cell.includes('#')) {
+                  console.warn(`Found error value in ${sheetName}: ${cell}, replacing with empty string`);
+                  return "";
+                }
+                return cell;
+              })
+            );
+            
+            hf.setSheetContent(sheetId, sanitizedSheetData);
+          }
         }
+      } catch (error) {
+        console.error(`Error initializing sheet ${sheetName}:`, error);
+        // Continue with other sheets even if one fails
       }
     });
   };
@@ -167,13 +210,28 @@ export const DataProvider: React.FC<{
 
     const { row, col } = cellToIndices(cell);
 
-    // Update the cell value in HyperFormula
-    hf.setCellContents({ sheet: sheetId, row, col }, [[value]]);
+    try {
+      // Sanitize the value before setting it
+      let sanitizedValue = value;
+      if (typeof value === 'string') {
+        // Check for error values
+        if (value.includes('#ERROR!') || value.includes('#REF!') || value.includes('#VALUE!') || value.includes('#NAME?') || value.includes('#DIV/0!') || value.includes('#N/A') || value.includes('#NUM!') || value.includes('#NULL!')) {
+          console.warn(`Attempted to set error value in ${sheet}:${cell}: ${value}, using empty string instead`);
+          sanitizedValue = "";
+        }
+      }
 
-    // Get updated calculated data
-    const calculatedData = getCalculatedData();
+      // Update the cell value in HyperFormula
+      hf.setCellContents({ sheet: sheetId, row, col }, [[sanitizedValue]]);
 
-    setUserInput(calculatedData);
+      // Get updated calculated data
+      const calculatedData = getCalculatedData();
+
+      setUserInput(calculatedData);
+    } catch (error) {
+      console.error(`Error setting cell ${sheet}:${cell} to value ${value}:`, error);
+      // Don't update the UI if there was an error
+    }
   };
 
   // Get changed cells compared to original data
@@ -315,6 +373,11 @@ export const DataProvider: React.FC<{
     setSuccessMessage(null);
   };
 
+  // Retry function for failed data loading
+  const retry = async () => {
+    await fetchUserInputs();
+  };
+
   const value: DataContextType = {
     data: userInput,
     onChange: handleChangeCell,
@@ -326,6 +389,7 @@ export const DataProvider: React.FC<{
     errorMessage,
     successMessage,
     clearMessages,
+    retry,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

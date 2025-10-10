@@ -26,6 +26,7 @@ import {
   transformBe2Fe,
   transformFe2Be,
   BackendData,
+  SheetNameType,
 } from "@/lib/transformers/dataTransformer";
 import { DataProvider } from "@/lib/contexts/DataContext";
 
@@ -198,7 +199,7 @@ export default function DashboardLayout() {
   };
 
   // Handle cell change
-  const handleChangeCell = (sheet: string, cell: string, value: number) => {
+  const handleChangeCell = (sheet: SheetNameType, cell: string, value: number) => {
     const hf = hfInstanceRef.current;
     if (!hf) return;
 

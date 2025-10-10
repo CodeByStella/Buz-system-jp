@@ -13,6 +13,8 @@ export interface FrontendData {
   [sheetName: string]: CellValue[][];
 }
 
+export type SheetNameType = "start" | "mq_current_status" | "profit" | "mq_future" | "salary" | "expenses" | "manufacturing_labor" | "manufacturing_expenses" | "manufacturing_income" | "break_even_point" | "progress_result_input" | "sales_plan_by_department" | "profit_planing_table";
+
 // Helper function to convert cell reference (e.g., "C7") to row and column indices
 const cellToIndices = (cell: string): { row: number; col: number } => {
   const match = cell.match(/^([A-Z]+)(\d+)$/);

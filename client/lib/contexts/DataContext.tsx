@@ -1,11 +1,11 @@
 "use client";
 
 import React, { createContext, useContext } from "react";
-import { FrontendData } from "../transformers/dataTransformer";
+import { FrontendData, SheetNameType } from "../transformers/dataTransformer";
 
 interface DataContextType {
   data: FrontendData;
-  onChange: (sheet: string, cell: string, value: number) => void;
+  onChange: (sheet: SheetNameType, cell: string, value: number) => void;
   onSave: () => Promise<void>;
   saving: boolean;
   hasChanges: boolean;

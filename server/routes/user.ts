@@ -29,7 +29,7 @@ router.post('/inputs', async (req: AuthenticatedRequest, res) => {
       { 
         sheet,
         cell,
-        value: typeof value === 'number' ? value : 0,
+        value,
       },
       { 
         new: true, // Return the updated document
@@ -62,7 +62,7 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
           $set: {
             sheet: input.sheet,
             cell: input.cell,
-            value: typeof input.value === 'number' ? input.value : 0,
+            value: input.value,
           }
         },
         upsert: true

@@ -17,8 +17,9 @@ import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 
 export default function StartSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, successMessage } = useDataContext();
-  
+  const { onSave, saving, hasChanges, loading, errorMessage, successMessage } =
+    useDataContext();
+
   const sheetName = "start";
 
   //コードNo	勘定科目	損益計算書	製造原価報告書
@@ -80,7 +81,7 @@ export default function StartSheet() {
               cell={value.value}
               disabled={value.type === 0}
               readOnly={value.type === 2}
-              suffix={record.key === "profitMargin" ? "%" : undefined}
+              suffix={record.incomeStatement.suffix||""}
               className={`border-transparent h-full`}
             />
           );
@@ -133,22 +134,12 @@ export default function StartSheet() {
         render: (value: string, record: OthersRowDataType, index: number) => {
           // For label, value is just a text string, not a cell reference
           // Could be enhanced later to support cell references if needed
-          return record.editable ? (
-            <CustomInput
-              type="text"
-              value={value || ""}
-              className={`border-transparent h-full`}
-              placeholder="項目名を入力"
-              onChange={(e) => {
-                // Text editing not yet supported in the current system
-                // Will need to enhance DataContext to support string values
-              }}
-            />
-          ) : (
-            <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
-              {value}
-            </div>
-          );
+          const baseClass =
+            "flex items-center justify-center h-full w-full absolute top-0 left-0";
+          const labelClass = record.editable
+            ? baseClass
+            : `bg-violet-500 ${baseClass}`;
+          return <div className={labelClass}>{value}</div>;
         },
       },
       {
@@ -157,26 +148,19 @@ export default function StartSheet() {
         width: 70,
         align: "center",
         cellClassName: "!p-0 !h-full relative",
-        render: (
-          value: string,
-          record: OthersRowDataType,
-          index: number
-        ) => {
+        render: (value: string, record: OthersRowDataType, index: number) => {
           return record.editable ? (
             <CustomInput
-              type="number"
+              type="text"
               sheet={sheetName}
               cell={value}
+              disabled={!record.editable}
               className={`border-transparent h-full`}
             />
           ) : (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              disabled
-              className={`border-transparent h-full`}
-            />
+            <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
+              {value}
+            </div>
           );
         },
       },
@@ -191,12 +175,14 @@ export default function StartSheet() {
         title: "",
         width: 100,
         align: "center",
+        cellClassName: "!bg-yellow-300",
       },
       {
         key: "value",
         title: "",
         width: 100,
         align: "right",
+        cellClassName: "relative",
         render: (value: string, record: SummaryRowDataType, index: number) => {
           return (
             <CustomInput
@@ -204,7 +190,7 @@ export default function StartSheet() {
               sheet={sheetName}
               cell={value}
               readOnly
-              className={`border-transparent h-full !bg-yellow-200`}
+              className={`border-transparent text-right`}
             />
           );
         },
@@ -256,7 +242,7 @@ export default function StartSheet() {
             loading={saving}
             loadingText="保存中..."
             onClick={onSave}
-            disabled={saving||!hasChanges}
+            disabled={saving || !hasChanges}
           >
             保存
           </Button>
@@ -330,7 +316,7 @@ export default function StartSheet() {
                 maxHeight={"full"}
                 hideHeader
                 stickyHeader
-                cellClassName="!bg-yellow-200"
+                cellClassName="!p-0"
               />
             </div>
           </div>

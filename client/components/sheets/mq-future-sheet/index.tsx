@@ -275,7 +275,7 @@ export default function MQFutureSheet() {
                 <div className="flex-1 p-3 min-h-0">
                   <CustomTextarea
                     sheet={sheetName}
-                    cell="C24"
+                    cell="L25"
                     placeholder="メモを入力してください..."
                     className="w-full h-full border-0 resize-none focus:ring-0 focus:outline-none text-gray-700"
                     rows={6}

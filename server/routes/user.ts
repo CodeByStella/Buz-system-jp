@@ -53,7 +53,6 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
     if (!Array.isArray(inputs)) {
       return res.status(400).json({ error: '入力データは配列である必要があります' })
     }
-    
     // Use bulkWrite for efficient upsert operations
     const bulkOps = inputs.map((input) => ({
       updateOne: {
@@ -68,7 +67,7 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
         upsert: true
       }
     }))
-    
+
     const result = await Data.bulkWrite(bulkOps)
     
     res.json({

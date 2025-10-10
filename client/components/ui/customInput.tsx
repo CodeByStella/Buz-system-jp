@@ -13,10 +13,12 @@ export interface InputProps
   tipStyle?: React.CSSProperties;
   sheet?: string;
   cell?: string;
+  renderValue?: (value: number | string) => number | string;
+  inverseRenderValue?: (value: number) => number;
 }
 
 const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, value, prefix, suffix, step, tip, tipClassName, tipStyle, sheet, cell, onChange, ...props }, ref) => {
+  ({ className, type, value, prefix, suffix, step, tip, tipClassName, tipStyle, sheet, cell, onChange, renderValue, inverseRenderValue, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false)
     const [tooltipPosition, setTooltipPosition] = React.useState<{ top: number; left: number } | null>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
@@ -46,8 +48,14 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // If value is undefined or null, show blank
     inputValue = inputValue === undefined || inputValue === null ? "" : inputValue;
     
+    // Apply custom render function if provided (e.g., multiply by 100 for percentages)
+    if (renderValue && inputValue !== "" && !Array.isArray(inputValue) && (typeof inputValue === "string" || typeof inputValue === "number")) {
+      inputValue = renderValue(inputValue as string | number);
+    }
+    
     // Check if the value is negative for styling
-    const isNegative = type === "number" && typeof value === "number" && value < 0
+    const numericValue = typeof inputValue === "number" ? inputValue : parseFloat(inputValue as string);
+    const isNegative = type === "number" && !isNaN(numericValue) && numericValue < 0;
     const negativeClass = isNegative ? "text-red-600" : ""
     
     // Combine refs
@@ -112,7 +120,13 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // Handle change event - use context if available, otherwise use prop
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (hasContext && contextOnChange && type === "number") {
-        const newValue = parseFloat(e.target.value) || 0;
+        let newValue = parseFloat(e.target.value) || 0;
+        
+        // Apply inverse transformation if provided (e.g., divide by 100 for percentages)
+        if (inverseRenderValue) {
+          newValue = inverseRenderValue(newValue);
+        }
+        
         contextOnChange(sheet!, cell!, newValue);
       } else if (onChange) {
         onChange(e);

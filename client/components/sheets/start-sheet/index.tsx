@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useMemo } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   MainRowDataType,
@@ -17,7 +17,7 @@ import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 
 export default function StartSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, successMessage } =
+  const { onSave, saving, hasChanges, loading } =
     useDataContext();
 
   const sheetName = "start";
@@ -74,6 +74,9 @@ export default function StartSheet() {
           record: MainRowDataType,
           index: number
         ) => {
+          // For percentage fields, multiply by 100 for display
+          const isPercentage = record.incomeStatement.suffix === "%";
+          
           return (
             <CustomInput
               type="number"
@@ -81,7 +84,9 @@ export default function StartSheet() {
               cell={value.value}
               disabled={value.type === 0}
               readOnly={value.type === 2}
-              suffix={record.incomeStatement.suffix||""}
+              suffix={record.incomeStatement.suffix || ""}
+              renderValue={isPercentage ? (v) => (Number(v) * 100) : undefined}
+              inverseRenderValue={isPercentage ? (v) => v / 100 : undefined}
               className={`border-transparent h-full`}
             />
           );
@@ -151,11 +156,11 @@ export default function StartSheet() {
         render: (value: string, record: OthersRowDataType, index: number) => {
           return record.editable ? (
             <CustomInput
-              type="text"
+              type="number"
               sheet={sheetName}
               cell={value}
               disabled={!record.editable}
-              className={`border-transparent h-full`}
+              className={`border-transparent h-full text-right`}
             />
           ) : (
             <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
@@ -213,21 +218,6 @@ export default function StartSheet() {
 
   return (
     <div className="h-full flex flex-col space-y-4 overflow-hidden ">
-      {/* Error Message */}
-      {errorMessage && (
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
-          <p className="font-medium">エラー</p>
-          <p className="text-sm">{errorMessage}</p>
-        </div>
-      )}
-
-      {/* Success Message */}
-      {successMessage && (
-        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-md">
-          <p className="text-sm">{successMessage}</p>
-        </div>
-      )}
-
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">スタート</h1>

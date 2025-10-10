@@ -53,11 +53,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "売上",
     label: "直近売上",
     incomeStatement: {
-      value: "A1",
+      value: "C6",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D6",
       type: 0,
     },
     bgcolor1: colors.lightCyan,
@@ -67,11 +67,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "総益",
     label: "売上総利益",
     incomeStatement: {
-      value: "A1",
+      value: "C7",
       type: 2,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D7",
       type: 0,
     },
     bgcolor1: colors.lightCyan,
@@ -81,12 +81,12 @@ export const startSheet_main: MainRowDataType[] = [
     no: "益率",
     label: "利益率(%)",
     incomeStatement: {
-      value: "A1",
+      value: "C8",
       type: 2,
       suffix: "%",
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D8",
       type: 0,
     },
     bgcolor1: colors.lightCyan,
@@ -96,11 +96,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件1",
     label: "社員給料",
     incomeStatement: {
-      value: "A1",
+      value: "C12",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D12",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -110,11 +110,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件2",
     label: "通勤手当",
     incomeStatement: {
-      value: "A1",
+      value: "C13",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D13",
       type: 1,
     },
     bgcolor1: colors.beige,
@@ -124,11 +124,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件3",
     label: "賞与",
     incomeStatement: {
-      value: "A1",
+      value: "C14",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D14",
       type: 1,
     },
     bgcolor1: colors.beige,
@@ -138,11 +138,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件4",
     label: "退職金",
     incomeStatement: {
-      value: "A1",
+      value: "C15",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D15",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -152,11 +152,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件5",
     label: "雑給料",
     incomeStatement: {
-      value: "A1",
+      value: "C16",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D16",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -166,11 +166,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件6",
     label: "派遣社員費",
     incomeStatement: {
-      value: "A1",
+      value: "C17",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D17",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -180,11 +180,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件7",
     label: "契約社員費",
     incomeStatement: {
-      value: "A1",
+      value: "C18",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D18",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -194,11 +194,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件8",
     label: "諸費用",
     incomeStatement: {
-      value: "A1",
+      value: "C19",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D19",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -208,11 +208,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件9",
     label: "役員報酬",
     incomeStatement: {
-      value: "A1",
+      value: "C20",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D20",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -222,11 +222,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件10",
     label: "募集費",
     incomeStatement: {
-      value: "A1",
+      value: "C21",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D21",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -236,11 +236,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件11",
     label: "教育研修",
     incomeStatement: {
-      value: "A1",
+      value: "C22",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D22",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -250,11 +250,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件12",
     label: "研修費",
     incomeStatement: {
-      value: "A1",
+      value: "C23",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D23",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -264,11 +264,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件13",
     label: "会議費",
     incomeStatement: {
-      value: "A1",
+      value: "C24",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D24",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -278,11 +278,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件14",
     label: "予備",
     incomeStatement: {
-      value: "A1",
+      value: "C25",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D25",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -292,11 +292,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件15",
     label: "予備",
     incomeStatement: {
-      value: "A1",
+      value: "C26",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D26",
       type: 0,
     },
     bgcolor1: colors.beige,
@@ -306,11 +306,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件16",
     label: "福利厚生費",
     incomeStatement: {
-      value: "A1",
+      value: "C27",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D27",
       type: 1,
     },
     bgcolor1: colors.beige,
@@ -320,11 +320,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "人件17",
     label: "法定福利費",
     incomeStatement: {
-      value: "A1",
+      value: "C28",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D28",
       type: 1,
     },
     bgcolor1: colors.beige,
@@ -334,11 +334,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費1",
     label: "事業戦略費",
     incomeStatement: {
-      value: "A1",
+      value: "C29",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D29",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -348,11 +348,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費2",
     label: "社長戦略費Ａ",
     incomeStatement: {
-      value: "A1",
+      value: "C30",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D30",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -362,11 +362,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費3",
     label: "社長戦略費Ｂ",
     incomeStatement: {
-      value: "A1",
+      value: "C31",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D31",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -376,11 +376,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費4",
     label: "開拓手数料(外交員)",
     incomeStatement: {
-      value: "A1",
+      value: "C32",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D32",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -390,11 +390,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費5",
     label: "消耗資材費",
     incomeStatement: {
-      value: "A1",
+      value: "C33",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D33",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -404,11 +404,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費6",
     label: "ロイヤリティー",
     incomeStatement: {
-      value: "A1",
+      value: "C34",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D34",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -418,11 +418,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費7",
     label: "外注加工費",
     incomeStatement: {
-      value: "A1",
+      value: "C35",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D35",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -432,11 +432,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "事業費8",
     label: "運賃荷造費",
     incomeStatement: {
-      value: "A1",
+      value: "C36",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D36",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -446,11 +446,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "販促費1",
     label: "テナント料",
     incomeStatement: {
-      value: "A1",
+      value: "C37",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D37",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -460,11 +460,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "販促費2",
     label: "包装費",
     incomeStatement: {
-      value: "A1",
+      value: "C38",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D38",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -474,11 +474,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "販促費3",
     label: "販売企画費",
     incomeStatement: {
-      value: "A1",
+      value: "C39",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D39",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -488,11 +488,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "販促費4",
     label: "試供品ＤＭ費",
     incomeStatement: {
-      value: "A1",
+      value: "C40",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D40",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -502,11 +502,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "販促費5",
     label: "販売促進費",
     incomeStatement: {
-      value: "A1",
+      value: "C41",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D41",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -516,11 +516,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "販促費6",
     label: "広告宣伝費",
     incomeStatement: {
-      value: "A1",
+      value: "C42",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D42",
       type: 0,
     },
     bgcolor1: colors.blue,
@@ -530,11 +530,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１",
     label: "期首商品棚卸高",
     incomeStatement: {
-      value: "A1",
+      value: "C43",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D43",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -544,11 +544,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価２",
     label: "期首製品棚卸高",
     incomeStatement: {
-      value: "A1",
+      value: "C44",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D44",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -558,11 +558,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価３",
     label: "商品仕入高",
     incomeStatement: {
-      value: "A1",
+      value: "C45",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D45",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -572,11 +572,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価4",
     label: "製品仕入高",
     incomeStatement: {
-      value: "A1",
+      value: "C46",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D46",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -586,11 +586,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価5",
     label: "期末商品棚卸高",
     incomeStatement: {
-      value: "A1",
+      value: "C47",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D47",
       type: 1,
       tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
@@ -601,11 +601,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価6",
     label: "期末製品棚卸高",
     incomeStatement: {
-      value: "A1",
+      value: "C48",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D48",
       type: 1,
       tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
@@ -616,11 +616,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価7",
     label: "期首原材料棚卸高",
     incomeStatement: {
-      value: "A1",
+      value: "C49",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D49",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -630,11 +630,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価8",
     label: "原材料仕入高１",
     incomeStatement: {
-      value: "A1",
+      value: "C50",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D50",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -644,11 +644,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価9",
     label: "原材料仕入高２",
     incomeStatement: {
-      value: "A1",
+      value: "C51",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D51",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -658,11 +658,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原仕10",
     label: "原材料仕入高３",
     incomeStatement: {
-      value: "A1",
+      value: "C52",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D52",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -672,11 +672,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１1",
     label: "仕掛品",
     incomeStatement: {
-      value: "A1",
+      value: "C53",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D53",
       type: 1,
       tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
@@ -687,11 +687,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１2",
     label: "期末原材料棚卸高",
     incomeStatement: {
-      value: "A1",
+      value: "C54",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D54",
       type: 1,
       tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
@@ -702,11 +702,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１3",
     label: "在庫",
     incomeStatement: {
-      value: "A1",
+      value: "C55",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D55",
       type: 1,
       tip: "＊期末の棚卸額は、\n - (マイナス）を付けて\n 入力してください。",
     },
@@ -717,11 +717,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１４",
     label: "外注費",
     incomeStatement: {
-      value: "A1",
+      value: "C56",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D56",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -731,11 +731,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１５",
     label: "労務費",
     incomeStatement: {
-      value: "A1",
+      value: "C57",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D57",
       type: 2,
     },
     bgcolor1: colors.yellow,
@@ -745,11 +745,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "原価１６",
     label: "外注加工費",
     incomeStatement: {
-      value: "A1",
+      value: "C58",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D58",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -759,11 +759,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "労務費内訳",
     label: "(労務費内訳）",
     incomeStatement: {
-      value: "A1",
+      value: "C59",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D59",
       type: 0,
     },
     bgcolor1: colors.yellow,
@@ -773,11 +773,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "労務費内訳",
     label: "社員給料",
     incomeStatement: {
-      value: "A1",
+      value: "C60",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D60",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -787,11 +787,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "労務費内訳",
     label: "雑給料",
     incomeStatement: {
-      value: "A1",
+      value: "C61",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D61",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -801,11 +801,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "労務費内訳",
     label: "契約社員費",
     incomeStatement: {
-      value: "A1",
+      value: "C62",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D62",
       type: 1,
     },
     bgcolor1: colors.yellow,
@@ -815,11 +815,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１",
     label: "電力費",
     incomeStatement: {
-      value: "A1",
+      value: "C63",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D63",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -829,11 +829,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費２",
     label: "動力費",
     incomeStatement: {
-      value: "A1",
+      value: "C64",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D64",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -843,11 +843,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費３",
     label: "ガス光熱費",
     incomeStatement: {
-      value: "A1",
+      value: "C65",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D65",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -857,11 +857,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費4",
     label: "燃料費",
     incomeStatement: {
-      value: "A1",
+      value: "C66",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D66",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -871,11 +871,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費5",
     label: "上水道費",
     incomeStatement: {
-      value: "A1",
+      value: "C67",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D67",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -885,11 +885,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費6",
     label: "下水道費",
     incomeStatement: {
-      value: "A1",
+      value: "C68",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D68",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -899,11 +899,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費7",
     label: "車輌費",
     incomeStatement: {
-      value: "A1",
+      value: "C69",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D69",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -913,11 +913,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費8",
     label: "家賃地代",
     incomeStatement: {
-      value: "A1",
+      value: "C70",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D70",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -927,11 +927,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費9",
     label: "賃貸料",
     incomeStatement: {
-      value: "A1",
+      value: "C71",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D71",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -941,11 +941,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１0",
     label: "研究開発費",
     incomeStatement: {
-      value: "A1",
+      value: "C72",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D72",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -955,11 +955,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１1",
     label: "調査研究費",
     incomeStatement: {
-      value: "A1",
+      value: "C73",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D73",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -969,11 +969,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１2",
     label: "租税公課",
     incomeStatement: {
-      value: "A1",
+      value: "C74",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D74",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -983,11 +983,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１3",
     label: "接待交際費",
     incomeStatement: {
-      value: "A1",
+      value: "C75",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D75",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -997,11 +997,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１4",
     label: "支払手数料",
     incomeStatement: {
-      value: "A1",
+      value: "C76",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D76",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1011,11 +1011,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１5",
     label: "顧問料",
     incomeStatement: {
-      value: "A1",
+      value: "C77",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D77",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1025,11 +1025,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１6",
     label: "リース料",
     incomeStatement: {
-      value: "A1",
+      value: "C78",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D78",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1039,11 +1039,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１7",
     label: "通信交通費",
     incomeStatement: {
-      value: "A1",
+      value: "C79",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D79",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1053,11 +1053,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１8",
     label: "出張費",
     incomeStatement: {
-      value: "A1",
+      value: "C80",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D80",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1067,11 +1067,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費１9",
     label: "消耗品費",
     incomeStatement: {
-      value: "A1",
+      value: "C81",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D81",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1081,11 +1081,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費20",
     label: "事務用品費",
     incomeStatement: {
-      value: "A1",
+      value: "C82",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D82",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1095,11 +1095,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費21",
     label: "その他経費",
     incomeStatement: {
-      value: "A1",
+      value: "C83",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D83",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1109,11 +1109,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費22",
     label: "雑費",
     incomeStatement: {
-      value: "A1",
+      value: "C84",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D84",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1123,11 +1123,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費23",
     label: "装飾費",
     incomeStatement: {
-      value: "A1",
+      value: "C85",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D85",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1137,11 +1137,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費24",
     label: "衛生費",
     incomeStatement: {
-      value: "A1",
+      value: "C86",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D86",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1151,11 +1151,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費25",
     label: "運賃",
     incomeStatement: {
-      value: "A1",
+      value: "C87",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D87",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1165,11 +1165,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費26",
     label: "荷造包装費",
     incomeStatement: {
-      value: "A1",
+      value: "C88",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D88",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1179,11 +1179,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費27",
     label: "水道光熱費",
     incomeStatement: {
-      value: "A1",
+      value: "C89",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D89",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1193,11 +1193,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費28",
     label: "旅費交通費",
     incomeStatement: {
-      value: "A1",
+      value: "C90",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D90",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1207,11 +1207,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費29",
     label: "諸会費",
     incomeStatement: {
-      value: "A1",
+      value: "C91",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D91",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1221,11 +1221,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費30",
     label: "管理諸費",
     incomeStatement: {
-      value: "A1",
+      value: "C92",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D92",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1235,11 +1235,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費3１",
     label: "保守管理費",
     incomeStatement: {
-      value: "A1",
+      value: "C93",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D93",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1249,11 +1249,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費32",
     label: "図書費",
     incomeStatement: {
-      value: "A1",
+      value: "C94",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D94",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1263,11 +1263,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費33",
     label: "修繕費",
     incomeStatement: {
-      value: "A1",
+      value: "C95",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D95",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1277,11 +1277,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費34",
     label: "修繕維持費",
     incomeStatement: {
-      value: "A1",
+      value: "C96",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D96",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1291,11 +1291,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費35",
     label: "保険料",
     incomeStatement: {
-      value: "A1",
+      value: "C97",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D97",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1305,11 +1305,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費36",
     label: "備品費",
     incomeStatement: {
-      value: "A1",
+      value: "C98",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D98",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1319,11 +1319,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "経費37",
     label: "寄付金",
     incomeStatement: {
-      value: "A1",
+      value: "C99",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D99",
       type: 1,
     },
     bgcolor1: colors.peach,
@@ -1333,11 +1333,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "減償",
     label: "減価償却費",
     incomeStatement: {
-      value: "A1",
+      value: "C100",
       type: 1,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D100",
       type: 1,
     },
     bgcolor1: colors.beige,
@@ -1347,11 +1347,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "営00",
     label: "本社費",
     incomeStatement: {
-      value: "A1",
+      value: "C101",
       type: 0,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D101",
       type: 0,
     },
     bgcolor1: colors.orange,
@@ -1361,11 +1361,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "営01",
     label: "営業外収益",
     incomeStatement: {
-      value: "A1",
+      value: "C102",
       type: 2,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D102",
       type: 0,
     },
     bgcolor1: colors.purple,
@@ -1375,11 +1375,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "営02",
     label: "営業外費用",
     incomeStatement: {
-      value: "A1",
+      value: "C103",
       type: 2,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D103",
       type: 0,
     },
     bgcolor1: colors.purple,
@@ -1389,11 +1389,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "営03",
     label: "経常利益",
     incomeStatement: {
-      value: "A1",
+      value: "C104",
       type: 2,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D104",
       type: 0,
     },
     bgcolor1: colors.purple,
@@ -1403,11 +1403,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "営04",
     label: "特別利益・除却益",
     incomeStatement: {
-      value: "A1",
+      value: "C105",
       type: 2,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D105",
       type: 0,
     },
     bgcolor1: colors.purple,
@@ -1417,11 +1417,11 @@ export const startSheet_main: MainRowDataType[] = [
     no: "営05",
     label: "特別損失・除却損",
     incomeStatement: {
-      value: "A1",
+      value: "C106",
       type: 2,
     },
     manufacturingCostReport: {
-      value: "A1",
+      value: "D106",
       type: 0,
     },
     bgcolor1: colors.purple,
@@ -1440,14 +1440,14 @@ export const startSheet_others: OthersRowDataType[] = [
     no: "営01",
     parent_key: "non_operating_income_name",
     label: "土地売却益",
-    value: "A1",
+    value: "G64",
     editable: true,
   },
   {
     no: "営02",
     parent_key: "non_operating_income_name",
     label: "不動産賃貸",
-    value: "A1",
+    value: "G65",
     editable: true,
   },
 
@@ -1462,7 +1462,7 @@ export const startSheet_others: OthersRowDataType[] = [
     no: "営01",
     parent_key: "non_operating_expenses_name",
     label: "有価証券評価損",
-    value: "A1",
+    value: "G69",
     editable: true,
   },
 
@@ -1477,14 +1477,14 @@ export const startSheet_others: OthersRowDataType[] = [
     no: "営01",
     parent_key: "extraordinary_gain_name",
     label: "土地売却益",
-    value: "A1",
+    value: "G74",
     editable: true,
   },
   {
     no: "営02",
     parent_key: "extraordinary_gain_name",
     label: "事業再構築補助",
-    value: "A1",
+    value: "G75",
     editable: true,
   },
 
@@ -1499,25 +1499,25 @@ export const startSheet_others: OthersRowDataType[] = [
     no: "営01",
     parent_key: "extraordinary_loss_name",
     label: "土地売却損",
-    value: "A1",
+    value: "G79",
     editable: true,
   },
 ];
 export const startSheet_summary: SummaryRowDataType[] = [
   {
     label: "売上原価 合計",
-    value: "A1",
+    value: "G102",
   },
   {
     label: "一般管理費",
-    value: "A1",
+    value: "G103",
   },
   {
     label: "営業利益",
-    value: "A1",
+    value: "G105",
   },
   {
     label: "税引前利益",
-    value: "A1",
+    value: "G106",
   },
 ];

@@ -302,7 +302,7 @@ export function AdvancedTable<T = any>({
             {searchable && (
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
+                <CustomInput
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -322,7 +322,7 @@ export function AdvancedTable<T = any>({
                       <span className={dense ? "text-xs" : "text-sm"}>
                         {column.title}:
                       </span>
-                      <Input
+                      <CustomInput
                         placeholder={`${column.title}でフィルター`}
                         value={filters[column.key] || ""}
                         onChange={(e) =>

@@ -1,29 +1,41 @@
 import { cellToIndices, indicesToCell } from "../utils/cellHelpers";
 
-export interface BackendData {
+export interface BackendDataType {
   cell: string;
-  formula: string;
   sheet: string;
-  value: number;
+  value: number | string;
 }
 
 // Type for a single cell value - can be string or number
 type CellValue = string | number;
 
 // FrontendData with dynamic sheet names as keys
-export interface FrontendData {
+export interface FrontendDataType {
   [sheetName: string]: CellValue[][];
 }
 
-export type SheetNameType = "start" | "mq_current_status" | "profit" | "mq_future" | "salary" | "expenses" | "manufacturing_labor" | "manufacturing_expenses" | "manufacturing_income" | "break_even_point" | "progress_result_input" | "sales_plan_by_department" | "profit_planing_table";
+export type SheetNameType =
+  | "start"
+  | "mq_current_status"
+  | "profit"
+  | "mq_future"
+  | "salary"
+  | "expenses"
+  | "manufacturing_labor"
+  | "manufacturing_expenses"
+  | "manufacturing_income"
+  | "break_even_point"
+  | "progress_result_input"
+  | "sales_plan_by_department"
+  | "profit_planing_table";
 
 // Transform Backend data to Frontend data (2D arrays by sheet)
-export const transformBe2Fe = (backendData: BackendData[]): FrontendData => {
-  const frontendData: FrontendData = {};
+export const transformBe2Fe = (backendData: BackendDataType[]): FrontendDataType => {
+  const frontendData: FrontendDataType = {};
 
   // Group data by sheet
   backendData.forEach((item) => {
-    const { sheet, cell, value, formula } = item;
+    const { sheet, cell, value } = item;
 
     // Initialize sheet array if it doesn't exist
     if (!frontendData[sheet]) {
@@ -45,7 +57,7 @@ export const transformBe2Fe = (backendData: BackendData[]): FrontendData => {
 
     // If formula exists, use it; otherwise use the numeric value
     // Each cell contains only ONE value (either formula string or number)
-    frontendData[sheet][row][col] = formula || value;
+    frontendData[sheet][row][col] = value;
   });
 
   return frontendData;
@@ -53,10 +65,10 @@ export const transformBe2Fe = (backendData: BackendData[]): FrontendData => {
 
 // Transform Frontend data to Backend data (array of cell objects)
 export const transformFe2Be = (
-  frontendData: FrontendData,
+  frontendData: FrontendDataType,
   sheetName?: string
-): BackendData[] => {
-  const backendData: BackendData[] = [];
+): BackendDataType[] => {
+  const backendData: BackendDataType[] = [];
 
   // Determine which sheets to process
   const sheetsToProcess = sheetName ? [sheetName] : Object.keys(frontendData);
@@ -75,14 +87,11 @@ export const transformFe2Be = (
         const cell = indicesToCell(rowIndex, colIndex);
 
         // Determine if it's a formula or value
-        const isFormula =
-          typeof cellValue === "string" && cellValue.startsWith("=");
 
         backendData.push({
           sheet,
           cell,
-          value: typeof cellValue === "number" ? cellValue : 0,
-          formula: isFormula ? cellValue : "",
+          value: cellValue,
         });
       });
     });

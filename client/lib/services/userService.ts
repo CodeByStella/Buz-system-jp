@@ -1,37 +1,20 @@
 import axiosService from '../axios-service';
-
-// User Types
-export interface UserInputRequest {
-  sheet: string;
-  cell: string;
-  value: number;
-}
-
-export interface UserInput {
-  _id: string;
-  sheet: string;
-  cell: string;
-  value: number;
-  formula: string;
-  user: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { BackendDataType } from '../transformers/dataTransformer';
 
 
 // User Service
 class UserService {
-  async getUserInputs(): Promise<UserInput[]> {
-    return axiosService.get<UserInput[]>(`/api/user/inputs`);
+  async getUserInputs(): Promise<BackendDataType[]> {
+    return axiosService.get<BackendDataType[]>(`/api/user/inputs`);
   }
 
-  async saveUserInput(input: UserInputRequest): Promise<UserInput> {
-    return axiosService.post<UserInput>('/api/user/inputs', input);
+  async saveUserInput(input: BackendDataType): Promise<BackendDataType> {
+    return axiosService.post<BackendDataType>('/api/user/inputs', input);
   }
 
   // Save multiple inputs at once
-  async saveMultipleInputs(inputs: UserInputRequest[]): Promise<UserInput[]> {
-    return axiosService.post<UserInput[]>('/api/user/inputs/bulk', { inputs });
+  async saveMultipleInputs(inputs: BackendDataType[]): Promise<BackendDataType[]> {
+    return axiosService.post<BackendDataType[]>('/api/user/inputs/bulk', { inputs });
   }
 }
 

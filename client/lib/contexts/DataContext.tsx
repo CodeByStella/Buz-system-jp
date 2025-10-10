@@ -9,15 +9,15 @@ import React, {
 } from "react";
 import { HyperFormula } from "hyperformula";
 import {
-  FrontendData,
-  BackendData,
+  FrontendDataType,
+  BackendDataType,
   transformBe2Fe,
 } from "../transformers/dataTransformer";
 import { userService } from "../services";
 import { cellToIndices, indicesToCell } from "../utils/cellHelpers";
 
 interface DataContextType {
-  data: FrontendData;
+  data: FrontendDataType;
   onChange: (sheet: string, cell: string, value: number) => void;
   onSave: () => Promise<void>;
   saving: boolean;
@@ -34,14 +34,14 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [userInput, setUserInput] = useState<FrontendData>({});
+  const [userInput, setUserInput] = useState<FrontendDataType>({});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Store original data from server for change tracking
-  const originalDataRef = useRef<BackendData[]>([]);
+  const originalDataRef = useRef<BackendDataType[]>([]);
 
   // HyperFormula instance
   const hfInstanceRef = useRef<HyperFormula | null>(null);
@@ -71,7 +71,7 @@ export const DataProvider: React.FC<{
     try {
       setLoading(true);
       setErrorMessage(null);
-      const backendData: BackendData[] = await userService.getUserInputs();
+      const backendData: BackendDataType[] = await userService.getUserInputs();
 
       // Store original data for change tracking
       originalDataRef.current = JSON.parse(JSON.stringify(backendData));
@@ -100,7 +100,7 @@ export const DataProvider: React.FC<{
   };
 
   // Initialize HyperFormula with sheets and formulas
-  const initializeHyperFormula = (frontendData: FrontendData) => {
+  const initializeHyperFormula = (frontendData: FrontendDataType) => {
     const hf = hfInstanceRef.current;
     if (!hf) return;
 
@@ -132,11 +132,11 @@ export const DataProvider: React.FC<{
   };
 
   // Get calculated data from HyperFormula
-  const getCalculatedData = (): FrontendData => {
+  const getCalculatedData = (): FrontendDataType => {
     const hf = hfInstanceRef.current;
     if (!hf) return {};
 
-    const result: FrontendData = {};
+    const result: FrontendDataType = {};
 
     sheetIdsRef.current.forEach((sheetId, sheetName) => {
       const sheetSize = hf.getSheetDimensions(sheetId);
@@ -158,7 +158,7 @@ export const DataProvider: React.FC<{
   };
 
   // Handle cell change
-  const handleChangeCell = (sheet: string, cell: string, value: number) => {
+  const handleChangeCell = (sheet: string, cell: string, value: number | string) => {
     const hf = hfInstanceRef.current;
     if (!hf) return;
 
@@ -166,19 +166,6 @@ export const DataProvider: React.FC<{
     if (sheetId === undefined) return;
 
     const { row, col } = cellToIndices(cell);
-
-    // Check if this cell has a formula (shouldn't be editable)
-    const serializedCell = hf.getCellSerialized({ sheet: sheetId, row, col });
-    if (
-      serializedCell &&
-      typeof serializedCell === "string" &&
-      serializedCell.startsWith("=")
-    ) {
-      console.warn(
-        `Cannot edit cell ${cell} in sheet ${sheet} - it contains a formula`
-      );
-      return;
-    }
 
     // Update the cell value in HyperFormula
     hf.setCellContents({ sheet: sheetId, row, col }, [[value]]);
@@ -190,12 +177,12 @@ export const DataProvider: React.FC<{
   };
 
   // Get changed cells compared to original data
-  const getChangedCells = (): BackendData[] => {
+  const getChangedCells = (): BackendDataType[] => {
     const hf = hfInstanceRef.current;
     if (!hf) return [];
 
-    const changedCells: BackendData[] = [];
-    const originalDataMap = new Map<string, BackendData>();
+    const changedCells: BackendDataType[] = [];
+    const originalDataMap = new Map<string, BackendDataType>();
 
     // Create map of original data for quick lookup
     originalDataRef.current.forEach((item) => {
@@ -213,11 +200,6 @@ export const DataProvider: React.FC<{
           const key = `${sheetName}:${cellRef}`;
 
           const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
-          const serializedCell = hf.getCellSerialized({
-            sheet: sheetId,
-            row,
-            col,
-          });
 
           // Skip empty cells
           if (
@@ -228,39 +210,23 @@ export const DataProvider: React.FC<{
             continue;
           }
 
-          // Skip cells with formulas (they are calculated, not user input)
-          if (
-            serializedCell &&
-            typeof serializedCell === "string" &&
-            serializedCell.startsWith("=")
-          ) {
-            continue;
-          }
-
           const originalData = originalDataMap.get(key);
-
-          // Check if value changed
-          const currentValue =
-            typeof cellValue === "number" ? cellValue : Number(cellValue) || 0;
 
           if (!originalData) {
             // New cell that wasn't in original data
             changedCells.push({
               sheet: sheetName,
               cell: cellRef,
-              value: currentValue,
-              formula: "",
+              value: cellValue as number | string,
             });
           } else if (
-            originalData.value !== currentValue &&
-            !originalData.formula
+            originalData.value !== cellValue
           ) {
             // Value changed and it's not a formula cell
             changedCells.push({
               sheet: sheetName,
               cell: cellRef,
-              value: currentValue,
-              formula: "",
+              value: cellValue as number | string,
             });
           }
         }
@@ -303,7 +269,7 @@ export const DataProvider: React.FC<{
       await userService.saveMultipleInputs(bulkData);
 
       // Update original data to reflect saved state
-      const updatedBackendData: BackendData[] =
+      const updatedBackendData: BackendDataType[] =
         await userService.getUserInputs();
       originalDataRef.current = JSON.parse(JSON.stringify(updatedBackendData));
 

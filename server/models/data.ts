@@ -3,8 +3,7 @@ import mongoose, { Schema, InferSchemaType } from "mongoose";
 export interface DataType {
   sheet: string;
   cell: string;
-  value?: number;
-  formula?: string;
+  value?: number|string;
   user: string;
 }
 
@@ -12,8 +11,7 @@ const DataSchema = new Schema<DataType & Document>(
   {
     sheet: { type: String, required: true },
     cell: { type: String, required: true },
-    value: { type: Number, default: 0 },
-    formula: { type: String, default: "" },
+    value: { type: Schema.Types.Mixed, default: 0 },
     user: { type: String, default: "" },
   },
   { timestamps: true }

@@ -1,221 +1,195 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CustomInput } from '@/components/ui/customInput'
-import { Button } from '@/components/ui/button'
-import { userService } from '@/lib/services'
-
-interface MQCurrentData {
-  pq_sales: number
-  vq_variable_costs: number
-  p_price: number
-  q_quantity: number
-  calculated_sales: number
-  m_gross_profit: number
-  f_fixed_costs: number
-  g_profit: number
-}
+import React from "react";
+import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { AdvancedTable, Column } from "@/components/ui/advanced-table";
+import {
+  inputTable_cells,
+  InputTableCell,
+  resultTable_cells,
+  ResultTableCell,
+} from "./cells";
+import { CustomInput } from "@/components/ui/customInput";
+import { useDataContext } from "@/lib/contexts";
+import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function MQCurrentSheet() {
-  const [data, setData] = useState<MQCurrentData>({
-    pq_sales: 0,
-    vq_variable_costs: 0,
-    p_price: 0,
-    q_quantity: 0,
-    calculated_sales: 0,
-    m_gross_profit: 0,
-    f_fixed_costs: 0,
-    g_profit: 0
-  })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { onSave, saving, hasChanges, loading } = useDataContext();
 
-  useEffect(() => {
-    initializeData()
-  }, [])
+  const sheetName: SheetNameType = "mq_current_status";
 
-  const initializeData = async () => {
-    try {
-      const result = await api.user.getInputs('mq-current')
-      // result.inputs is an array of { cellKey, value }
-      const inputMap: Partial<MQCurrentData> = {}
-      ;(result.inputs || []).forEach((i: any) => {
-        inputMap[i.cellKey as keyof MQCurrentData] = Number(i.value) || 0
-      })
-      setData(prev => ({ ...prev, ...inputMap }))
-    } catch (error) {
-      console.error('Failed to load MQ current data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const resultTableColumns: Column[] = [
+    {
+      key: "label",
+      title: "",
+      width: 100,
+      align: "left",
+      cellClassName: "h-20 text-lg",
+    },
+    {
+      key: "value",
+      title: "",
+      width: 100,
+      align: "right",
+      cellClassName: "h-20 text-lg relative",
+      render: (value: string, record: ResultTableCell) => {
+        return (
+          <CustomInput
+            type="number"
+            sheet={sheetName}
+            cell={value}
+            readOnly
+            tipClassName="text-red-500"
+            prefix="¥"
+            className={`border-transparent h-full text-lg`}
+          />
+        );
+      },
+    },
+  ];
 
-  const handleInputChange = async (key: keyof MQCurrentData, value: number) => {
-    const newData = { ...data, [key]: value }
-    setData(newData)
+  const inputTableColumns: Column[] = [
+    {
+      key: "x",
+      title: "",
+      width: 100,
+      align: "left",
+      cellClassName: "h-20 text-lg !p-0 !h-full relative",
+      render: (value: string, record: InputTableCell) => {
+        return record.editable ? (
+          <CustomInput
+            type="number"
+            sheet={sheetName}
+            cell={value}
+            tipClassName="text-red-500"
+            className={`border-transparent h-full text-lg`}
+          />
+        ) : (
+          <div className="p-4">
+            <p className="text-xl font-semibold">{value}</p>
+            <p className="text-xs">{record.xDesc}</p>
+          </div>
+        );
+      },
+    },
+    {
+      key: "op",
+      title: "",
+      width: 20,
+      align: "center",
+      cellClassName: "h-20 text-lg bg-yellow-200",
+    },
+    {
+      key: "y",
+      title: "",
+      width: 100,
+      align: "left",
+      cellClassName: "h-20 text-lg !p-0 !h-full relative",
+      render: (value: string, record: InputTableCell) => {
+        return record.editable ? (
+          <CustomInput
+            type="number"
+            sheet={sheetName}
+            cell={value}
+            tipClassName="text-red-500"
+            className={`border-transparent h-full text-lg`}
+          />
+        ) : (
+          <div className="p-4">
+            <p className="text-xl font-semibold">{value}</p>
+            <p className="text-xs">{record.yDesc}</p>
+          </div>
+        );
+      },
+    },
+  ];
 
-    try {
-      await userService.saveUserInput({ sheet: 'mq-current', cell: key, value })
-      
-      // Trigger recalculation
-      const inputs = Object.fromEntries(
-        Object.entries(newData).map(([k, v]) => [k, v])
-      )
-      const result = await userService.calculate({ sheet: 'mq-current', inputs })
-      
-      // Update with calculated values (result.results)
-      setData(prev => ({ ...prev, ...(result.results || {}) }))
-    } catch (error) {
-      console.error('Failed to save input:', error)
-    }
-  }
-
-  const handleSaveAll = async () => {
-    setSaving(true)
-    try {
-      const promises = Object.entries(data).map(([key, value]) =>
-        userService.saveUserInput({ sheet: 'mq-current', cell: key, value })
-      )
-      await Promise.all(promises)
-    } catch (error) {
-      console.error('Failed to save all:', error)
-    } finally {
-      setSaving(false)
-    }
-  }
-
+  // Show loading spinner while fetching data
   if (loading) {
-    return <div className="p-3 text-sm">読み込み中...</div>
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+          <p className="text-gray-600">データを読み込んでいます...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-3 space-y-3 text-sm">
-      <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">MQ会計(現状)</h1>
-        <Button onClick={handleSaveAll} disabled={saving} className="h-8 px-3 text-xs">
-          {saving ? '保存中...' : 'すべて保存'}
-        </Button>
+    <div className="h-full flex flex-col space-y-4 overflow-hidden ">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">MQ会計(現状)</h1>
+          <p className="text-gray-600">このページで元データを入力します。</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="success"
+            leftIcon={Save}
+            loading={saving}
+            loadingText="保存中..."
+            onClick={onSave}
+            disabled={saving || !hasChanges}
+          >
+            保存
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileSpreadsheet}
+            className="border-green-500 text-green-700 hover:bg-green-50"
+            onClick={() => {
+              /* TODO: implement export to Excel logic */
+            }}
+          >
+            Excel出力
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileText}
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              /* TODO: implement export to PDF logic */
+            }}
+          >
+            PDF出力
+          </Button>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {/* MQ Accounting Results */}
-        <Card>
-          <CardHeader className="py-2">
-            <CardTitle className="text-sm">MQ会計結果</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-xs font-medium">PQ 結果 (売上)</label>
-                <Input
-                  type="number"
-                  value={data.pq_sales}
-                  onChange={(e) => handleInputChange('pq_sales', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
+      <div className="grid grid-rows-4 gap-2 flex-1 min-h-0">
+        {/* Row 1 - Horizontal Grid */}
+        <div className="grid grid-cols-2 gap-2 row-span-3 h-full overflow-hidden">
+          <AdvancedTable
+            columns={resultTableColumns}
+            data={resultTable_cells}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"460px"}
+            cellClassName="!bg-yellow-300"
+            footerContent={
+              <div className="text-xs text-red-500">
+                <p>P×Qを入れるとここに売り上げが反映。</p>
+                <p>上と同じ数字になるように①と②で調整しましょう。</p>
               </div>
-              <div>
-                <label className="text-xs font-medium">VQ 結果 (変動費)</label>
-                <Input
-                  type="number"
-                  value={data.vq_variable_costs}
-                  onChange={(e) => handleInputChange('vq_variable_costs', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-xs font-medium">M 結果 (粗利)</label>
-              <Input
-                type="number"
-                value={data.m_gross_profit}
-                readOnly
-                className="mt-1 h-8 text-xs bg-gray-50"
-              />
-            </div>
-            
-            <div>
-              <label className="text-xs font-medium">F 結果 (固定費)</label>
-              <Input
-                type="number"
-                value={data.f_fixed_costs}
-                onChange={(e) => handleInputChange('f_fixed_costs', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-            
-            <div>
-              <label className="text-xs font-medium">G 結果 (利益)</label>
-              <Input
-                type="number"
-                value={data.g_profit}
-                readOnly
-                className="mt-1 h-8 text-xs bg-gray-50"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Unit Price per Item */}
-        <Card>
-          <CardHeader className="py-2">
-            <CardTitle className="text-sm">1件当たりの客単価</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-xs font-medium">P (プライス)</label>
-                <Input
-                  type="number"
-                  value={data.p_price}
-                  onChange={(e) => handleInputChange('p_price', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-              <div>
-                <label className="text-xs font-medium">Q (クォンティティー)</label>
-                <Input
-                  type="number"
-                  value={data.q_quantity}
-                  onChange={(e) => handleInputChange('q_quantity', Number(e.target.value))}
-                  className="mt-1 h-8 text-xs"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label className="text-xs font-medium">計算された売上 (P×Q)</label>
-              <Input
-                type="number"
-                value={data.calculated_sales}
-                readOnly
-                className="mt-1 h-8 text-xs bg-gray-50"
-              />
-            </div>
-            
-            <div className="p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-              <p className="text-xs text-yellow-800">
-                P×Qを入れるとここに売り上げが反映。上と同じ数字になるように①と②で調整しましょう。
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Memo Section */}
-      <Card>
-        <CardHeader className="py-2">
-          <CardTitle className="text-sm">メモ</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <textarea
-            className="w-full h-24 p-2 text-xs border border-gray-300 rounded-md"
-            placeholder="メモを入力してください..."
+            }
           />
-        </CardContent>
-      </Card>
+          <AdvancedTable
+            columns={inputTableColumns}
+            data={inputTable_cells}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"full"}
+          />
+        </div>
+
+        {/* Row 2 - Horizontal Grid */}
+        <div className="h-full overflow-hidden">
+          
+        </div>
+      </div>
     </div>
-  )
+  );
 }

@@ -1,0 +1,71 @@
+export interface ResultTableCell {
+  label: string;
+  value: string;
+}
+
+export interface InputTableCell {
+  x: string;
+  op: string;
+  y: string;
+  editable: boolean;
+  xDesc?: string,
+  yDesc?: string,
+}
+
+export const resultTable_cells: ResultTableCell[] = [
+  {
+    label: "PQ(売上）",
+    value: "B3",
+  },
+  {
+    label: "③",
+    value: "B13",
+  },
+  {
+    label: "VQ(変動費）",
+    value: "F3",
+  },
+  {
+    label: "M(粗利）",
+    value: "F13",
+  },
+  {
+    label: "F(固定費）",
+    value: "H13",
+  },
+  {
+    label: "G(利益）",
+    value: "H18",
+  },
+];
+
+export const inputTable_cells: InputTableCell[] = [
+  {
+    x: "P",
+    op: "",
+    y: "Q",
+    editable: false,
+    xDesc: "(プライス）①",
+    yDesc: "(クォンティティー）②",
+  },
+  {
+    x: "L3",
+    op: "×",
+    y: 'Q3',
+    editable: true,
+  },
+  {
+    x: "V",
+    op: "",
+    y: "Q",
+    editable: false,
+    xDesc: "(ヴァリアブル）",
+    yDesc: "(クォンティティー）②",
+  },
+  {
+    x: "L13",
+    op: "×",
+    y: "Q13",
+    editable: true,
+  },
+];

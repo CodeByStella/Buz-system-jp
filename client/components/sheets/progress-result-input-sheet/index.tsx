@@ -138,19 +138,56 @@ const getFieldLabel = (key: string): string => {
 }
 
 // Main component
-const ProgressResultInputSheet: React.FC<{
-  data: ProgressData
-  onSave: (data: ProgressData) => void
-}> = ({ data, onSave }) => {
+interface Props {
+  data?: ProgressData
+  onSave?: (data: ProgressData) => void
+}
+
+const defaultData: ProgressData = {
+  basicInfo: { period: "2025年度", targetSalesGrowthRate: 0, lastUpdated: new Date() },
+  settlementTarget: {
+    recentSales: { target: 0, actual: 0, cumulative: 0 },
+    targetSales: { target: 0, actual: 0, cumulative: 0 },
+    grossProfit: { target: 0, actual: 0, cumulative: 0 },
+    grossProfitMargin: { target: 0, actual: 0, cumulative: 0 },
+    manufacturingCost: { target: 0, actual: 0, cumulative: 0 },
+    fixedCosts: { target: 0, actual: 0, cumulative: 0 },
+    operatingIncome: { target: 0, actual: 0, cumulative: 0 },
+    netIncome: { target: 0, actual: 0, cumulative: 0 },
+  },
+  expenseCategories: {
+    business: {
+      strategy: { target: 0, actual: 0, cumulative: 0 },
+      materials: { target: 0, actual: 0, cumulative: 0 },
+      outsourcing: { target: 0, actual: 0, cumulative: 0 },
+      total: { target: 0, actual: 0, cumulative: 0 },
+    },
+    personnel: {
+      salaries: { target: 0, actual: 0, cumulative: 0 },
+      bonuses: { target: 0, actual: 0, cumulative: 0 },
+      welfare: { target: 0, actual: 0, cumulative: 0 },
+      statutoryWelfare: { target: 0, actual: 0, cumulative: 0 },
+      total: { target: 0, actual: 0, cumulative: 0 },
+    },
+    promotion: {
+      advertising: { target: 0, actual: 0, cumulative: 0 },
+      samples: { target: 0, actual: 0, cumulative: 0 },
+      planning: { target: 0, actual: 0, cumulative: 0 },
+      total: { target: 0, actual: 0, cumulative: 0 },
+    },
+  },
+};
+
+export default function ProgressResultInputSheet({ data = defaultData, onSave = () => {} }: Props) {
   const [formData, setFormData] = useState<ProgressData>(data)
 
   const handleUpdate = (category: string, field: string, key: keyof TrackedValue, value: number) => {
     setFormData(prev => ({
       ...prev,
       [category]: {
-        ...prev[category],
+        ...(prev as any)[category],
         [field]: {
-          ...prev[category][field],
+          ...(prev as any)[category][field],
           [key]: value
         }
       }
@@ -242,4 +279,3 @@ const ProgressResultInputSheet: React.FC<{
   )
 }
 
-export default ProgressResultInputSheet

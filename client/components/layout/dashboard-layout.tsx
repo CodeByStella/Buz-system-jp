@@ -17,11 +17,12 @@ import SalarySheet from "@/components/sheets/salary-sheet";
 import ExpensesSheet from "@/components/sheets/expenses-sheet";
 import ManufacturingLaborSheet from "@/components/sheets/manufacturing-labor-sheet";
 import ManufacturingExpensesSheet from "@/components/sheets/manufacturing-expenses-sheet";
-import CostDetailsSheet from "@/components/sheets/cost-details-sheet";
-import ProgressSheet from "@/components/sheets/progress-sheet";
+import ManufacturingIncome from "@/components/sheets/manufacturing_income";
 import SalesPlanSheet from "@/components/sheets/sales-plan-sheet";
 import ProfitPlanSheet from "@/components/sheets/profit-plan-sheet";
+import ProgressResultInputSheet from "@/components/sheets/progress-result-input-sheet";
 import StartSheet from "@/components/sheets/start-sheet";
+import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 interface User {
   id: string;
@@ -30,20 +31,20 @@ interface User {
   role?: "ADMIN" | "USER";
 }
 
-const VALID_TABS = [
+const VALID_TABS: SheetNameType[] = [
   "start",
-  "mq-current",
+  "mq_current_status",
   "profit",
-  "mq-future",
+  "mq_future",
   "salary",
   "expenses",
-  "manufacturing-labor",
-  "manufacturing-expenses",
-  "cost-details",
-  "breakeven",
-  "progress",
-  "sales-plan",
-  "profit-plan"
+  "manufacturing_labor",
+  "manufacturing_expenses",
+  "manufacturing_income",
+  "break_even_point",
+  "progress_result_input",
+  "sales_plan_by_department",
+  "profit_planing_table",
 ] as const;
 
 export default function DashboardLayout() {
@@ -51,8 +52,8 @@ export default function DashboardLayout() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(() => {
     // Load last visited tab from localStorage on initial mount
-    if (typeof window !== 'undefined') {
-      const savedTab = localStorage.getItem('lastVisitedTab');
+    if (typeof window !== "undefined") {
+      const savedTab = localStorage.getItem("lastVisitedTab");
       // Validate that the saved tab is a valid tab
       if (savedTab && VALID_TABS.includes(savedTab as any)) {
         console.log(`Restored last visited tab: ${savedTab}`);
@@ -69,8 +70,8 @@ export default function DashboardLayout() {
 
   // Save active tab to localStorage whenever it changes
   useEffect(() => {
-    if (typeof window !== 'undefined' && activeTab) {
-      localStorage.setItem('lastVisitedTab', activeTab);
+    if (typeof window !== "undefined" && activeTab) {
+      localStorage.setItem("lastVisitedTab", activeTab);
       console.log(`Saved last visited tab: ${activeTab}`);
     }
   }, [activeTab]);
@@ -90,29 +91,29 @@ export default function DashboardLayout() {
     switch (activeTab) {
       case "start":
         return <StartSheet />;
-      case "mq-current":
+      case "mq_current_status":
         return <MQCurrentSheet />;
       case "profit":
         return <ProfitSheet />;
-      case "mq-future":
+      case "mq_future":
         return <MQFutureSheet />;
       case "salary":
         return <SalarySheet />;
       case "expenses":
         return <ExpensesSheet />;
-      case "manufacturing-labor":
+      case "manufacturing_labor":
         return <ManufacturingLaborSheet />;
-      case "manufacturing-expenses":
+      case "manufacturing_expenses":
         return <ManufacturingExpensesSheet />;
-      case "cost-details":
-        return <CostDetailsSheet />;
-      case "breakeven":
+      case "manufacturing_income":
+        return <ManufacturingIncome />;
+      case "break_even_point":
         return <BreakevenSheet />;
-      case "progress":
-        return <ProgressSheet />;
-      case "sales-plan":
+      case "progress_result_input":
+        return <ProgressResultInputSheet />;
+      case "sales_plan_by_department":
         return <SalesPlanSheet />;
-      case "profit-plan":
+      case "profit_planing_table":
         return <ProfitPlanSheet />;
       default:
         return (
@@ -155,8 +156,8 @@ export default function DashboardLayout() {
 
   return (
     <DataProvider>
-      <DashboardContent 
-        activeTab={activeTab} 
+      <DashboardContent
+        activeTab={activeTab}
         setActiveTab={setActiveTab}
         renderContent={renderContent}
       />
@@ -165,12 +166,12 @@ export default function DashboardLayout() {
 }
 
 // Separate component to access DataContext
-function DashboardContent({ 
-  activeTab, 
-  setActiveTab, 
-  renderContent 
-}: { 
-  activeTab: string; 
+function DashboardContent({
+  activeTab,
+  setActiveTab,
+  renderContent,
+}: {
+  activeTab: string;
   setActiveTab: (tab: string) => void;
   renderContent: () => React.ReactNode;
 }) {
@@ -183,7 +184,10 @@ function DashboardContent({
         <div className="w-full max-w-[1440px] h-full p-4">
           <div className="h-full border border-gray-200 bg-white overflow-hidden">
             <div className="flex h-full">
-              <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+              <Sidebar
+                activeTab={activeTab as SheetNameType}
+                onTabChange={setActiveTab}
+              />
               <div className="flex-1 flex flex-col overflow-hidden">
                 <main className="flex-1 p-6 overflow-auto">
                   {renderContent()}
@@ -203,11 +207,7 @@ function DashboardContent({
         />
       )}
       {errorMessage && (
-        <Toast
-          type="error"
-          message={errorMessage}
-          onClose={clearMessages}
-        />
+        <Toast type="error" message={errorMessage} onClose={clearMessages} />
       )}
     </div>
   );

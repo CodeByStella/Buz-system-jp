@@ -132,7 +132,7 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     L16: "=SUM(L5:L15)",
     L17: "=SUM(start!C29:C34)",
 
-    I2: "=L16+124+F13+C43",
+    I2: "=L16+I24+F13+C43",
   },
   manufacturing_labor: {
     E6: "=C6*D6",

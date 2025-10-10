@@ -109,7 +109,16 @@ export default function BreakevenSheet() {
     breakevenPoint: number;
     maxValue: number;
   }) => {
-    const chartData = generateChartData(sales, variableCosts, fixedCosts, breakevenPoint);
+    const chartData = generateChartData(
+      sales,
+      variableCosts,
+      fixedCosts,
+      breakevenPoint
+    );
+
+    // Calculate grid intervals based on maxValue
+    const gridInterval = maxValue / 10;
+    const gridSteps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => i * gridInterval);
 
     return (
       <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
@@ -117,91 +126,173 @@ export default function BreakevenSheet() {
           {title}
         </div>
         <div className="p-4">
-          <div className="relative h-64 bg-gray-50 border">
-            <svg className="w-full h-full" viewBox="0 0 400 250">
+          <div className="relative h-80 bg-gray-50 border">
+            <svg className="w-full h-full" viewBox="0 0 500 320">
               {/* Grid lines */}
-              {[0, 50, 100, 150, 200, 250, 300, 350, 400].map((x) => (
+              {[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map((x, i) => (
                 <line
                   key={`v-${x}`}
                   x1={x}
                   y1={0}
                   x2={x}
-                  y2={250}
-                  stroke="#e5e7eb"
-                  strokeWidth="1"
+                  y2={320}
+                  stroke={i % 2 === 0 ? "#d1d5db" : "#e5e7eb"}
+                  strokeWidth={i % 2 === 0 ? "1" : "0.5"}
                 />
               ))}
-              {[0, 50, 100, 150, 200, 250].map((y) => (
+              {[0, 40, 80, 120, 160, 200, 240, 280, 320].map((y, i) => (
                 <line
                   key={`h-${y}`}
                   x1={0}
                   y1={y}
-                  x2={400}
+                  x2={500}
                   y2={y}
-                  stroke="#e5e7eb"
-                  strokeWidth="1"
+                  stroke={i % 2 === 0 ? "#d1d5db" : "#e5e7eb"}
+                  strokeWidth={i % 2 === 0 ? "1" : "0.5"}
                 />
               ))}
 
-              {/* Sales line (orange) */}
+              {/* Sales line (orange) with glow effect */}
               {chartData.length > 0 && (
-                <polyline
-                  points={chartData
-                    .map(
-                      (point) =>
-                        `${(point.x / maxValue) * 400},${250 - (point.sales / maxValue) * 250}`
-                    )
-                    .join(" ")}
-                  fill="none"
-                  stroke="#f97316"
-                  strokeWidth="2"
-                />
+                <>
+                  <defs>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <polyline
+                    points={chartData
+                      .map(
+                        (point) =>
+                          `${(point.x / maxValue) * 500},${
+                            320 - (point.sales / maxValue) * 320
+                          }`
+                      )
+                      .join(" ")}
+                    fill="none"
+                    stroke="#f97316"
+                    strokeWidth="3"
+                    filter="url(#glow)"
+                  />
+                </>
               )}
 
-              {/* Total costs line (blue) */}
+              {/* Total costs line (blue) with glow effect */}
               {chartData.length > 0 && (
                 <polyline
                   points={chartData
                     .map(
                       (point) =>
-                        `${(point.x / maxValue) * 400},${250 - (point.totalCosts / maxValue) * 250}`
+                        `${(point.x / maxValue) * 500},${
+                          320 - (point.totalCosts / maxValue) * 320
+                        }`
                     )
                     .join(" ")}
                   fill="none"
                   stroke="#3b82f6"
-                  strokeWidth="2"
+                  strokeWidth="3"
+                  filter="url(#glow)"
                 />
               )}
 
-              {/* Break-even point */}
+              {/* Break-even point with annotation */}
               {breakevenPoint > 0 && (
-                <circle
-                  cx={(breakevenPoint / maxValue) * 400}
-                  cy={250 - (breakevenPoint / maxValue) * 250}
-                  r="4"
-                  fill="#000"
-                />
+                <>
+                  {/* Break-even point circle */}
+                  <circle
+                    cx={(breakevenPoint / maxValue) * 500}
+                    cy={320 - (breakevenPoint / maxValue) * 320}
+                    r="6"
+                    fill="#fff"
+                    stroke="#000"
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Vertical line to break-even point */}
+                  <line
+                    x1={(breakevenPoint / maxValue) * 500}
+                    y1={320 - (breakevenPoint / maxValue) * 320}
+                    x2={(breakevenPoint / maxValue) * 500}
+                    y2={320}
+                    stroke="#9ca3af"
+                    strokeWidth="1"
+                    strokeDasharray="5,5"
+                  />
+                  
+                  {/* Break-even point value annotation */}
+                  <text
+                    x={(breakevenPoint / maxValue) * 500 + 10}
+                    y={320 - (breakevenPoint / maxValue) * 320 - 10}
+                    fontSize="12"
+                    fill="#374151"
+                    fontWeight="bold"
+                  >
+                    ¥{breakevenPoint.toLocaleString()}
+                  </text>
+                </>
               )}
 
-              {/* Labels */}
-              <text x="10" y="20" fontSize="10" fill="#666">
-                ¥0
+              {/* Y-axis labels */}
+              {gridSteps.map((value, i) => (
+                <text
+                  key={`y-label-${i}`}
+                  x="5"
+                  y={320 - (i * 32) + 4}
+                  fontSize="10"
+                  fill="#6b7280"
+                >
+                  ¥{Math.round(value / 1000000)}M
+                </text>
+              ))}
+
+              {/* X-axis labels */}
+              {gridSteps.map((value, i) => (
+                <text
+                  key={`x-label-${i}`}
+                  x={i * 50 - 15}
+                  y={315}
+                  fontSize="10"
+                  fill="#6b7280"
+                >
+                  ¥{Math.round(value / 1000000)}M
+                </text>
+              ))}
+
+              {/* Line labels on graph */}
+              <text
+                x="450"
+                y="50"
+                fontSize="12"
+                fill="#3b82f6"
+                fontWeight="bold"
+              >
+                総費用線
               </text>
-              <text x="10" y="240" fontSize="10" fill="#666">
-                ¥{maxValue.toLocaleString()}
+              <text
+                x="450"
+                y="70"
+                fontSize="12"
+                fill="#f97316"
+                fontWeight="bold"
+              >
+                売上高線
               </text>
 
               {/* Legend */}
-              <rect x="10" y="10" width="8" height="2" fill="#3b82f6" />
-              <text x="20" y="18" fontSize="8" fill="#666">
+              <rect x="10" y="10" width="12" height="3" fill="#3b82f6" />
+              <text x="25" y="20" fontSize="10" fill="#374151" fontWeight="500">
                 総費用
               </text>
-              <rect x="60" y="10" width="8" height="2" fill="#f97316" />
-              <text x="70" y="18" fontSize="8" fill="#666">
+              <rect x="80" y="10" width="12" height="3" fill="#f97316" />
+              <text x="95" y="20" fontSize="10" fill="#374151" fontWeight="500">
                 売上高
               </text>
-              <circle cx="120" cy="11" r="2" fill="#000" />
-              <text x="125" y="18" fontSize="8" fill="#666">
+              <circle cx="145" cy="11" r="3" fill="#fff" stroke="#000" strokeWidth="1" />
+              <text x="155" y="20" fontSize="10" fill="#374151" fontWeight="500">
                 損益分岐点
               </text>
             </svg>
@@ -298,17 +389,18 @@ export default function BreakevenSheet() {
             hideHeader
             maxHeight={"300px"}
             cellClassName="!p-0"
+            title={<div className="text-center w-full p-1">来期</div>}
           />
 
           <BreakevenChart
-            title="現状"
-            sales={data?.[sheetName]?.[1]?.[1] || 0} // B2
-            variableCosts={data?.[sheetName]?.[2]?.[1] || 0} // B3
-            fixedCosts={data?.[sheetName]?.[3]?.[1] || 0} // B4
-            breakevenPoint={data?.[sheetName]?.[5]?.[1] || 0} // B6
+            title="来期"
+            sales={Number(data?.[sheetName]?.[1]?.[1]) || 0} // B2
+            variableCosts={Number(data?.[sheetName]?.[2]?.[1]) || 0} // B3
+            fixedCosts={Number(data?.[sheetName]?.[3]?.[1]) || 0} // B4
+            breakevenPoint={Number(data?.[sheetName]?.[5]?.[1]) || 0} // B6
             maxValue={Math.max(
-              data?.[sheetName]?.[1]?.[1] || 0,
-              (data?.[sheetName]?.[5]?.[1] || 0) * 1.2
+              Number(data?.[sheetName]?.[1]?.[1]) || 0,
+              (Number(data?.[sheetName]?.[5]?.[1]) || 0) * 1.2
             )}
           />
         </div>
@@ -323,17 +415,18 @@ export default function BreakevenSheet() {
             hideHeader
             maxHeight={"300px"}
             cellClassName="!p-0"
+            title={<div className="text-center p-1 w-full">現状</div>}
           />
 
           <BreakevenChart
-            title="来期"
-            sales={data?.[sheetName]?.[1]?.[4] || 0} // E2
-            variableCosts={data?.[sheetName]?.[2]?.[4] || 0} // E3
-            fixedCosts={data?.[sheetName]?.[3]?.[4] || 0} // E4
-            breakevenPoint={data?.[sheetName]?.[5]?.[4] || 0} // E6
+            title="現状"
+            sales={Number(data?.[sheetName]?.[1]?.[4]) || 0} // E2
+            variableCosts={Number(data?.[sheetName]?.[2]?.[4]) || 0} // E3
+            fixedCosts={Number(data?.[sheetName]?.[3]?.[4]) || 0} // E4
+            breakevenPoint={Number(data?.[sheetName]?.[5]?.[4]) || 0} // E6
             maxValue={Math.max(
-              data?.[sheetName]?.[1]?.[4] || 0,
-              (data?.[sheetName]?.[5]?.[4] || 0) * 1.2
+              Number(data?.[sheetName]?.[1]?.[4]) || 0,
+              (Number(data?.[sheetName]?.[5]?.[4]) || 0) * 1.2
             )}
           />
         </div>

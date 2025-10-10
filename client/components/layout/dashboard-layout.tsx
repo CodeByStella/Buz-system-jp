@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { authService } from "@/lib/services";
-import { DataProvider } from "@/lib/contexts/DataContext";
+import { DataProvider, useDataContext } from "@/lib/contexts/DataContext";
+import { Toast } from "@/components/ui/toast";
 
 // Import all sheet components
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
@@ -119,23 +120,60 @@ export default function DashboardLayout() {
 
   return (
     <DataProvider>
-      <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
-        <Header />
-        <div className="flex-1 overflow-hidden flex justify-center">
-          <div className="w-full max-w-[1440px] h-full p-4">
-            <div className="h-full border border-gray-200 bg-white overflow-hidden">
-              <div className="flex h-full">
-                <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
-                <div className="flex-1 flex flex-col overflow-hidden">
-                  <main className="flex-1 p-6 overflow-auto">
-                    {renderContent()}
-                  </main>
-                </div>
+      <DashboardContent 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab}
+        renderContent={renderContent}
+      />
+    </DataProvider>
+  );
+}
+
+// Separate component to access DataContext
+function DashboardContent({ 
+  activeTab, 
+  setActiveTab, 
+  renderContent 
+}: { 
+  activeTab: string; 
+  setActiveTab: (tab: string) => void;
+  renderContent: () => React.ReactNode;
+}) {
+  const { errorMessage, successMessage, clearMessages } = useDataContext();
+
+  return (
+    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+      <Header />
+      <div className="flex-1 overflow-hidden flex justify-center">
+        <div className="w-full max-w-[1440px] h-full p-4">
+          <div className="h-full border border-gray-200 bg-white overflow-hidden">
+            <div className="flex h-full">
+              <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <main className="flex-1 p-6 overflow-auto">
+                  {renderContent()}
+                </main>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </DataProvider>
+
+      {/* Toast notifications */}
+      {successMessage && (
+        <Toast
+          type="success"
+          message={successMessage}
+          onClose={clearMessages}
+        />
+      )}
+      {errorMessage && (
+        <Toast
+          type="error"
+          message={errorMessage}
+          onClose={clearMessages}
+        />
+      )}
+    </div>
   );
 }

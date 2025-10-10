@@ -12,7 +12,7 @@ export interface InputProps
   tipStyle?: React.CSSProperties;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, value, prefix, suffix, step, tip, tipClassName, tipStyle, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false)
     const [tooltipPosition, setTooltipPosition] = React.useState<{ top: number; left: number } | null>(null)
@@ -158,6 +158,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     )
   }
 )
-Input.displayName = "Input"
+CustomInput.displayName = "Input"
 
-export { Input }
+export { CustomInput }

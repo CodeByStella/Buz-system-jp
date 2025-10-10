@@ -24,6 +24,9 @@ interface DataContextType {
   hasChanges: boolean;
   getCell: (sheet: string, cell: string) => string | number | undefined;
   loading: boolean;
+  errorMessage: string | null;
+  successMessage: string | null;
+  clearMessages: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -34,6 +37,8 @@ export const DataProvider: React.FC<{
   const [userInput, setUserInput] = useState<FrontendData>({});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Store original data from server for change tracking
   const originalDataRef = useRef<BackendData[]>([]);
@@ -65,6 +70,7 @@ export const DataProvider: React.FC<{
   const fetchUserInputs = async () => {
     try {
       setLoading(true);
+      setErrorMessage(null);
       const backendData: BackendData[] = await userService.getUserInputs();
 
       // Store original data for change tracking
@@ -82,6 +88,12 @@ export const DataProvider: React.FC<{
       setUserInput(calculatedData);
     } catch (error) {
       console.error("Failed to fetch user inputs:", error);
+      setErrorMessage("データの読み込みに失敗しました");
+      
+      // Auto-clear error message after 5 seconds
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     } finally {
       setLoading(false);
     }
@@ -262,12 +274,19 @@ export const DataProvider: React.FC<{
   const handleSave = async () => {
     try {
       setSaving(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
 
       // Get only changed cells
       const changedCells = getChangedCells();
 
       if (changedCells.length === 0) {
-        console.log("No changes to save");
+        setSuccessMessage("変更はありません");
+        
+        // Auto-clear info message after 3 seconds
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 3000);
         return;
       }
 
@@ -288,9 +307,21 @@ export const DataProvider: React.FC<{
         await userService.getUserInputs();
       originalDataRef.current = JSON.parse(JSON.stringify(updatedBackendData));
 
+      setSuccessMessage(`${changedCells.length}件の変更を保存しました`);
       console.log("Changes saved successfully");
+
+      // Auto-clear success message after 3 seconds
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 3000);
     } catch (error) {
       console.error("Failed to save changes:", error);
+      setErrorMessage("保存に失敗しました。もう一度お試しください。");
+      
+      // Auto-clear error message after 5 seconds
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     } finally {
       setSaving(false);
     }
@@ -312,6 +343,12 @@ export const DataProvider: React.FC<{
     }
   };
 
+  // Clear messages
+  const clearMessages = () => {
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
+
   const value: DataContextType = {
     data: userInput,
     onChange: handleChangeCell,
@@ -320,6 +357,9 @@ export const DataProvider: React.FC<{
     hasChanges: getChangedCells().length > 0,
     getCell,
     loading,
+    errorMessage,
+    successMessage,
+    clearMessages,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
@@ -330,7 +370,17 @@ export const DataProvider: React.FC<{
  *
  * Usage in sheet components:
  * ```tsx
- * const { data, onChange, onSave, saving, hasChanges, getCell } = useDataContext();
+ * const { 
+ *   data, 
+ *   onChange, 
+ *   onSave, 
+ *   saving, 
+ *   hasChanges, 
+ *   getCell,
+ *   errorMessage,
+ *   successMessage,
+ *   clearMessages
+ * } = useDataContext();
  *
  * // Get cell value by reference
  * const value = getCell("start", "B6");
@@ -340,6 +390,10 @@ export const DataProvider: React.FC<{
  *
  * // Save changes
  * await onSave();
+ *
+ * // Show messages
+ * {errorMessage && <div className="error">{errorMessage}</div>}
+ * {successMessage && <div className="success">{successMessage}</div>}
  * ```
  */
 export const useDataContext = (): DataContextType => {

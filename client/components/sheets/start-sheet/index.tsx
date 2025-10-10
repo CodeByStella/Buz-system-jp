@@ -6,213 +6,18 @@ import {
   MainRowDataType,
   OthersRowDataType,
   SummaryRowDataType,
-  initialStartSheet_main,
-  initialStartSheet_others,
-  initialStartSheet_summary,
+  startSheet_main,
+  startSheet_others,
+  startSheet_summary,
 } from "./StartSheetCells";
-import { Input } from "@/components/ui/customInput";
+import { CustomInput } from "@/components/ui/customInput";
 import { cn } from "@/lib/utils";
-import { applyFormulas } from "./formulas";
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
-import { startSheetService } from "@/lib/services";
+import { useDataContext } from "@/lib/contexts";
 
 export default function StartSheet() {
-  const [startSheetData_main, setStartSheetData_main] = useState(
-    initialStartSheet_main
-  );
-  const [startSheetData_others, setStartSheetData_others] = useState(
-    initialStartSheet_others
-  );
-  const [startSheetData_summary, setStartSheetData_summary] = useState(
-    initialStartSheet_summary
-  );
-
-  // Loading and saving states
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  // Utility function to ensure blank rows exist at the end of each group
-  const ensureBlankRows = useCallback((data: OthersRowDataType[]) => {
-    const result = [...data];
-    const parentKeys = [
-      "non_operating_income_name",
-      "non_operating_expenses_name",
-      "extraordinary_gain_name",
-      "extraordinary_loss_name",
-    ];
-
-    parentKeys.forEach((parentKey) => {
-      // Find all rows for this parent with their indices
-      const groupRowIndices: number[] = [];
-      result.forEach((row, index) => {
-        if (row.parent_key === parentKey) {
-          groupRowIndices.push(index);
-        }
-      });
-      
-      // Find all blank rows in this group
-      const blankRowIndices = groupRowIndices.filter((index) => {
-        const row = result[index];
-        return row.editable && (!row.label || row.label.trim() === "") && (!row.value || row.value === 0 || row.value === "0");
-      });
-
-      // If there are multiple blank rows, remove the extras (keep only the last one)
-      if (blankRowIndices.length > 1) {
-        // Sort in descending order to remove from the end first (to avoid index issues)
-        const indicesToRemove = blankRowIndices.slice(0, -1).sort((a, b) => b - a);
-        indicesToRemove.forEach((index) => {
-          result.splice(index, 1);
-        });
-      }
-      // If there are no blank rows, add one
-      else if (blankRowIndices.length === 0) {
-        // Recalculate group rows after potential deletions
-        const currentGroupRows = result.filter((row) => row.parent_key === parentKey);
-        
-        // Find the position to insert (after the last row of this group)
-        const headerIndex = result.findIndex((row) => row.key === parentKey);
-        const lastGroupRowIndex = result.reduce((lastIndex, row, index) => {
-          if (row.parent_key === parentKey) return index;
-          return lastIndex;
-        }, headerIndex);
-
-        // Calculate the next number for the "no" field
-        const groupCount = currentGroupRows.length;
-        const nextNo = `営${(groupCount + 1).toString().padStart(2, "0")}`;
-
-        // Create a blank row
-        const blankRow: OthersRowDataType = {
-          key: `${parentKey}_blank_${Date.now()}`,
-          no: nextNo,
-          parent_key: parentKey,
-          label: "",
-          value: 0,
-          editable: true,
-        };
-
-        // Insert the blank row after the last group row
-        result.splice(lastGroupRowIndex + 1, 0, blankRow);
-      }
-    });
-
-    return result;
-  }, []);
-
-  // Fetch data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-
-        const response = await startSheetService.getStartSheet();
-
-        if (response) {
-          const transformed = transformBackendToFrontend(
-            response,
-            initialStartSheet_main,
-            initialStartSheet_others
-          );
-
-          setStartSheetData_main(transformed.main);
-          // Ensure blank rows exist when loading data
-          setStartSheetData_others(ensureBlankRows(transformed.others));
-        }
-      } catch (err: any) {
-        console.error("Error fetching start sheet data:", err);
-        setError(err.message || "データの読み込みに失敗しました");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [ensureBlankRows]);
-
-  // Save handler
-  const handleSave = useCallback(async () => {
-    try {
-      setIsSaving(true);
-      setError(null);
-      setSuccessMessage(null);
-
-      const backendData = transformFrontendToBackend(
-        startSheetData_main,
-        startSheetData_others
-      );
-
-      const response = await startSheetService.saveStartSheet(backendData);
-
-      setSuccessMessage(response.message || "データを保存しました");
-
-      // Auto-hide success message after 3 seconds
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3000);
-    } catch (err: any) {
-      console.error("Error saving start sheet:", err);
-      setError(err.message || "データの保存に失敗しました");
-    } finally {
-      setIsSaving(false);
-    }
-  }, [startSheetData_main, startSheetData_others]);
-
-  // Apply formulas to readonly fields automatically
-  // Formulas can reference data from all sources (main, others, summary)
-  const calculatedData = useMemo(() => {
-    return applyFormulas({
-      main: startSheetData_main,
-      others: startSheetData_others,
-      summary: startSheetData_summary,
-    });
-  }, [startSheetData_main, startSheetData_others, startSheetData_summary]);
-
-  // Handler for updating main table data
-  const handleMainDataChange = useCallback(
-    (
-      rowKey: string,
-      field: "incomeStatement" | "manufacturingCostReport",
-      newValue: number
-    ) => {
-      setStartSheetData_main((prevData) =>
-        prevData.map((row) =>
-          row.key === rowKey
-            ? {
-                ...row,
-                [field]: {
-                  ...row[field],
-                  value: Number(newValue),
-                },
-              }
-            : row
-        )
-      );
-    },
-    []
-  );
-
-  // Handler for updating others table data
-  const handleOthersDataChange = useCallback(
-    (rowKey: string, field: "label" | "value", newValue: string | number) => {
-      setStartSheetData_others((prevData) => {
-        const updatedData = prevData.map((row) =>
-          row.key === rowKey
-            ? {
-                ...row,
-                [field]: field === "value" ? Number(newValue) : newValue,
-              }
-            : row
-        );
-
-        // Ensure blank rows exist after update
-        return ensureBlankRows(updatedData);
-      });
-    },
-    [ensureBlankRows]
-  );
+  const { onSave, saving, hasChanges, loading, errorMessage, successMessage } = useDataContext()
 
   //コードNo	勘定科目	損益計算書	製造原価報告書
   const startSheetCols_main: Column[] = useMemo(
@@ -267,16 +72,14 @@ export default function StartSheet() {
           index: number
         ) => {
           return (
-            <Input
+            <CustomInput
               type="number"
               value={value.value || ""}
               disabled={value.type === 0}
               readOnly={value.type === 2}
               suffix={record.key === "profitMargin" ? "%" : undefined}
               onChange={(e) => {
-                const inputValue = e.target.value;
-                const newValue = inputValue === "" ? 0 : Number(inputValue);
-                handleMainDataChange(record.key, "incomeStatement", newValue);
+               
               }}
               className={`border-transparent h-full`}
             />
@@ -295,7 +98,7 @@ export default function StartSheet() {
           index: number
         ) => {
           return (
-            <Input
+            <CustomInput
               type="number"
               value={value.value || ""}
               disabled={value.type === 0}
@@ -303,13 +106,7 @@ export default function StartSheet() {
               tip={record.manufacturingCostReport.tip}
               tipClassName="text-red-500"
               onChange={(e) => {
-                const inputValue = e.target.value;
-                const newValue = inputValue === "" ? 0 : Number(inputValue);
-                handleMainDataChange(
-                  record.key,
-                  "manufacturingCostReport",
-                  newValue
-                );
+                
               }}
               className={`border-transparent h-full`}
             />
@@ -317,7 +114,7 @@ export default function StartSheet() {
         },
       },
     ],
-    [handleMainDataChange]
+    []
   );
 
   const startSheetCols_others: Column[] = useMemo(
@@ -337,12 +134,9 @@ export default function StartSheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: OthersRowDataType, index: number) => {
           return record.editable ? (
-            <Input
+            <CustomInput
               type="text"
               value={value || ""}
-              onChange={(e) => {
-                handleOthersDataChange(record.key, "label", e.target.value);
-              }}
               className={`border-transparent h-full`}
               placeholder="項目名を入力"
             />
@@ -365,14 +159,9 @@ export default function StartSheet() {
           index: number
         ) => {
           return record.editable ? (
-            <Input
+            <CustomInput
               type="number"
               value={value || ""}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const newValue = inputValue === "" ? 0 : Number(inputValue);
-                handleOthersDataChange(record.key, "value", newValue);
-              }}
               className={`border-transparent h-full`}
             />
           ) : (
@@ -383,7 +172,7 @@ export default function StartSheet() {
         },
       },
     ],
-    [handleOthersDataChange]
+    []
   );
 
   const startSheetCols_summary: Column[] = useMemo(
@@ -408,7 +197,7 @@ export default function StartSheet() {
   );
 
   // Show loading spinner while fetching data
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -422,10 +211,10 @@ export default function StartSheet() {
   return (
     <div className="h-full flex flex-col space-y-4 overflow-hidden ">
       {/* Error Message */}
-      {error && (
+      {errorMessage && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md">
           <p className="font-medium">エラー</p>
-          <p className="text-sm">{error}</p>
+          <p className="text-sm">{errorMessage}</p>
         </div>
       )}
 
@@ -447,10 +236,10 @@ export default function StartSheet() {
           <Button
             variant="success"
             leftIcon={Save}
-            loading={isSaving}
+            loading={saving}
             loadingText="保存中..."
-            onClick={handleSave}
-            disabled={isSaving}
+            onClick={onSave}
+            disabled={saving||!hasChanges}
           >
             保存
           </Button>
@@ -480,7 +269,7 @@ export default function StartSheet() {
         <div className="col-span-2 flex flex-col overflow-hidden">
           <AdvancedTable
             columns={startSheetCols_main as any}
-            data={calculatedData.main as any}
+            data={startSheet_main as any}
             dense
             bordered
             maxHeight={"full"}
@@ -504,7 +293,7 @@ export default function StartSheet() {
           <div className="row-span-3  h-full">
             <AdvancedTable
               columns={startSheetCols_others as any}
-              data={startSheetData_others as any}
+              data={startSheet_others as any}
               dense
               bordered
               maxHeight={"full"}
@@ -518,7 +307,7 @@ export default function StartSheet() {
             <div className="mt-auto">
               <AdvancedTable
                 columns={startSheetCols_summary as any}
-                data={calculatedData.summary as any}
+                data={startSheet_summary as any}
                 dense
                 bordered
                 maxHeight={"full"}

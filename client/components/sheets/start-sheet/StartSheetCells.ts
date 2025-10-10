@@ -49,7 +49,7 @@ const colors = {
   blue: "bg-blue-400",
 };
 
-export const initialStartSheet_main: MainRowDataType[] = [
+export const startSheet_main: MainRowDataType[] = [
   {
     key: "recentSales",
     no: "売上",
@@ -1526,7 +1526,7 @@ export const initialStartSheet_main: MainRowDataType[] = [
     bgcolor2: colors.purple,
   },
 ];
-export const initialStartSheet_others: OthersRowDataType[] = [
+export const startSheet_others: OthersRowDataType[] = [
   {
     key: "non_operating_income_name",
     no: "",
@@ -1608,7 +1608,7 @@ export const initialStartSheet_others: OthersRowDataType[] = [
     editable: true,
   },
 ];
-export const initialStartSheet_summary: SummaryRowDataType[] = [
+export const startSheet_summary: SummaryRowDataType[] = [
   {
     key: "cost_of_sales_total",
     label: "売上原価 合計",

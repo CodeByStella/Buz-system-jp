@@ -61,6 +61,7 @@ export default function ManufacturingExpensesSheet() {
             <CustomInput
               type="number"
               sheet={sheetName}
+              tip={record.tip}
               cell={value}
               readOnly={record.readonly}
               className={`border-transparent h-full text-xs text-center`}

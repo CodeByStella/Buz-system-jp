@@ -3,6 +3,7 @@ export interface ManufacturingExpensesRowDataType {
   value: string;
   bgcolor: string;
   readonly?: boolean;
+  tip?: string;
 }
 
 export interface ManufacturingExpensesSummaryRowDataType {
@@ -391,11 +392,13 @@ export const businessExpensesRows: ManufacturingExpensesRowDataType[] = [
     label: "期末商品棚卸高",
     value: "L9",
     bgcolor: colors.white,
+    tip: "（マイナスを入れてから入力）",
   },
   {
     label: "期末製品棚卸高",
-    value: "L10",
+    value: "L10", 
     bgcolor: colors.white,
+    tip: "（マイナスを入れてから入力）",
   },
   {
     label: "期首原材料棚卸高",

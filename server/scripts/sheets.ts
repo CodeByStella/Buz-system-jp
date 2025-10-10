@@ -55,8 +55,8 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
   },
   profit: {
     B6: "=B3+B4-B5",
-    I5: "=B6+13-14",
-    I7: "=15/start!G106",
+    I5: "=B6+I3-I4",
+    I7: "=I5/start!G106",
   },
   mq_future: {
     B3: "=manufacturing_income! F31/1000000",
@@ -112,8 +112,8 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     O15: "=start!C17+start!C18",
     N14: "=SUM(N6:N13)",
 
-    C18: "=(E14+J14+014)/(D14+114+N14)",
-    C19: '=IFERROR((E15+J15+015)/(N15+115+D15),"0")',
+    C18: "=(E14+J14+O14)/(D14+I14+N14)",
+    C19: '=IFERROR((E15+J15+O15)/(N15+I15+D15),"0")',
 
     E18: "=C18/C19",
   },
@@ -132,7 +132,7 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     L16: "=SUM(L5:L15)",
     L17: "=SUM(start!C29:C34)",
 
-    I2: "=L16+124+F13+C43",
+    I2: "=L16+I24+F13+C43",
   },
   manufacturing_labor: {
     E6: "=C6*D6",

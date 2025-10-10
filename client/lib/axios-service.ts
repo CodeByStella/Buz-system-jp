@@ -20,7 +20,7 @@ class AxiosService {
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
-      timeout: 30000,
+      timeout: 15000, // Reduced timeout to 15 seconds for better UX
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
@@ -108,14 +108,38 @@ class AxiosService {
     return Promise.reject(customError);
   }
 
-  // Generic request method
-  async request<T = any>(config: AxiosRequestConfig): Promise<T> {
+  // Generic request method with retry logic
+  async request<T = any>(config: AxiosRequestConfig, retries: number = 3): Promise<T> {
     try {
       const response = await this.axiosInstance.request<T>(config);
       return response.data;
     } catch (error) {
+      // Retry on network errors or 5xx server errors
+      if (retries > 0 && this.shouldRetry(error)) {
+        console.log(`Request failed, retrying... (${retries} attempts left)`);
+        await this.delay(1000 * (4 - retries)); // Exponential backoff
+        return this.request<T>(config, retries - 1);
+      }
       throw error;
     }
+  }
+
+  private shouldRetry(error: any): boolean {
+    // Retry on network errors or 5xx server errors
+    if (error.code === 'ECONNABORTED' || error.code === 'ENOTFOUND' || error.code === 'ECONNRESET') {
+      return true;
+    }
+    
+    if (error.response) {
+      const status = error.response.status;
+      return status >= 500 && status < 600;
+    }
+    
+    return false;
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   // HTTP Methods

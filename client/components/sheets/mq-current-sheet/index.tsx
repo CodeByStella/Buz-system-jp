@@ -11,11 +11,13 @@ import {
   ResultTableCell,
 } from "./cells";
 import { CustomInput } from "@/components/ui/customInput";
+import { CustomTextarea } from "@/components/ui/customTextarea";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function MQCurrentSheet() {
-  const { onSave, saving, hasChanges, loading } = useDataContext();
+  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
+    useDataContext();
 
   const sheetName: SheetNameType = "mq_current_status";
 
@@ -117,6 +119,27 @@ export default function MQCurrentSheet() {
     );
   }
 
+  // Show error message with retry option
+  if (errorMessage) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 max-w-md mx-auto p-6 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-red-600 text-center">
+            <p className="text-lg font-semibold mb-2">エラーが発生しました</p>
+            <p className="text-sm">{errorMessage}</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={retry}
+            className="border-red-300 text-red-700 hover:bg-red-100"
+          >
+            再試行
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col space-y-4 overflow-hidden ">
       <div className="flex items-center justify-between">
@@ -185,9 +208,20 @@ export default function MQCurrentSheet() {
           />
         </div>
 
-        {/* Row 2 - Horizontal Grid */}
-        <div className="h-full overflow-hidden">
-          
+        {/* Row 2 - Memo Section */}
+        <div className="h-full overflow-hidden border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
+          <div className="flex-shrink-0 p-3 border-b border-gray-200">
+            <label className="font-semibold text-gray-900">メモ:</label>
+          </div>
+          <div className="flex-1 p-3 min-h-0">
+            <CustomTextarea
+              sheet={sheetName}
+              cell="C24"
+              placeholder="メモを入力してください..."
+              className="w-full h-full border-0 resize-none focus:ring-0 focus:outline-none text-gray-700"
+              rows={6}
+            />
+          </div>
         </div>
       </div>
     </div>

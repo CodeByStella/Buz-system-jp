@@ -42,6 +42,35 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // If type is number, add text-right to align number to right
     const numberAlignClass = type === "number" ? "text-right" : ""
     
+    // Calculate dynamic padding based on suffix length
+    const getSuffixPadding = () => {
+      if (!suffix || typeof suffix !== 'string') return ""
+      
+      // Estimate character width (roughly 8-12px per character for Japanese text)
+      const estimatedWidth = suffix.length * 10 // 10px per character
+      const minPadding = 32 // pr-8 = 32px minimum
+      const calculatedPadding = Math.max(minPadding, estimatedWidth + 16) // Add 16px buffer
+      
+      // Convert to Tailwind classes (approximate)
+      if (calculatedPadding <= 32) return "pr-8"      // 32px
+      if (calculatedPadding <= 48) return "pr-12"     // 48px
+      if (calculatedPadding <= 64) return "pr-16"     // 64px
+      if (calculatedPadding <= 80) return "pr-20"     // 80px
+      if (calculatedPadding <= 96) return "pr-24"     // 96px
+      return "pr-28" // 112px for very long suffixes
+    }
+    
+    // Calculate dynamic suffix positioning
+    const getSuffixPosition = () => {
+      if (!suffix || typeof suffix !== 'string') return "right-2"
+      
+      const estimatedWidth = suffix.length * 10
+      if (estimatedWidth <= 30) return "right-2"      // 8px
+      if (estimatedWidth <= 50) return "right-3"      // 12px
+      if (estimatedWidth <= 70) return "right-4"      // 16px
+      return "right-5" // 20px for very long suffixes
+    }
+    
     // Determine the actual value to display
     // Priority: contextValue (from DataContext) > value prop
     let inputValue = hasContext && contextValue !== undefined ? contextValue : value;
@@ -65,7 +94,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     if (type === "number" && inputValue !== "" && typeof inputValue === "number") {
       // Check if it's a decimal number
       if (!Number.isInteger(inputValue)) {
-        inputValue = Number(inputValue).toFixed(3)
+        inputValue = Number(inputValue).toFixed(1)
       }
     }
     
@@ -147,7 +176,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
           numberAlignClass,
           negativeClass,
           prefix && "pl-8",
-          suffix && "pr-8",
+          suffix && getSuffixPadding(),
           className
         )}
         ref={inputRef}
@@ -188,7 +217,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
             )}
             {inputElement}
             {suffix && (
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none z-10">
+              <span className={`absolute top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none z-10 ${getSuffixPosition()}`}>
                 {suffix}
               </span>
             )}

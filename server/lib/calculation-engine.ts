@@ -151,12 +151,52 @@ export class CalculationEngine {
         results['target_value_5'] = this.getCellValue('target_value_5')
         break
       }
-      case 'profit':
-        results['total_sales'] = this.getCellValue('sales_revenue')
-        results['total_costs'] = this.getCellValue('material_costs') + this.getCellValue('labor_costs') + this.getCellValue('overhead_costs')
-        results['gross_profit'] = this.calculateProfit('total_sales', 'total_costs')
-        results['profit_margin'] = this.calculateProfitMargin('total_sales', 'gross_profit')
+      case 'profit': {
+        // Get input values from the profit sheet cells
+        const operatingProfit = this.getCellValue('C3') || 0  // 営業利益
+        const nonOperatingIncome = this.getCellValue('C4') || 0  // 営業外収益
+        const nonOperatingExpenses = this.getCellValue('C5') || 0  // 営業外費用
+        const extraordinaryIncome = this.getCellValue('K3') || 0  // 特別利益
+        const extraordinaryLoss = this.getCellValue('K4') || 0  // 特別損失
+        
+        // Calculate Ordinary Profit (経常利益) = 営業利益 + 営業外収益 - 営業外費用
+        const ordinaryProfit = operatingProfit + nonOperatingIncome - nonOperatingExpenses
+        results['C6'] = ordinaryProfit
+        
+        // Calculate Profit Before Tax (税引前利益) = 経常利益 + 特別利益 - 特別損失
+        const profitBeforeTax = ordinaryProfit + extraordinaryIncome - extraordinaryLoss
+        results['K5'] = profitBeforeTax
+        
+        // Keep all input values
+        results['C3'] = operatingProfit
+        results['C4'] = nonOperatingIncome
+        results['C5'] = nonOperatingExpenses
+        results['K3'] = extraordinaryIncome
+        results['K4'] = extraordinaryLoss
+        
+        // Year-on-year comparison calculation
+        const previousYearOrdinaryProfit = this.getCellValue('C8') || 0  // 前年経常利益
+        const previousYearProfitBeforeTax = this.getCellValue('K8') || 0  // 前年税引前利益
+        
+        // Calculate year-on-year comparison percentage for ordinary profit
+        const ordinaryProfitComparison = previousYearOrdinaryProfit > 0 
+          ? ((ordinaryProfit - previousYearOrdinaryProfit) / previousYearOrdinaryProfit) * 100 
+          : 0
+        
+        // Calculate year-on-year comparison percentage for profit before tax
+        const profitBeforeTaxComparison = previousYearProfitBeforeTax > 0 
+          ? ((profitBeforeTax - previousYearProfitBeforeTax) / previousYearProfitBeforeTax) * 100 
+          : 0
+        
+        // Store comparison results (using average of both comparisons for J7)
+        results['J7'] = (ordinaryProfitComparison + profitBeforeTaxComparison) / 2
+        
+        // Keep previous year data
+        results['C8'] = previousYearOrdinaryProfit
+        results['K8'] = previousYearProfitBeforeTax
+        
         break
+      }
         
       case 'salary': {
         // Calculate individual totals for employees

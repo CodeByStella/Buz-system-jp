@@ -18,7 +18,7 @@ import { cellToIndices, indicesToCell } from "../utils/cellHelpers";
 
 interface DataContextType {
   data: FrontendDataType;
-  onChange: (sheet: string, cell: string, value: number) => void;
+  onChange: (sheet: string, cell: string, value: number | string) => void;
   onSave: () => Promise<void>;
   saving: boolean;
   hasChanges: boolean;
@@ -27,6 +27,7 @@ interface DataContextType {
   errorMessage: string | null;
   successMessage: string | null;
   clearMessages: () => void;
+  retry: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -48,6 +49,21 @@ export const DataProvider: React.FC<{
 
   // Map sheet names to sheet IDs in HyperFormula
   const sheetIdsRef = useRef<Map<string, number>>(new Map());
+
+  // Track cells with formulas (format: "sheet:cell")
+  const formulaCellsRef = useRef<Set<string>>(new Set());
+
+  // Track user-edited cells (format: "sheet:cell")
+  const userEditedCellsRef = useRef<Set<string>>(new Set());
+
+  // Helper function to check if a value is a formula
+  // A formula is a string that starts with "=" 
+  // Regular strings (like "Total", "Sales", etc.) do NOT start with "="
+  const isFormula = (value: any): boolean => {
+    if (typeof value !== "string") return false;
+    const trimmed = value.trim();
+    return trimmed.length > 0 && trimmed.startsWith("=");
+  };
 
   // Initialize HyperFormula instance
   useEffect(() => {
@@ -71,29 +87,69 @@ export const DataProvider: React.FC<{
     try {
       setLoading(true);
       setErrorMessage(null);
+      
+      console.log("Fetching user inputs...");
       const backendData: BackendDataType[] = await userService.getUserInputs();
+      console.log("Backend data received:", backendData.length, "items");
 
       // Store original data for change tracking
       originalDataRef.current = JSON.parse(JSON.stringify(backendData));
 
+      // Clear previous formula and edit tracking
+      formulaCellsRef.current.clear();
+      userEditedCellsRef.current.clear();
+
+      // Identify and track formula cells from backend data
+      backendData.forEach((item) => {
+        if (isFormula(item.value)) {
+          const key = `${item.sheet}:${item.cell}`;
+          formulaCellsRef.current.add(key);
+          console.log(`Identified formula cell: ${key} = ${item.value}`);
+        }
+      });
+
+      console.log(`Loaded ${formulaCellsRef.current.size} formula cells from database`);
+
       // Transform to frontend format
+      console.log("Transforming data...");
       const frontendData = transformBe2Fe(backendData);
+      console.log("Frontend data transformed:", Object.keys(frontendData));
 
       // Initialize HyperFormula with the data
+      console.log("Initializing HyperFormula...");
       initializeHyperFormula(frontendData);
 
       // Get calculated values from HyperFormula
+      console.log("Getting calculated data...");
       const calculatedData = getCalculatedData();
+      console.log("Calculated data ready:", Object.keys(calculatedData));
 
       setUserInput(calculatedData);
+      console.log("Data loading completed successfully");
     } catch (error) {
       console.error("Failed to fetch user inputs:", error);
-      setErrorMessage("データの読み込みに失敗しました");
       
-      // Auto-clear error message after 5 seconds
+      // Provide more specific error messages
+      let errorMessage = "データの読み込みに失敗しました";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("サーバーに接続できません")) {
+          errorMessage = "サーバーに接続できません。ネットワーク接続を確認してください。";
+        } else if (error.message.includes("認証が必要です")) {
+          errorMessage = "認証が必要です。ページを再読み込みしてください。";
+        } else if (error.message.includes("timeout")) {
+          errorMessage = "リクエストがタイムアウトしました。再試行してください。";
+        } else {
+          errorMessage = `データの読み込みに失敗しました: ${error.message}`;
+        }
+      }
+      
+      setErrorMessage(errorMessage);
+      
+      // Auto-clear error message after 8 seconds for better UX
       setTimeout(() => {
         setErrorMessage(null);
-      }, 5000);
+      }, 8000);
     } finally {
       setLoading(false);
     }
@@ -116,17 +172,34 @@ export const DataProvider: React.FC<{
 
     // Add sheets from frontendData (already transformed)
     Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
-      // Add sheet to HyperFormula
-      hf.addSheet(sheetName);
-      const sheetId = hf.getSheetId(sheetName);
+      try {
+        // Add sheet to HyperFormula
+        hf.addSheet(sheetName);
+        const sheetId = hf.getSheetId(sheetName);
 
-      if (sheetId !== undefined) {
-        sheetIdsRef.current.set(sheetName, sheetId);
+        if (sheetId !== undefined) {
+          sheetIdsRef.current.set(sheetName, sheetId);
 
-        // Set sheet content directly from transformed data
-        if (sheetData && sheetData.length > 0) {
-          hf.setSheetContent(sheetId, sheetData);
+          // Set sheet content directly from transformed data
+          if (sheetData && sheetData.length > 0) {
+            // Additional sanitization before sending to HyperFormula
+            const sanitizedSheetData = sheetData.map(row => 
+              row.map(cell => {
+                // Ensure no error values slip through
+                if (typeof cell === 'string' && cell.includes('#')) {
+                  console.warn(`Found error value in ${sheetName}: ${cell}, replacing with empty string`);
+                  return "";
+                }
+                return cell;
+              })
+            );
+            
+            hf.setSheetContent(sheetId, sanitizedSheetData);
+          }
         }
+      } catch (error) {
+        console.error(`Error initializing sheet ${sheetName}:`, error);
+        // Continue with other sheets even if one fails
       }
     });
   };
@@ -166,14 +239,45 @@ export const DataProvider: React.FC<{
     if (sheetId === undefined) return;
 
     const { row, col } = cellToIndices(cell);
+    const cellKey = `${sheet}:${cell}`;
 
-    // Update the cell value in HyperFormula
-    hf.setCellContents({ sheet: sheetId, row, col }, [[value]]);
+    try {
+      // Sanitize the value before setting it
+      let sanitizedValue = value;
+      if (typeof value === 'string') {
+        // Check for error values
+        if (value.includes('#ERROR!') || value.includes('#REF!') || value.includes('#VALUE!') || value.includes('#NAME?') || value.includes('#DIV/0!') || value.includes('#N/A') || value.includes('#NUM!') || value.includes('#NULL!')) {
+          console.warn(`Attempted to set error value in ${sheet}:${cell}: ${value}, using empty string instead`);
+          sanitizedValue = "";
+        }
+      }
 
-    // Get updated calculated data
-    const calculatedData = getCalculatedData();
+      // Track this cell as user-edited
+      userEditedCellsRef.current.add(cellKey);
+      
+      // If user enters a formula, track it as a formula cell
+      if (isFormula(sanitizedValue)) {
+        formulaCellsRef.current.add(cellKey);
+        console.log(`User entered formula in ${cellKey}: ${sanitizedValue}`);
+      } else {
+        // If user overwrites a formula cell with a value, remove it from formula cells
+        if (formulaCellsRef.current.has(cellKey)) {
+          formulaCellsRef.current.delete(cellKey);
+          console.log(`User replaced formula in ${cellKey} with value: ${sanitizedValue}`);
+        }
+      }
 
-    setUserInput(calculatedData);
+      // Update the cell value in HyperFormula
+      hf.setCellContents({ sheet: sheetId, row, col }, [[sanitizedValue]]);
+
+      // Get updated calculated data
+      const calculatedData = getCalculatedData();
+
+      setUserInput(calculatedData);
+    } catch (error) {
+      console.error(`Error setting cell ${sheet}:${cell} to value ${value}:`, error);
+      // Don't update the UI if there was an error
+    }
   };
 
   // Get changed cells compared to original data
@@ -190,45 +294,62 @@ export const DataProvider: React.FC<{
       originalDataMap.set(key, item);
     });
 
-    // Check each cell in HyperFormula for changes
-    sheetIdsRef.current.forEach((sheetId, sheetName) => {
-      const sheetSize = hf.getSheetDimensions(sheetId);
+    // Only process user-edited cells
+    userEditedCellsRef.current.forEach((cellKey) => {
+      const [sheetName, cellRef] = cellKey.split(":");
+      const sheetId = sheetIdsRef.current.get(sheetName);
+      
+      if (sheetId === undefined) return;
 
-      for (let row = 0; row < sheetSize.height; row++) {
-        for (let col = 0; col < sheetSize.width; col++) {
-          const cellRef = indicesToCell(row, col);
-          const key = `${sheetName}:${cellRef}`;
+      const { row, col } = cellToIndices(cellRef);
+      
+      // Get the cell contents (formula or value)
+      const cellContents = hf.getCellSerialized({ sheet: sheetId, row, col });
+      
+      // Determine the value to save
+      let valueToSave: number | string | null = null;
+      
+      if (typeof cellContents === "string" && cellContents.trim().startsWith("=")) {
+        // This is a formula - save the formula string
+        valueToSave = cellContents;
+      } else {
+        // This is a regular value - get the actual value
+        const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
+        
+        // If cell is empty, mark for deletion
+        if (cellValue === null || cellValue === undefined || cellValue === "") {
+          valueToSave = "";
+        } else {
+          valueToSave = cellValue as number | string;
+        }
+      }
 
-          const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
+      const originalData = originalDataMap.get(cellKey);
 
-          // Skip empty cells
-          if (
-            cellValue === null ||
-            cellValue === undefined ||
-            cellValue === ""
-          ) {
-            continue;
-          }
-
-          const originalData = originalDataMap.get(key);
-
-          if (!originalData) {
-            // New cell that wasn't in original data
-            changedCells.push({
-              sheet: sheetName,
-              cell: cellRef,
-              value: cellValue as number | string,
-            });
-          } else if (
-            originalData.value !== cellValue
-          ) {
-            // Value changed and it's not a formula cell
-            changedCells.push({
-              sheet: sheetName,
-              cell: cellRef,
-              value: cellValue as number | string,
-            });
-          }
+      // Check if the value actually changed
+      if (!originalData && valueToSave !== "") {
+        // New cell that wasn't in original data (and not empty)
+        changedCells.push({
+          sheet: sheetName,
+          cell: cellRef,
+          value: valueToSave,
+        });
+      } else if (originalData) {
+        // Cell existed before
+        if (valueToSave === "" && originalData.value !== "") {
+          // User cleared the cell - save as empty to delete it
+          changedCells.push({
+            sheet: sheetName,
+            cell: cellRef,
+            value: "",
+          });
+        } else if (originalData.value !== valueToSave) {
+          // Value changed
+          changedCells.push({
+            sheet: sheetName,
+            cell: cellRef,
+            value: valueToSave,
+          });
         }
       }
     });
@@ -273,6 +394,18 @@ export const DataProvider: React.FC<{
         await userService.getUserInputs();
       originalDataRef.current = JSON.parse(JSON.stringify(updatedBackendData));
 
+      // Clear user-edited cells since they're now saved
+      userEditedCellsRef.current.clear();
+
+      // Re-identify formula cells from updated data
+      formulaCellsRef.current.clear();
+      updatedBackendData.forEach((item) => {
+        if (isFormula(item.value)) {
+          const key = `${item.sheet}:${item.cell}`;
+          formulaCellsRef.current.add(key);
+        }
+      });
+
       setSuccessMessage(`${changedCells.length}件の変更を保存しました`);
       console.log("Changes saved successfully");
 
@@ -315,6 +448,11 @@ export const DataProvider: React.FC<{
     setSuccessMessage(null);
   };
 
+  // Retry function for failed data loading
+  const retry = async () => {
+    await fetchUserInputs();
+  };
+
   const value: DataContextType = {
     data: userInput,
     onChange: handleChangeCell,
@@ -326,6 +464,7 @@ export const DataProvider: React.FC<{
     errorMessage,
     successMessage,
     clearMessages,
+    retry,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

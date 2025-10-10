@@ -10,7 +10,7 @@ import { Toast } from "@/components/ui/toast";
 
 // Import all sheet components
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
-import { ProfitSheet } from "@/components/sheets/profit-sheet";
+import ProfitSheet from "@/components/sheets/profit-sheet";
 import MQFutureSheet from "@/components/sheets/mq-future-sheet";
 import BreakevenSheet from "@/components/sheets/breakeven-sheet";
 import SalarySheet from "@/components/sheets/salary-sheet";

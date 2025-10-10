@@ -17,7 +17,9 @@ import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 
 export default function StartSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, successMessage } = useDataContext()
+  const { onSave, saving, hasChanges, loading, errorMessage, successMessage } = useDataContext();
+  
+  const sheetName = "start";
 
   //コードNo	勘定科目	損益計算書	製造原価報告書
   const startSheetCols_main: Column[] = useMemo(
@@ -67,20 +69,18 @@ export default function StartSheet() {
         align: "center",
         cellClassName: "!p-0 !h-full relative",
         render: (
-          value: { value: number; type: 0 | 1 | 2 },
+          value: { value: string; type: 0 | 1 | 2 },
           record: MainRowDataType,
           index: number
         ) => {
           return (
             <CustomInput
               type="number"
-              value={value.value || ""}
+              sheet={sheetName}
+              cell={value.value}
               disabled={value.type === 0}
               readOnly={value.type === 2}
               suffix={record.key === "profitMargin" ? "%" : undefined}
-              onChange={(e) => {
-               
-              }}
               className={`border-transparent h-full`}
             />
           );
@@ -93,28 +93,26 @@ export default function StartSheet() {
         align: "center",
         cellClassName: "!p-0 !h-full relative",
         render: (
-          value: { value: number; type: 0 | 1 | 2 },
+          value: { value: string; type: 0 | 1 | 2; tip?: string },
           record: MainRowDataType,
           index: number
         ) => {
           return (
             <CustomInput
               type="number"
-              value={value.value || ""}
+              sheet={sheetName}
+              cell={value.value}
               disabled={value.type === 0}
               readOnly={value.type === 2}
-              tip={record.manufacturingCostReport.tip}
+              tip={value.tip}
               tipClassName="text-red-500"
-              onChange={(e) => {
-                
-              }}
               className={`border-transparent h-full`}
             />
           );
         },
       },
     ],
-    []
+    [sheetName]
   );
 
   const startSheetCols_others: Column[] = useMemo(
@@ -133,12 +131,18 @@ export default function StartSheet() {
         align: "center",
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: OthersRowDataType, index: number) => {
+          // For label, value is just a text string, not a cell reference
+          // Could be enhanced later to support cell references if needed
           return record.editable ? (
             <CustomInput
               type="text"
               value={value || ""}
               className={`border-transparent h-full`}
               placeholder="項目名を入力"
+              onChange={(e) => {
+                // Text editing not yet supported in the current system
+                // Will need to enhance DataContext to support string values
+              }}
             />
           ) : (
             <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
@@ -154,25 +158,30 @@ export default function StartSheet() {
         align: "center",
         cellClassName: "!p-0 !h-full relative",
         render: (
-          value: string | number,
+          value: string,
           record: OthersRowDataType,
           index: number
         ) => {
           return record.editable ? (
             <CustomInput
               type="number"
-              value={value || ""}
+              sheet={sheetName}
+              cell={value}
               className={`border-transparent h-full`}
             />
           ) : (
-            <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
-              {value}
-            </div>
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled
+              className={`border-transparent h-full`}
+            />
           );
         },
       },
     ],
-    []
+    [sheetName]
   );
 
   const startSheetCols_summary: Column[] = useMemo(
@@ -189,11 +198,19 @@ export default function StartSheet() {
         width: 100,
         align: "right",
         render: (value: string, record: SummaryRowDataType, index: number) => {
-          return parseFloat(value).toFixed(3);
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              readOnly
+              className={`border-transparent h-full !bg-yellow-200`}
+            />
+          );
         },
       },
     ],
-    []
+    [sheetName]
   );
 
   // Show loading spinner while fetching data

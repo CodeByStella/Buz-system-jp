@@ -2,6 +2,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 
 import { cn } from "@/lib/utils"
+import { useDataContext } from "@/lib/contexts/DataContext"
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'prefix'> {
@@ -10,18 +11,40 @@ export interface InputProps
   tip?: string;
   tipClassName?: string;
   tipStyle?: React.CSSProperties;
+  sheet?: string;
+  cell?: string;
 }
 
 const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, value, prefix, suffix, step, tip, tipClassName, tipStyle, ...props }, ref) => {
+  ({ className, type, value, prefix, suffix, step, tip, tipClassName, tipStyle, sheet, cell, onChange, ...props }, ref) => {
     const [isFocused, setIsFocused] = React.useState(false)
     const [tooltipPosition, setTooltipPosition] = React.useState<{ top: number; left: number } | null>(null)
     const inputRef = React.useRef<HTMLInputElement>(null)
     const isInteractive = !props.disabled && !props.readOnly
+    
+    // Use DataContext if sheet and cell are provided
+    const hasContext = sheet && cell;
+    let contextValue: string | number | undefined;
+    let contextOnChange: ((sheet: string, cell: string, value: number) => void) | undefined;
+    
+    try {
+      const context = hasContext ? useDataContext() : { getCell: () => undefined, onChange: () => {} };
+      contextValue = hasContext ? context.getCell(sheet!, cell!) : undefined;
+      contextOnChange = hasContext ? context.onChange : undefined;
+    } catch (e) {
+      // Context not available, use props
+      contextValue = undefined;
+      contextOnChange = undefined;
+    }
+    
     // If type is number, add text-right to align number to right
     const numberAlignClass = type === "number" ? "text-right" : ""
+    
+    // Determine the actual value to display
+    // Priority: contextValue (from DataContext) > value prop
+    let inputValue = hasContext && contextValue !== undefined ? contextValue : value;
     // If value is undefined or null, show blank
-    let inputValue = value === undefined || value === null ? "" : value
+    inputValue = inputValue === undefined || inputValue === null ? "" : inputValue;
     
     // Check if the value is negative for styling
     const isNegative = type === "number" && typeof value === "number" && value < 0
@@ -86,6 +109,16 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       }
     }, [isFocused, tip, updateTooltipPosition])
     
+    // Handle change event - use context if available, otherwise use prop
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (hasContext && contextOnChange && type === "number") {
+        const newValue = parseFloat(e.target.value) || 0;
+        contextOnChange(sheet!, cell!, newValue);
+      } else if (onChange) {
+        onChange(e);
+      }
+    };
+    
     const inputElement = (
       <input
         type={type}
@@ -93,6 +126,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         onWheel={handleWheel}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onChange={handleChange}
         className={cn(
           "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300",
           isInteractive && "focus:border-primary",

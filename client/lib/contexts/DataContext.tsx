@@ -331,15 +331,15 @@ export const DataProvider: React.FC<{
   const getCell = (
     sheet: string,
     cell: string
-  ): string | number | undefined => {
+  ): string | number => {
     const sheetData = userInput[sheet];
-    if (!sheetData) return undefined;
+    if (!sheetData) return cell; // Return the text itself if sheet doesn't exist
 
     try {
       const { row, col } = cellToIndices(cell);
       return sheetData[row]?.[col];
     } catch {
-      return undefined;
+      return cell; // Return the text itself if it's not a valid cell reference
     }
   };
 

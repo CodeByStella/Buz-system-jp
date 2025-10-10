@@ -106,6 +106,8 @@ export default function ProfitSheet() {
               disabled={record.type === 0}
               readOnly={record.type === 2}
               suffix="%"
+              inverseRenderValue={(v) => v / 100}
+              renderValue={(v) => Number(v) * 100}
               tipClassName="text-blue-500"
               className={`border-transparent h-full text-lg text-center border border-green-500`}
             />

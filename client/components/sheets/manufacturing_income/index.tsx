@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
+import { getCellValue } from "@/lib/utils/cellHelpers";
 
 export default function ManufacturingIncomeSheet() {
   const { onSave, saving, hasChanges, loading, errorMessage, retry } =
@@ -39,10 +40,16 @@ export default function ManufacturingIncomeSheet() {
               sheet={sheetName}
               cell={record.product_name}
               disabled={record.type === 0}
-              readOnly={record.type === 2 || index === manufacturingIncomeProducts.length - 1}
+              readOnly={
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+              }
               placeholder={record.type === 1 ? "商品名を入力" : ""}
               className={`border-transparent h-full text-xs text-center ${
-                record.type === 2 || index === manufacturingIncomeProducts.length - 1 ? "!bg-gray-100" : ""
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+                  ? "!bg-gray-100"
+                  : ""
               }`}
             />
           );
@@ -79,9 +86,15 @@ export default function ManufacturingIncomeSheet() {
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2 || index === manufacturingIncomeProducts.length - 1}
+              readOnly={
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+              }
               className={`border-transparent h-full text-xs text-right  ${
-                record.type === 2 || index === manufacturingIncomeProducts.length - 1 ? "!bg-gray-100" : ""
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+                  ? "!bg-gray-100"
+                  : ""
               }`}
             />
           );
@@ -100,9 +113,15 @@ export default function ManufacturingIncomeSheet() {
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2 || index === manufacturingIncomeProducts.length - 1}
+              readOnly={
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+              }
               className={`border-transparent h-full text-xs text-right  ${
-                record.type === 2 || index === manufacturingIncomeProducts.length - 1 ? "!bg-gray-100" : ""
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+                  ? "!bg-gray-100"
+                  : ""
               }`}
             />
           );
@@ -121,9 +140,15 @@ export default function ManufacturingIncomeSheet() {
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2 || index === manufacturingIncomeProducts.length - 1}
+              readOnly={
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+              }
               className={`border-transparent h-full text-xs text-right  ${
-                record.type === 2 || index === manufacturingIncomeProducts.length - 1 ? "!bg-gray-100" : ""
+                record.type === 2 ||
+                index === manufacturingIncomeProducts.length - 1
+                  ? "!bg-gray-100"
+                  : ""
               }`}
             />
           );
@@ -196,7 +221,7 @@ export default function ManufacturingIncomeSheet() {
         ) => {
           return (
             <CustomInput
-              type={value.type === 2 ? "text" : "number"}
+              type={index % 2 === 0 ? "text" : "number"}
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}
@@ -220,10 +245,12 @@ export default function ManufacturingIncomeSheet() {
         ) => {
           return (
             <CustomInput
-              type={value.type === 2 ? "text" : "number"}
+              type={index % 2 === 0 ? "text" : "number"}
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}
+              suffix={index===1?"%":""}
+              renderValue={index===1?(v)=>Number(v)*100:undefined}
               className={`border-transparent h-full text-xs text-center ${
                 index % 2 === 0 ? "!bg-gray-100" : ""
               }`}
@@ -244,7 +271,7 @@ export default function ManufacturingIncomeSheet() {
         ) => {
           return (
             <CustomInput
-              type={value.type === 2 ? "text" : "number"}
+              type={index % 2 === 0 ? "text" : "number"}
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}
@@ -268,7 +295,7 @@ export default function ManufacturingIncomeSheet() {
         ) => {
           return (
             <CustomInput
-              type={value.type === 2 ? "text" : "number"}
+              type={index % 2 === 0 ? "text" : "number"}
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}
@@ -292,7 +319,7 @@ export default function ManufacturingIncomeSheet() {
         ) => {
           return (
             <CustomInput
-              type={value.type === 2 ? "text" : "number"}
+              type={index % 2 === 0 ? "text" : "number"}
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}
@@ -316,7 +343,7 @@ export default function ManufacturingIncomeSheet() {
         ) => {
           return (
             <CustomInput
-              type={value.type === 2 ? "text" : "number"}
+              type={index % 2 === 0 ? "text" : "number"}
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}

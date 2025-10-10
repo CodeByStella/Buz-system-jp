@@ -1,3 +1,5 @@
+import { cellToIndices, indicesToCell } from "../utils/cellHelpers";
+
 export interface BackendData {
   cell: string;
   formula: string;
@@ -14,42 +16,6 @@ export interface FrontendData {
 }
 
 export type SheetNameType = "start" | "mq_current_status" | "profit" | "mq_future" | "salary" | "expenses" | "manufacturing_labor" | "manufacturing_expenses" | "manufacturing_income" | "break_even_point" | "progress_result_input" | "sales_plan_by_department" | "profit_planing_table";
-
-// Helper function to convert cell reference (e.g., "C7") to row and column indices
-const cellToIndices = (cell: string): { row: number; col: number } => {
-  const match = cell.match(/^([A-Z]+)(\d+)$/);
-  if (!match) throw new Error(`Invalid cell reference: ${cell}`);
-
-  const colStr = match[1];
-  const rowStr = match[2];
-
-  // Convert column letters to index (A=1, B=2, ..., Z=26, AA=27, etc.)
-  let col = 0;
-  for (let i = 0; i < colStr.length; i++) {
-    col = col * 26 + (colStr.charCodeAt(i) - 65 + 1);
-  }
-  // Keep as 1-based index (A=1, B=2, etc.)
-
-  const row = parseInt(rowStr); // Keep as 1-based index (1, 2, 3, etc.)
-
-  return { row, col };
-};
-
-// Helper function to convert row and column indices to cell reference (e.g., 1, 1 => "A1")
-const indicesToCell = (row: number, col: number): string => {
-  let colStr = "";
-  let c = col; // Already 1-based (A=1, B=2, etc.)
-
-  while (c > 0) {
-    const remainder = (c - 1) % 26;
-    colStr = String.fromCharCode(65 + remainder) + colStr;
-    c = Math.floor((c - 1) / 26);
-  }
-
-  const rowStr = row.toString(); // Already 1-based
-
-  return colStr + rowStr;
-};
 
 // Transform Backend data to Frontend data (2D arrays by sheet)
 export const transformBe2Fe = (backendData: BackendData[]): FrontendData => {

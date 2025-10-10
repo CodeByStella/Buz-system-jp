@@ -1,577 +1,537 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CustomInput } from '@/components/ui/customInput'
-import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { userService } from '@/lib/services'
+import React, { useMemo } from "react";
+import { AdvancedTable, Column } from "@/components/ui/advanced-table";
+import {
+  ProductRowDataType,
+  SummaryRowDataType,
+  AdjustmentRowDataType,
+  PlanDifferenceRowDataType,
+  GrossProfitRowDataType,
+  manufacturingIncomeProducts,
+  manufacturingIncomeSummary,
+  manufacturingIncomeAdjustment,
+  manufacturingIncomePlanDifference,
+  manufacturingIncomeGrossProfit,
+} from "./cells";
+import { CustomInput } from "@/components/ui/customInput";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { useDataContext } from "@/lib/contexts";
+import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
-interface ProductData {
-  product_name: string
-  gross_profit_amount: number
-  gross_profit_per_item: number
-  quantity: number
-  unit_price: number
-  sales: number
-  gross_profit_rate: number
-}
+export default function ManufacturingIncomeSheet() {
+  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
+    useDataContext();
 
-interface CostDetailsData {
-  // Product data (up to 20 products)
-  products: ProductData[]
-  
-  // Summary data
-  total_gross_profit: number
-  total_gross_profit_per_item: number
-  total_quantity: number
-  average_customer_unit_price: number
-  total_sales: number
-  average_gross_profit_rate: number
-  
-  // Adjustment section
-  target_gross_profit_rate: number
-  monthly_customers: number
-  customer_unit_price: number
-  workforce: number
-  deficiency_amount: number
-  profit_per_person: number
-  productivity_per_person: number
-  
-  // Plan difference
-  workforce_profitability_per_person: number
-  workforce_productivity_per_person: number
-  
-  // Gross profit amounts
-  gross_profit_amount_1: number
-  gross_profit_amount_2: number
-  gross_profit_amount_3: number
-  gross_profit_amount_4: number
-  gross_profit_amount_5: number
-}
+  const sheetName: SheetNameType = "manufacturing_income";
 
-export default function CostDetailsSheet() {
-  const [data, setData] = useState<CostDetailsData>({
-    // Pre-filled products from image
-    products: [
+  // Main Product Table Columns
+  const productTableColumns: Column[] = useMemo(
+    () => [
       {
-        product_name: '塗装工事',
-        gross_profit_amount: 129500000,
-        gross_profit_per_item: 370000,
-        quantity: 350,
-        unit_price: 1000000,
-        sales: 350000000,
-        gross_profit_rate: 37.0
+        key: "product_name",
+        title: "①商品名",
+        width: 120,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={record.product_name === "〇〇" ? "" : value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              placeholder={record.product_name === "〇〇" ? "商品名を入力" : ""}
+              className={`border-transparent h-full text-xs text-center`}
+            />
+          );
+        },
       },
       {
-        product_name: 'リフォーム工事',
-        gross_profit_amount: 17400000,
-        gross_profit_per_item: 120000,
-        quantity: 145,
-        unit_price: 340000,
-        sales: 49300000,
-        gross_profit_rate: 35.3
+        key: "gross_profit_amount",
+        title: "粗利益額",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              prefix="¥"
+              className={`border-transparent h-full text-xs text-right bg-gray-50`}
+            />
+          );
+        },
       },
       {
-        product_name: '小工事',
-        gross_profit_amount: 2509990,
-        gross_profit_per_item: 21826,
-        quantity: 115,
-        unit_price: 50000,
-        sales: 5750000,
-        gross_profit_rate: 43.7
+        key: "gross_profit_per_item",
+        title: "④1個あたり粗利益",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              prefix="¥"
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
       },
       {
-        product_name: '板金工事',
-        gross_profit_amount: 21390000,
-        gross_profit_per_item: 138000,
-        quantity: 155,
-        unit_price: 290000,
-        sales: 44950000,
-        gross_profit_rate: 47.6
+        key: "quantity",
+        title: "③数量",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              suffix="個"
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
       },
-      // Empty rows
-      ...Array(16).fill(null).map((_, i) => ({
-        product_name: '〇〇',
-        gross_profit_amount: 0,
-        gross_profit_per_item: 0,
-        quantity: 0,
-        unit_price: 0,
-        sales: 0,
-        gross_profit_rate: 0
-      })),
       {
-        product_name: 'その他群',
-        gross_profit_amount: 0,
-        gross_profit_per_item: 0,
-        quantity: 0,
-        unit_price: 0,
-        sales: 0,
-        gross_profit_rate: 0
-      }
+        key: "unit_price",
+        title: "②単価",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              prefix="¥"
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
+      },
+      {
+        key: "sales",
+        title: "売上",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              prefix="¥"
+              className={`border-transparent h-full text-xs text-right bg-gray-50`}
+            />
+          );
+        },
+      },
+      {
+        key: "gross_profit_rate",
+        title: "粗利益率",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProductRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              suffix="%"
+              className={`border-transparent h-full text-xs text-right bg-gray-50`}
+            />
+          );
+        },
+      },
     ],
-    
-    // Summary data from image
-    total_gross_profit: 170799990,
-    total_gross_profit_per_item: 129965,
-    total_quantity: 765,
-    average_customer_unit_price: 588235,
-    total_sales: 450000000,
-    average_gross_profit_rate: 40.9,
-    
-    // Adjustment section
-    target_gross_profit_rate: 37.96,
-    monthly_customers: 0,
-    customer_unit_price: 0,
-    workforce: 25,
-    deficiency_amount: -10,
-    profit_per_person: 0,
-    productivity_per_person: 0,
-    
-    // Plan difference
-    workforce_profitability_per_person: 0,
-    workforce_productivity_per_person: 0,
-    
-    // Gross profit amounts
-    gross_profit_amount_1: 170799990.0,
-    gross_profit_amount_2: 0.0,
-    gross_profit_amount_3: 0.0,
-    gross_profit_amount_4: 6831999.6,
-    gross_profit_amount_5: 18000000
-  })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+    [sheetName]
+  );
 
-  useEffect(() => {
-    initializeData()
-  }, [])
+  // Summary Table Columns
+  const summaryTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 100,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: SummaryRowDataType) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor,
+                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs font-medium`
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        key: "value",
+        title: "",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: SummaryRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              prefix={
+                value.includes("率") || value.includes("M(個)") ? "" : "¥"
+              }
+              suffix={
+                value.includes("率")
+                  ? "%"
+                  : value.includes("M(個)") || value.includes("数量")
+                  ? "個"
+                  : ""
+              }
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
 
-  const initializeData = async () => {
-    try {
-      const result = await userService.getUserInputs('cost-details')
-      const inputMap: Partial<CostDetailsData> = {}
-      ;(result || []).forEach((i: any) => {
-        if (i.cellKey.startsWith('product_')) {
-          // Handle product data
-          const productIndex = parseInt(i.cellKey.split('_')[1])
-          const field = i.cellKey.split('_')[2]
-          if (!inputMap.products) inputMap.products = [...data.products]
-          if (inputMap.products[productIndex]) {
-            inputMap.products[productIndex] = {
-              ...inputMap.products[productIndex],
-              [field]: field === 'product_name' ? i.value : Number(i.value) || 0
-            } as ProductData
-          }
-        } else {
-          (inputMap as any)[i.cellKey] = Number(i.value) || 0
-        }
-      })
-      setData(prev => ({ ...prev, ...inputMap }))
-    } catch (error) {
-      console.error('Failed to load cost details data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // Adjustment Table Columns
+  const adjustmentTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 120,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: AdjustmentRowDataType) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor,
+                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs font-medium`
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        key: "value",
+        title: "",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: AdjustmentRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              prefix={value.includes("率") ? "" : "¥"}
+              suffix={
+                value.includes("率") ? "%" : value.includes("人") ? "名" : ""
+              }
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
 
-  const handleProductChange = async (productIndex: number, field: keyof ProductData, value: number | string) => {
-    const newProducts = [...data.products]
-    newProducts[productIndex] = {
-      ...newProducts[productIndex],
-      [field]: field === 'product_name' ? value : Number(value)
-    }
-    
-    // Recalculate derived fields
-    if (field === 'unit_price' || field === 'quantity') {
-      const unitPrice = field === 'unit_price' ? Number(value) : newProducts[productIndex].unit_price
-      const quantity = field === 'quantity' ? Number(value) : newProducts[productIndex].quantity
-      const grossProfitPerItem = newProducts[productIndex].gross_profit_per_item
-      
-      newProducts[productIndex].sales = unitPrice * quantity
-      newProducts[productIndex].gross_profit_amount = grossProfitPerItem * quantity
-      newProducts[productIndex].gross_profit_rate = newProducts[productIndex].sales > 0 
-        ? (newProducts[productIndex].gross_profit_amount / newProducts[productIndex].sales) * 100 
-        : 0
-    } else if (field === 'gross_profit_per_item') {
-      const quantity = newProducts[productIndex].quantity
-      newProducts[productIndex].gross_profit_amount = Number(value) * quantity
-      newProducts[productIndex].gross_profit_rate = newProducts[productIndex].sales > 0 
-        ? (newProducts[productIndex].gross_profit_amount / newProducts[productIndex].sales) * 100 
-        : 0
-    }
-    
-    const newData = { ...data, products: newProducts }
-    setData(newData)
+  // Plan Difference Table Columns
+  const planDifferenceTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 120,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: PlanDifferenceRowDataType) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor,
+                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs font-medium`
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        key: "value",
+        title: "",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: PlanDifferenceRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
 
-    try {
-      // Only save numeric values to the API
-      if (field !== 'product_name') {
-        await userService.saveUserInput({ sheet: 'cost-details', cell: `product_${productIndex}_${field}`, value: Number(value) })
-      }
-      
-      // Trigger recalculation
-      const inputs: Record<string, number> = {}
-      Object.entries(newData).forEach(([k, v]) => {
-        if (k !== 'products' && typeof v === 'number') {
-          inputs[k] = v
-        }
-      })
-      const result = await userService.calculate({ sheet: 'cost-details', inputs })
-      
-      // Update with calculated values
-      setData(prev => ({ ...prev, ...(result.results || {}) }))
-    } catch (error) {
-      console.error('Failed to save input:', error)
-    }
-  }
+  // Gross Profit Table Columns
+  const grossProfitTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 120,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: GrossProfitRowDataType) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor,
+                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs font-medium`
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        key: "value",
+        title: "",
+        width: 100,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: GrossProfitRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              className={`border-transparent h-full text-xs text-right`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
 
-  const handleInputChange = async (key: keyof CostDetailsData, value: number) => {
-    const newData = { ...data, [key]: value }
-    setData(newData)
-
-    try {
-      await userService.saveUserInput({ sheet: 'cost-details', cell: key, value })
-      
-      // Trigger recalculation
-      const inputs: Record<string, number> = {}
-      Object.entries(newData).forEach(([k, v]) => {
-        if (k !== 'products' && typeof v === 'number') {
-          inputs[k] = v
-        }
-      })
-      const result = await userService.calculate({ sheet: 'cost-details', inputs })
-      
-      // Update with calculated values
-      setData(prev => ({ ...prev, ...(result.results || {}) }))
-    } catch (error) {
-      console.error('Failed to save input:', error)
-    }
-  }
-
-  const handleSaveAll = async () => {
-    setSaving(true)
-    try {
-      const promises: Promise<any>[] = []
-      
-      // Save product data
-      data.products.forEach((product, index) => {
-        Object.entries(product).forEach(([field, value]) => {
-          promises.push(userService.saveUserInput({ sheet: 'cost-details', cell: `product_${index}_${field}`, value }))
-        })
-      })
-      
-      // Save other data
-      Object.entries(data).forEach(([key, value]) => {
-        if (key !== 'products') {
-          promises.push(userService.saveUserInput({ sheet: 'cost-details', cell: key, value }))
-        }
-      })
-      
-      await Promise.all(promises)
-    } catch (error) {
-      console.error('Failed to save all:', error)
-    } finally {
-      setSaving(false)
-    }
-  }
-
+  // Show loading spinner while fetching data
   if (loading) {
-    return <div className="p-3 text-sm">読み込み中...</div>
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+          <p className="text-gray-600">データを読み込んでいます...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error message with retry option
+  if (errorMessage) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 max-w-md mx-auto p-6 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-red-600 text-center">
+            <p className="text-lg font-semibold mb-2">エラーが発生しました</p>
+            <p className="text-sm">{errorMessage}</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={retry}
+            className="border-red-300 text-red-700 hover:bg-red-100"
+          >
+            再試行
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="p-3 space-y-3 text-sm">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <span className="text-xs text-gray-500">ひながた</span>
-          <h1 className="text-lg font-semibold">⑦(PQ)原価の詳細</h1>
+    <div className="h-full flex flex-col space-y-4 overflow-hidden">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">⑦(PQ)原価の詳細</h1>
+          <p className="text-gray-600">
+            製造業の原価詳細を入力して、製品別の粗利益を分析します。
+          </p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="bg-yellow-100 border border-yellow-300 px-3 py-1 text-sm font-medium">
-            売上計 ¥{data.total_sales.toLocaleString()}
-          </div>
-          <Button onClick={handleSaveAll} disabled={saving} className="h-8 px-3 text-xs">
-            {saving ? '保存中...' : 'すべて保存'}
+        <div className="flex gap-2">
+          <Button
+            variant="success"
+            leftIcon={Save}
+            loading={saving}
+            loadingText="保存中..."
+            onClick={onSave}
+            disabled={saving || !hasChanges}
+          >
+            保存
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileSpreadsheet}
+            className="border-green-500 text-green-700 hover:bg-green-50"
+            onClick={() => {
+              /* TODO: implement export to Excel logic */
+            }}
+          >
+            Excel出力
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileText}
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              /* TODO: implement export to PDF logic */
+            }}
+          >
+            PDF出力
           </Button>
         </div>
       </div>
 
+      {/* Header with instruction */}
       <div className="text-xs text-gray-600 mb-2">↓②~④に順番に記入</div>
 
-      {/* Main Product Table */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-32 text-xs">①商品名</TableHead>
-                <TableHead className="w-32 text-xs">粗利益額</TableHead>
-                <TableHead className="w-32 text-xs">④1個あたり粗利益</TableHead>
-                <TableHead className="w-24 text-xs">③数量</TableHead>
-                <TableHead className="w-32 text-xs">②単価</TableHead>
-                <TableHead className="w-32 text-xs">売上</TableHead>
-                <TableHead className="w-24 text-xs">粗利益率</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.products.map((product, index) => (
-                <TableRow key={index}>
-                  <TableCell className="p-2">
-                    <Input
-                      value={product.product_name}
-                      onChange={(e) => handleProductChange(index, 'product_name', e.target.value)}
-                      className="h-8 text-xs"
-                    />
-                  </TableCell>
-                  <TableCell className="p-2">
-                    <Input
-                      type="number"
-                      value={product.gross_profit_amount}
-                      readOnly
-                      className="h-8 text-xs bg-gray-50"
-                    />
-                  </TableCell>
-                  <TableCell className="p-2">
-                    <Input
-                      type="number"
-                      value={product.gross_profit_per_item}
-                      onChange={(e) => handleProductChange(index, 'gross_profit_per_item', Number(e.target.value))}
-                      className="h-8 text-xs"
-                    />
-                  </TableCell>
-                  <TableCell className="p-2">
-                    <Input
-                      type="number"
-                      value={product.quantity}
-                      onChange={(e) => handleProductChange(index, 'quantity', Number(e.target.value))}
-                      className="h-8 text-xs"
-                    />
-                  </TableCell>
-                  <TableCell className="p-2">
-                    <Input
-                      type="number"
-                      value={product.unit_price}
-                      onChange={(e) => handleProductChange(index, 'unit_price', Number(e.target.value))}
-                      className="h-8 text-xs"
-                    />
-                  </TableCell>
-                  <TableCell className="p-2">
-                    <Input
-                      type="number"
-                      value={product.sales}
-                      readOnly
-                      className="h-8 text-xs bg-gray-50"
-                    />
-                  </TableCell>
-                  <TableCell className="p-2">
-                    <Input
-                      type="number"
-                      value={product.gross_profit_rate.toFixed(1)}
-                      readOnly
-                      className="h-8 text-xs bg-gray-50"
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <div className="grid grid-rows-4 gap-4 flex-1 min-h-0">
+        {/* Row 1 - Main Product Table */}
+        <div className="row-span-2 flex flex-col space-y-2">
+          <AdvancedTable
+            columns={productTableColumns}
+            data={manufacturingIncomeProducts}
+            bordered
+            dense
+            stickyHeader
+            maxHeight={"400px"}
+            cellClassName="!p-0"
+          />
+          <div className="text-xs text-gray-600">
+            ①業種、種別、商品名など商品群として並べたいものを任意で追記
+          </div>
+        </div>
 
-      <div className="text-xs text-gray-600">
-        ①業種、種別、商品名など商品群として並べたいものを任意で追記して良
+        {/* Row 2 - Summary Section (実績) */}
+        <div className="row-span-1">
+          <AdvancedTable
+            columns={summaryTableColumns}
+            data={manufacturingIncomeSummary}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"100px"}
+            cellClassName="!p-0"
+            title={
+              <div className="text-sm font-semibold text-center w-full p-2 bg-yellow-300">
+                実績
+              </div>
+            }
+          />
+        </div>
+
+        {/* Row 3 - Adjustment Section (〇になるまで修正) */}
+        <div className="row-span-1">
+          <AdvancedTable
+            columns={adjustmentTableColumns}
+            data={manufacturingIncomeAdjustment}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"150px"}
+            cellClassName="!p-0"
+            title={
+              <div className="text-sm font-semibold text-center w-full p-2 bg-yellow-300">
+                〇になるまで修正
+              </div>
+            }
+          />
+        </div>
+
+        {/* Row 4 - Plan Difference and Gross Profit Sections */}
+        <div className="row-span-1 grid grid-cols-2 gap-4">
+          <AdvancedTable
+            columns={planDifferenceTableColumns}
+            data={manufacturingIncomePlanDifference}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"100px"}
+            cellClassName="!p-0"
+            title={
+              <div className="text-sm font-semibold text-center w-full p-2 bg-yellow-300">
+                計画との差
+              </div>
+            }
+          />
+          <AdvancedTable
+            columns={grossProfitTableColumns}
+            data={manufacturingIncomeGrossProfit}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"100px"}
+            cellClassName="!p-0"
+            title={
+              <div className="text-sm font-semibold text-center w-full p-2 bg-yellow-300">
+                粗利益額
+              </div>
+            }
+          />
+        </div>
       </div>
-
-      {/* Summary Section */}
-      <Card>
-        <CardHeader className="py-2">
-          <CardTitle className="text-sm">実績</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-6 gap-2 text-xs">
-            <div>
-              <label className="font-medium">M(計)</label>
-              <div className="text-gray-600">{data.total_gross_profit.toLocaleString()}</div>
-            </div>
-            <div>
-              <label className="font-medium">M(個)</label>
-              <div className="text-gray-600">{data.total_gross_profit_per_item.toLocaleString()}</div>
-            </div>
-            <div>
-              <label className="font-medium">数量(Q)</label>
-              <div className="text-gray-600">{data.total_quantity}</div>
-            </div>
-            <div>
-              <label className="font-medium">平均客単価</label>
-              <div className="text-gray-600">{data.average_customer_unit_price.toLocaleString()}</div>
-            </div>
-            <div>
-              <label className="font-medium">売上計</label>
-              <div className="text-gray-600">{data.total_sales.toLocaleString()}</div>
-            </div>
-            <div>
-              <label className="font-medium">平均粗利</label>
-              <div className="text-gray-600">{data.average_gross_profit_rate.toFixed(1)}%</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Adjustment Section */}
-      <Card>
-        <CardHeader className="py-2">
-          <CardTitle className="text-sm">〇になるまで修正</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-4 gap-3">
-            <div>
-              <label className="text-xs font-medium">粗利益率(%)</label>
-              <Input
-                type="number"
-                step="0.01"
-                value={data.target_gross_profit_rate}
-                onChange={(e) => handleInputChange('target_gross_profit_rate', Number(e.target.value))}
-                className="mt-1 h-8 text-xs bg-yellow-50"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium">客数(月)</label>
-              <Input
-                type="number"
-                value={data.monthly_customers}
-                onChange={(e) => handleInputChange('monthly_customers', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium">客単価(円)</label>
-              <Input
-                type="number"
-                value={data.customer_unit_price}
-                onChange={(e) => handleInputChange('customer_unit_price', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium">戦力(人)</label>
-              <Input
-                type="number"
-                value={data.workforce}
-                onChange={(e) => handleInputChange('workforce', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-              <div className="text-xs text-gray-500">25名</div>
-            </div>
-            <div>
-              <label className="text-xs font-medium">└→不足額</label>
-              <Input
-                type="number"
-                value={data.deficiency_amount}
-                readOnly
-                className="mt-1 h-8 text-xs bg-yellow-50"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium">1人あたりの利益</label>
-              <Input
-                type="number"
-                value={data.profit_per_person}
-                onChange={(e) => handleInputChange('profit_per_person', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium">1人あたり生産性</label>
-              <Input
-                type="number"
-                value={data.productivity_per_person}
-                onChange={(e) => handleInputChange('productivity_per_person', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Plan Difference Section */}
-      <Card>
-        <CardHeader className="py-2">
-          <CardTitle className="text-sm">計画との差</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-medium">戦力(1人当たりの利益力)</label>
-              <Input
-                type="number"
-                value={data.workforce_profitability_per_person}
-                onChange={(e) => handleInputChange('workforce_profitability_per_person', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-medium">1人当たり生産性</label>
-              <Input
-                type="number"
-                value={data.workforce_productivity_per_person}
-                onChange={(e) => handleInputChange('workforce_productivity_per_person', Number(e.target.value))}
-                className="mt-1 h-8 text-xs"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Gross Profit Amounts */}
-      <Card>
-        <CardHeader className="py-2">
-          <CardTitle className="text-sm">粗利益額</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-5 gap-2">
-            <div>
-              <Input
-                type="number"
-                value={data.gross_profit_amount_1}
-                onChange={(e) => handleInputChange('gross_profit_amount_1', Number(e.target.value))}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div>
-              <Input
-                type="number"
-                value={data.gross_profit_amount_2}
-                onChange={(e) => handleInputChange('gross_profit_amount_2', Number(e.target.value))}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div>
-              <Input
-                type="number"
-                value={data.gross_profit_amount_3}
-                onChange={(e) => handleInputChange('gross_profit_amount_3', Number(e.target.value))}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div>
-              <Input
-                type="number"
-                value={data.gross_profit_amount_4}
-                onChange={(e) => handleInputChange('gross_profit_amount_4', Number(e.target.value))}
-                className="h-8 text-xs"
-              />
-            </div>
-            <div>
-              <Input
-                type="number"
-                value={data.gross_profit_amount_5}
-                onChange={(e) => handleInputChange('gross_profit_amount_5', Number(e.target.value))}
-                className="h-8 text-xs"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
-  )
+  );
 }

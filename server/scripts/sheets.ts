@@ -24,8 +24,7 @@ const buildSheetData = (
       user: "",
       sheet: sheetName,
       cell,
-      value: typeof val === "number" ? val : 0,
-      formula: typeof val === "string" ? val : "",
+      value: val,
     })
   );
 };

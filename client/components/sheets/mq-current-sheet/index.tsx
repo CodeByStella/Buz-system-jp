@@ -186,7 +186,9 @@ export default function MQCurrentSheet() {
         </div>
 
         {/* Row 2 - Horizontal Grid */}
-        <div className="h-full overflow-hidden"></div>
+        <div className="h-full overflow-hidden">
+          
+        </div>
       </div>
     </div>
   );

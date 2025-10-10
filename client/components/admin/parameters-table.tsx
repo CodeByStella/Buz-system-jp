@@ -105,7 +105,7 @@ export function ParametersTable() {
                 <TableCell className="font-medium">{param.key}</TableCell>
                 <TableCell>
                   {editing === param.id ? (
-                    <Input
+                    <CustomInput
                       type="number"
                       value={editValues[param.id]?.value || param.value}
                       onChange={(e) => setEditValues({
@@ -123,7 +123,7 @@ export function ParametersTable() {
                 </TableCell>
                 <TableCell>
                   {editing === param.id ? (
-                    <Input
+                    <CustomInput
                       value={editValues[param.id]?.description || param.description || ''}
                       onChange={(e) => setEditValues({
                         ...editValues,

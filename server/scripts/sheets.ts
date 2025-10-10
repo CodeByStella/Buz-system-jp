@@ -171,8 +171,8 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     O15: "=start!D62",
     N14: "=SUM(N6:N13)",
 
-    C18: "=(E14+J14+014)/(D14+114+N14)",
-    C19: '=IFERROR((E15+J15+015)/(N15+115+D15),"0")',
+    C18: "=(E14+J14+O14)/(D14+I14+N14)",
+    C19: '=IFERROR((E15+J15+O15)/(N15+I15+D15),"0")',
 
     E18: "=C18/C19",
   },

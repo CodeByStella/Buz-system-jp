@@ -94,7 +94,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     if (type === "number" && inputValue !== "" && typeof inputValue === "number") {
       // Check if it's a decimal number
       if (!Number.isInteger(inputValue)) {
-        inputValue = Number(inputValue).toFixed(3)
+        inputValue = Number(inputValue).toFixed(1)
       }
     }
     

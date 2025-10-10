@@ -18,11 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Search,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { Search, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Types for the advanced table
@@ -53,7 +49,7 @@ export interface ColorSettings {
 export interface AdvancedTableProps<T = any> {
   data: T[];
   columns: Column<T>[];
-  title?: string;
+  title?: string | React.ReactNode;
   description?: string;
   loading?: boolean;
   dense?: boolean;
@@ -245,7 +241,7 @@ export function AdvancedTable<T = any>({
     return (
       <Card className={className}>
         {(title || description) && (
-          <CardHeader className={dense ? "py-3" : undefined}>
+          <CardHeader className={dense ? "p-0" : "py-0"}>
             <CardTitle className={dense ? "text-sm" : undefined}>
               {title}
             </CardTitle>
@@ -273,18 +269,16 @@ export function AdvancedTable<T = any>({
   }
 
   return (
-    <Card className={cn("h-full min-h-0 flex flex-col cardcardcard", className)}>
+    <Card
+      className={cn("h-full min-h-0 flex flex-col cardcardcard", className)}
+    >
       {(title || description) && (
-        <CardHeader className={dense ? "py-2" : undefined}>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className={dense ? "text-sm" : undefined}>
-                {title}
-              </CardTitle>
-              <CardDescription className={dense ? "text-xs" : undefined}>
-                {description}
-              </CardDescription>
-            </div>
+        <CardHeader className={dense ? "p-0" : "py-0"}>
+          <div className="flex justify-between items-center relative">
+            {title}
+            <CardDescription className={dense ? "text-xs" : undefined}>
+              {description}
+            </CardDescription>
           </div>
         </CardHeader>
       )}
@@ -335,42 +329,50 @@ export function AdvancedTable<T = any>({
               </div>
             )}
           </div>
-          
         )}
         {/* Table */}
         <div
           className={cn(
             "h-full min-h-0",
-            scrollable ? "overflow-auto scroll-pb-24 border border-gray-200 rounded-md" : "overflow-hidden"
+            scrollable
+              ? "overflow-auto scroll-pb-24 border border-gray-200 rounded-md"
+              : "overflow-hidden"
           )}
-          style={scrollable ? { 
-            maxHeight,
-            position: 'relative'
-          } : undefined}
+          style={
+            scrollable
+              ? {
+                  maxHeight,
+                  position: "relative",
+                }
+              : undefined
+          }
         >
-          <Table className={cn(
-            "pb-4",
-            bordered && "border border-gray-200",
-            tableClassName
-          )}>
+          <Table
+            className={cn(
+              "pb-4",
+              bordered && "border border-gray-200",
+              tableClassName
+            )}
+          >
             {!hideHeader && (
-              <TableHeader 
+              <TableHeader
                 className={cn(
                   "bg-white",
                   stickyHeader && "shadow-sm [&_tr]:border-b-0"
                 )}
-                style={stickyHeader ? { 
-                  position: 'sticky', 
-                  top: 0, 
-                  zIndex: 10,
-                  backgroundColor: 'white'
-                } : undefined}
+                style={
+                  stickyHeader
+                    ? {
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 10,
+                        backgroundColor: "white",
+                      }
+                    : undefined
+                }
               >
                 <TableRow
-                  className={cn(
-                    dense ? "h-8" : undefined, 
-                    colors.headerBg
-                  )}
+                  className={cn(dense ? "h-8" : undefined, colors.headerBg)}
                 >
                   {columns.map((column, columnIndex) => (
                     <TableHead
@@ -382,16 +384,24 @@ export function AdvancedTable<T = any>({
                         column.align === "center" && "text-center",
                         column.align === "right" && "text-right",
                         bordered && "border border-gray-200",
-                        stickyColumns > 0 && columnIndex < stickyColumns && "sticky bg-white z-20",
+                        stickyColumns > 0 &&
+                          columnIndex < stickyColumns &&
+                          "sticky bg-white z-20",
                         sortable &&
                           column.sortable &&
                           "cursor-pointer hover:bg-slate-100"
                       )}
-                      style={{ 
+                      style={{
                         width: column.width,
-                        left: stickyColumns > 0 && columnIndex < stickyColumns 
-                          ? `${columnIndex * (typeof column.width === 'number' ? column.width : 150)}px`
-                          : undefined
+                        left:
+                          stickyColumns > 0 && columnIndex < stickyColumns
+                            ? `${
+                                columnIndex *
+                                (typeof column.width === "number"
+                                  ? column.width
+                                  : 150)
+                              }px`
+                            : undefined,
                       }}
                       onClick={() => handleSort(column)}
                     >
@@ -468,13 +478,21 @@ export function AdvancedTable<T = any>({
                           column.align === "center" && "text-center",
                           column.align === "right" && "text-right",
                           bordered && "border border-gray-200",
-                          stickyColumns > 0 && columnIndex < stickyColumns && "sticky bg-white z-10"
+                          stickyColumns > 0 &&
+                            columnIndex < stickyColumns &&
+                            "sticky bg-white z-10"
                         )}
-                        style={{ 
+                        style={{
                           width: column.width,
-                          left: stickyColumns > 0 && columnIndex < stickyColumns 
-                            ? `${columnIndex * (typeof column.width === 'number' ? column.width : 150)}px`
-                            : undefined
+                          left:
+                            stickyColumns > 0 && columnIndex < stickyColumns
+                              ? `${
+                                  columnIndex *
+                                  (typeof column.width === "number"
+                                    ? column.width
+                                    : 150)
+                                }px`
+                              : undefined,
                         }}
                       >
                         {renderCell(column, record, index)}
@@ -531,9 +549,7 @@ export function AdvancedTable<T = any>({
         )}
 
         {/* Footer */}
-        {footerContent && (
-          <div className="border-t">{footerContent}</div>
-        )}
+        {footerContent && <div className="border-t">{footerContent}</div>}
       </CardContent>
     </Card>
   );

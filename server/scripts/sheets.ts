@@ -271,7 +271,7 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     D31: "=SUM(D8:D29)",
     E31: '=IFERROR(F31/D31,"")',
     F31: "=SUM(F8:F29)",
-    G31: "image.png",
+    G31: '=IFERROR(AVERAGE(G8:G29),"")',
 
     G33: "=salary!D14+salary!I14+salary!N14+manufacturing_labor!D14+manufacturing_labor!114+manufacturing_labor!N14",
 

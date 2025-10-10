@@ -1,5 +1,5 @@
 export interface ProductRowDataType {
-  product_name: string;
+  product_name: string; // This is the cell reference for the product name
   gross_profit_amount: string;
   gross_profit_per_item: string;
   quantity: string;
@@ -60,66 +60,86 @@ const colors = {
 export const manufacturingIncomeProducts: ProductRowDataType[] = [
   {
     product_name: "塗装工事",
-    gross_profit_amount: "B4", // 129,500,000
-    gross_profit_per_item: "C4", // 370,000
-    quantity: "D4", // 350
-    unit_price: "E4", // 1,000,000
-    sales: "F4", // 350,000,000
-    gross_profit_rate: "G4", // 37.0%
+    gross_profit_amount: "B8", // 129,500,000
+    gross_profit_per_item: "C8", // 370,000
+    quantity: "D8", // 350
+    unit_price: "E8", // 1,000,000
+    sales: "F8", // 350,000,000
+    gross_profit_rate: "G8", // 37.0%
     type: 1 as const,
   },
   {
     product_name: "リフォーム工事",
-    gross_profit_amount: "B5", // 17,400,000
-    gross_profit_per_item: "C5", // 120,000
-    quantity: "D5", // 145
-    unit_price: "E5", // 340,000
-    sales: "F5", // 49,300,000
-    gross_profit_rate: "G5", // 35.3%
+    gross_profit_amount: "B9", // 17,400,000
+    gross_profit_per_item: "C9", // 120,000
+    quantity: "D9", // 149
+    unit_price: "E9", // 340,000
+    sales: "F9", // 49,300,000
+    gross_profit_rate: "G9", // 35.3%
     type: 1 as const,
   },
   {
     product_name: "小工事",
-    gross_profit_amount: "B6", // 2,509,990
-    gross_profit_per_item: "C6", // 21,826
-    quantity: "D6", // 115
-    unit_price: "E6", // 50,000
-    sales: "F6", // 5,750,000
-    gross_profit_rate: "G6", // 43.7%
+    gross_profit_amount: "B10", // 2,509,990
+    gross_profit_per_item: "C10", // 21,826
+    quantity: "D10", // 115
+    unit_price: "E10", // 50,000
+    sales: "F10", // 5,750,000
+    gross_profit_rate: "G10", // 43.7%
     type: 1 as const,
   },
   {
     product_name: "板金工事",
-    gross_profit_amount: "B7", // 26,985,500
-    gross_profit_per_item: "C7", // 174,100
-    quantity: "D7", // 155
-    unit_price: "E7", // 290,000
-    sales: "F7", // 44,950,000
-    gross_profit_rate: "G7", // 60.0%
+    gross_profit_amount: "B11", // 26,985,500
+    gross_profit_per_item: "C11", // 174,100
+    quantity: "D11", // 155
+    unit_price: "E11", // 290,000
+    sales: "F11", // 44,950,000
+    gross_profit_rate: "G11", // 60.0%
     type: 1 as const,
   },
   // Empty rows with placeholder data
   ...Array(16)
     .fill(null)
     .map((_, i) => ({
-      product_name: "〇〇",
-      gross_profit_amount: `B${8 + i}`, // Calculated field
-      gross_profit_per_item: `C${8 + i}`,
-      quantity: `D${8 + i}`,
-      unit_price: `E${8 + i}`,
-      sales: `F${8 + i}`, // Calculated field
-      gross_profit_rate: `G${8 + i}`, // Calculated field
+      product_name: `A${12 + i}`,
+      gross_profit_amount: `B${12 + i}`, // Calculated field
+      gross_profit_per_item: `C${12 + i}`,
+      quantity: `D${12 + i}`,
+      unit_price: `E${12 + i}`,
+      sales: `F${12 + i}`, // Calculated field
+      gross_profit_rate: `G${12 + i}`, // Calculated field
       type: 1 as const,
     })),
   {
     product_name: "その他群",
-    gross_profit_amount: "B24", // Calculated field
-    gross_profit_per_item: "C24",
-    quantity: "D24",
-    unit_price: "E24",
-    sales: "F24", // Calculated field
-    gross_profit_rate: "G24", // Calculated field
+    gross_profit_amount: "B29", // Calculated field
+    gross_profit_per_item: "C29",
+    quantity: "D29",
+    unit_price: "E29",
+    sales: "F29", // Calculated field
+    gross_profit_rate: "G29", // Calculated field
     type: 1 as const,
+  },
+  {
+    product_name: "",
+    gross_profit_amount: "M(計)", // Calculated field
+    gross_profit_per_item: "M(個)",
+    quantity: "数量(Q)",
+    unit_price: "平均客単価",
+    sales: "売上 計", // Calculated field
+    gross_profit_rate: "平均粗利", // Calculated field
+    type: 2 as const,
+  },
+  {
+    product_name: "実績",
+    gross_profit_amount: "B31", // Calculated field
+    gross_profit_per_item: "C31",
+    quantity: "D31",
+    unit_price: "E31",
+    sales: "F31", // Calculated field
+    gross_profit_rate: "G31", // Calculated field
+    type: 2 as const,
   },
 ];
 

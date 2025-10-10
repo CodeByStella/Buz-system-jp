@@ -41,11 +41,13 @@ export default function ManufacturingIncomeSheet() {
             <CustomInput
               type="text"
               sheet={sheetName}
-              cell={record.product_name === "〇〇" ? "" : value}
+              cell={record.product_name}
               disabled={record.type === 0}
               readOnly={record.type === 2}
-              placeholder={record.product_name === "〇〇" ? "商品名を入力" : ""}
-              className={`border-transparent h-full text-xs text-center`}
+              placeholder={record.type === 1 ? "商品名を入力" : ""}
+              className={`border-transparent h-full text-xs text-center ${
+                record.type === 2 ? "!bg-gray-100" : ""
+              }`}
             />
           );
         },
@@ -54,18 +56,16 @@ export default function ManufacturingIncomeSheet() {
         key: "gross_profit_amount",
         title: "粗利益額",
         width: 100,
-        align: "right",
+        align: "center",
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: ProductRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
-              disabled={record.type === 0}
-              readOnly={record.type === 2}
+              readOnly
               prefix="¥"
-              className={`border-transparent h-full text-xs text-right bg-gray-50`}
+              className={`border-transparent h-full text-xs text-right !bg-gray-100`}
             />
           );
         },
@@ -79,13 +79,14 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: ProductRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
               readOnly={record.type === 2}
               prefix="¥"
-              className={`border-transparent h-full text-xs text-right`}
+              className={`border-transparent h-full text-xs text-right  ${
+                record.type === 2 ? "!bg-gray-100" : ""
+              }`}
             />
           );
         },
@@ -99,13 +100,14 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: ProductRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
               readOnly={record.type === 2}
               suffix="個"
-              className={`border-transparent h-full text-xs text-right`}
+              className={`border-transparent h-full text-xs text-right  ${
+                record.type === 2 ? "!bg-gray-100" : ""
+              }`}
             />
           );
         },
@@ -119,13 +121,14 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: ProductRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
               readOnly={record.type === 2}
               prefix="¥"
-              className={`border-transparent h-full text-xs text-right`}
+              className={`border-transparent h-full text-xs text-right  ${
+                record.type === 2 ? "!bg-gray-100" : ""
+              }`}
             />
           );
         },
@@ -139,13 +142,12 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: ProductRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2}
+              readOnly
               prefix="¥"
-              className={`border-transparent h-full text-xs text-right bg-gray-50`}
+              className={`border-transparent h-full text-xs text-right !bg-gray-100`}
             />
           );
         },
@@ -159,13 +161,14 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: ProductRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2}
+              readOnly
               suffix="%"
-              className={`border-transparent h-full text-xs text-right bg-gray-50`}
+              className={`border-transparent h-full text-xs text-right  ${
+                record.type === 2 ? "!bg-gray-100" : ""
+              }`}
             />
           );
         },
@@ -205,7 +208,6 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: SummaryRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
@@ -260,7 +262,6 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: AdjustmentRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
@@ -309,7 +310,6 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: PlanDifferenceRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
@@ -354,7 +354,6 @@ export default function ManufacturingIncomeSheet() {
         render: (value: string, record: GrossProfitRowDataType) => {
           return (
             <CustomInput
-              type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
@@ -443,10 +442,6 @@ export default function ManufacturingIncomeSheet() {
           </Button>
         </div>
       </div>
-
-      {/* Header with instruction */}
-      <div className="text-xs text-gray-600 mb-2">↓②~④に順番に記入</div>
-
       <div className="grid grid-rows-4 gap-4 flex-1 min-h-0">
         {/* Row 1 - Main Product Table */}
         <div className="row-span-2 flex flex-col space-y-2">
@@ -459,13 +454,10 @@ export default function ManufacturingIncomeSheet() {
             maxHeight={"400px"}
             cellClassName="!p-0"
           />
-          <div className="text-xs text-gray-600">
-            ①業種、種別、商品名など商品群として並べたいものを任意で追記
-          </div>
         </div>
 
         {/* Row 2 - Summary Section (実績) */}
-        <div className="row-span-1">
+        {/* <div className="row-span-1">
           <AdvancedTable
             columns={summaryTableColumns}
             data={manufacturingIncomeSummary}
@@ -480,10 +472,10 @@ export default function ManufacturingIncomeSheet() {
               </div>
             }
           />
-        </div>
+        </div> */}
 
         {/* Row 3 - Adjustment Section (〇になるまで修正) */}
-        <div className="row-span-1">
+        {/* <div className="row-span-1">
           <AdvancedTable
             columns={adjustmentTableColumns}
             data={manufacturingIncomeAdjustment}
@@ -498,11 +490,11 @@ export default function ManufacturingIncomeSheet() {
               </div>
             }
           />
-        </div>
+        </div> */}
 
         {/* Row 4 - Plan Difference and Gross Profit Sections */}
         <div className="row-span-1 grid grid-cols-2 gap-4">
-          <AdvancedTable
+          {/* <AdvancedTable
             columns={planDifferenceTableColumns}
             data={manufacturingIncomePlanDifference}
             bordered
@@ -515,8 +507,8 @@ export default function ManufacturingIncomeSheet() {
                 計画との差
               </div>
             }
-          />
-          <AdvancedTable
+          /> */}
+          {/* <AdvancedTable
             columns={grossProfitTableColumns}
             data={manufacturingIncomeGrossProfit}
             bordered
@@ -529,7 +521,7 @@ export default function ManufacturingIncomeSheet() {
                 粗利益額
               </div>
             }
-          />
+          /> */}
         </div>
       </div>
     </div>

@@ -410,26 +410,6 @@ export default function DashboardLayout() {
               <div className="flex h-full">
                 <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
                 <div className="flex-1 flex flex-col overflow-hidden">
-                  {/* Save button bar */}
-                  {/* <div className="border-b border-gray-200 px-6 py-3 flex justify-end items-center gap-3">
-                    <div className="text-sm text-gray-500">
-                      {getChangedCells().length > 0 && (
-                        <span>{getChangedCells().length} 件の変更</span>
-                      )}
-                    </div>
-                    <button
-                      onClick={handleSave}
-                      disabled={saving || getChangedCells().length === 0}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                        saving || getChangedCells().length === 0
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
-                      }`}
-                    >
-                      {saving ? "保存中..." : "変更を保存"}
-                    </button>
-                  </div> */}
-                  
                   <main className="flex-1 p-6 overflow-auto">
                     {renderContent()}
                   </main>

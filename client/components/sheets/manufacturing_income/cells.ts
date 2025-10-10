@@ -9,52 +9,28 @@ export interface ProductRowDataType {
   type: 0 | 1 | 2; // 0 disabled, 1 editable, 2 readonly
 }
 
-export interface SummaryRowDataType {
-  label: string;
+export type CellType = {
   value: string;
   type: 0 | 1 | 2; // 0 disabled, 1 editable, 2 readonly
+  prefix?: string;
+  suffix?: string;
   bgcolor?: string;
-}
-
-export interface AdjustmentRowDataType {
-  label: string;
-  value: string;
-  type: 0 | 1 | 2; // 0 disabled, 1 editable, 2 readonly
-  bgcolor?: string;
-}
-
-export interface PlanDifferenceRowDataType {
-  label: string;
-  value: string;
-  type: 0 | 1 | 2; // 0 disabled, 1 editable, 2 readonly
-  bgcolor?: string;
-}
-
-export interface GrossProfitRowDataType {
-  label: string;
-  value: string;
-  type: 0 | 1 | 2; // 0 disabled, 1 editable, 2 readonly
-  bgcolor?: string;
-}
-
-const colors = {
-  yellow: "bg-yellow-400",
-  red: "bg-red-700",
-  gray: "bg-gray-400",
-  lightCyan: "bg-cyan-100",
-  lightBlue: "bg-blue-200",
-  orange: "bg-orange-500",
-  teal: "bg-teal-400",
-  purple: "bg-purple-300",
-  beige: "bg-yellow-100",
-  gold: "bg-yellow-300",
-  orangeAccent: "bg-orange-400",
-  brightRed: "bg-red-500",
-  lightGray: "bg-gray-200",
-  peach: "bg-orange-200",
-  silver: "bg-slate-200",
-  blue: "bg-blue-400",
+  tip?: string;
 };
+
+export interface SummaryRowDataType {
+  a: CellType;
+  b: CellType;
+  c: CellType;
+  d: CellType;
+  e: CellType;
+  f: CellType;
+}
+
+export interface TotalValueType {
+  label: string;
+  value: string;
+}
 
 // Main Product Table - Based on the image data
 export const manufacturingIncomeProducts: ProductRowDataType[] = [
@@ -139,130 +115,120 @@ export const manufacturingIncomeProducts: ProductRowDataType[] = [
     unit_price: "E31",
     sales: "F31", // Calculated field
     gross_profit_rate: "G31", // Calculated field
-    type: 2 as const,
+    type: 1 as const,
   },
 ];
 
 // Summary Section (実績) - Based on image values
 export const manufacturingIncomeSummary: SummaryRowDataType[] = [
   {
-    label: "M(計)",
-    value: "B28", // 176,395,490
-    type: 2 as const,
-    bgcolor: colors.lightGray,
+    a: {
+      value: "不足額",
+      type: 2 as const,
+    },
+    b: {
+      value: "粗利益率(%)",
+      type: 2 as const,
+    },
+    c: {
+      value: "客数(月)",
+      type: 2 as const,
+    },
+    d: {
+      value: "客単価(円)",
+      type: 2 as const,
+    },
+    e: {
+      value: "戦力（人）",
+      type: 2 as const,
+    },
+    f: {
+      value: "",
+      type: 2 as const,
+    },
   },
   {
-    label: "M(個)",
-    value: "C28", // 137,185
-    type: 2 as const,
-    bgcolor: colors.lightGray,
+    a: {
+      value: "B34",
+      type: 2 as const,
+    },
+    b: {
+      value: "C34",
+      type: 2 as const,
+    },
+    c: {
+      value: "D34",
+      type: 1 as const,
+    },
+    d: {
+      value: "E34",
+      type: 1 as const,
+    },
+    e: {
+      value: "G33",
+      type: 2 as const,
+    },
+    f: {
+      value: "",
+      type: 2 as const,
+    },
   },
   {
-    label: "数量(Q)",
-    value: "D28", // 765
-    type: 2 as const,
-    bgcolor: colors.lightGray,
+    a: {
+      value: "粗利益額",
+      type: 2 as const,
+    },
+    b: {
+      value: "計画との差",
+      type: 2 as const,
+    },
+    c: {
+      value: "戦力(1人当たりの利益力)",
+      type: 2 as const,
+    },
+    d: {
+      value: "1人当たり生産性",
+      type: 2 as const,
+    },
+    e: {
+      value: "1人あたりの利益",
+      type: 2 as const,
+    },
+    f: {
+      value: "１人あたりの生産性",
+      type: 2 as const,
+    },
   },
   {
-    label: "平均客単価",
-    value: "E28", // 588,235
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "売上計",
-    value: "F28", // 450,000,000
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "平均粗利",
-    value: "G28", // 44.0%
-    type: 2 as const,
-    bgcolor: colors.lightGray,
+    a: {
+      value: "B36",
+      type: 2 as const,
+    },
+    b: {
+      value: "C36",
+      type: 1 as const,
+    },
+    c: {
+      value: "D36",
+      type: 1 as const,
+    },
+    d: {
+      value: "E36",
+      type: 1 as const,
+    },
+    e: {
+      value: "F36",
+      type: 2 as const,
+    },
+    f: {
+      value: "G36",
+      type: 2 as const,
+    },
   },
 ];
 
-// Adjustment Section (〇になるまで修正) - Based on image values
-export const manufacturingIncomeAdjustment: AdjustmentRowDataType[] = [
-  {
-    label: "粗利益率(%)",
-    value: "B30", // 39.20%
-    type: 1 as const,
-    bgcolor: colors.yellow,
-  },
-  {
-    label: "戦力(人)",
-    value: "B31", // 25名
-    type: 1 as const,
-    bgcolor: colors.yellow,
-  },
-  {
-    label: "客数(月)",
-    value: "B32", // Empty in image
-    type: 1 as const,
-    bgcolor: colors.yellow,
-  },
-  {
-    label: "客単価(円)",
-    value: "B33", // Empty in image
-    type: 1 as const,
-    bgcolor: colors.yellow,
-  },
-  {
-    label: "└→不足額",
-    value: "B34", // -5
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "1人あたりの利益",
-    value: "B35", // 7,055,819.6
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "1人あたり生産性",
-    value: "B36", // 18,000,000
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-];
-
-// Plan Difference Section (計画との差) - Based on image values
-export const manufacturingIncomePlanDifference: PlanDifferenceRowDataType[] = [
-  {
-    label: "戦力(1人当たりの利益力)",
-    value: "B38", // Empty in image
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "1人当たり生産性",
-    value: "B39", // Empty in image
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-];
-
-// Gross Profit Amounts Section (粗利益額) - Based on image values
-export const manufacturingIncomeGrossProfit: GrossProfitRowDataType[] = [
-  {
-    label: "粗利益額",
-    value: "B41", // 176,395,490.0
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "計画との差",
-    value: "B42", // 0.0
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-  {
-    label: "1人当たり生産性",
-    value: "B43", // 0.0
-    type: 2 as const,
-    bgcolor: colors.lightGray,
-  },
-];
+// Grand Total
+export const grandTotalRow: TotalValueType = {
+  label: "合計",
+  value: "G2",
+};

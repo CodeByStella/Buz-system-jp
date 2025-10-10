@@ -27,7 +27,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // Use DataContext if sheet and cell are provided
     const hasContext = sheet && cell;
     let contextValue: string | number | undefined;
-    let contextOnChange: ((sheet: string, cell: string, value: number) => void) | undefined;
+    let contextOnChange: ((sheet: string, cell: string, value: number | string) => void) | undefined;
     
     try {
       const context = hasContext ? useDataContext() : { getCell: () => undefined, onChange: () => {} };
@@ -148,15 +148,21 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     
     // Handle change event - use context if available, otherwise use prop
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (hasContext && contextOnChange && type === "number") {
-        let newValue = parseFloat(e.target.value) || 0;
-        
-        // Apply inverse transformation if provided (e.g., divide by 100 for percentages)
-        if (inverseRenderValue) {
-          newValue = inverseRenderValue(newValue);
+      if (hasContext && contextOnChange) {
+        if (type === "number") {
+          // Handle numeric input
+          let newValue = parseFloat(e.target.value) || 0;
+          
+          // Apply inverse transformation if provided (e.g., divide by 100 for percentages)
+          if (inverseRenderValue) {
+            newValue = inverseRenderValue(newValue);
+          }
+          
+          contextOnChange(sheet!, cell!, newValue);
+        } else {
+          // Handle string/text input
+          contextOnChange(sheet!, cell!, e.target.value);
         }
-        
-        contextOnChange(sheet!, cell!, newValue);
       } else if (onChange) {
         onChange(e);
       }

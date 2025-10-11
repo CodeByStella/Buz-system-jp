@@ -1,281 +1,417 @@
-import React, { useState } from 'react'
+"use client";
 
-// Types for the simplified model
-interface TrackedValue {
-  target: number
-  actual: number
-  cumulative: number
-}
+import React, { useMemo } from "react";
+import { AdvancedTable, Column } from "@/components/ui/advanced-table";
+import {
+  ProgressResultRowDataType,
+  FixedExpenseRowDataType,
+  settlementTarget_cells,
+  fixedExpenses_cells,
+  businessExpenses_cells,
+  personnelCost_cells,
+  salesPromotion_cells,
+  manufacturingBusinessExpenses_cells,
+  manufacturingPersonnelCost_cells,
+  manufacturingSalesPromotion_cells,
+  manufacturingFixedExpenses_cells,
+} from "./cells";
+import { CustomInput } from "@/components/ui/customInput";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { useDataContext } from "@/lib/contexts";
+import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
-interface ProgressData {
-  basicInfo: {
-    period: string
-    targetSalesGrowthRate: number
-    lastUpdated: Date
-  }
-  settlementTarget: {
-    recentSales: TrackedValue
-    targetSales: TrackedValue
-    grossProfit: TrackedValue
-    grossProfitMargin: TrackedValue
-    manufacturingCost: TrackedValue
-    fixedCosts: TrackedValue
-    operatingIncome: TrackedValue
-    netIncome: TrackedValue
-  }
-  expenseCategories: {
-    business: {
-      strategy: TrackedValue
-      materials: TrackedValue
-      outsourcing: TrackedValue
-      total: TrackedValue
-    }
-    personnel: {
-      salaries: TrackedValue
-      bonuses: TrackedValue
-      welfare: TrackedValue
-      statutoryWelfare: TrackedValue
-      total: TrackedValue
-    }
-    promotion: {
-      advertising: TrackedValue
-      samples: TrackedValue
-      planning: TrackedValue
-      total: TrackedValue
-    }
-  }
-  // ... other categories
-}
+export default function ProgressResultInputSheet() {
+  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
+    useDataContext();
 
-// Individual field component for easy editing
-const TrackedValueField: React.FC<{
-  label: string
-  value: TrackedValue
-  onChange: (field: keyof TrackedValue, newValue: number) => void
-  unit?: string
-}> = ({ label, value, onChange, unit = "万円" }) => {
-  return (
-    <div className="grid grid-cols-4 gap-2 p-2 border rounded">
-      <div className="font-medium text-sm">{label}</div>
-      <div>
-        <label className="block text-xs text-gray-600">目標</label>
-        <input
-          type="number"
-          value={value.target}
-          onChange={(e) => onChange('target', Number(e.target.value))}
-          className="w-full px-2 py-1 text-sm border rounded"
-        />
+  const sheetName: SheetNameType = "progress_result_input";
+
+  const progressTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 120,
+        align: "left",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProgressResultRowDataType) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor || "bg-white",
+                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium"
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        key: "target",
+        title: "目標",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProgressResultRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              tip={record.tip}
+              tipClassName="text-red-500"
+              className={`border-transparent h-full text-sm text-right`}
+            />
+          );
+        },
+      },
+      {
+        key: "actual",
+        title: "実績",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProgressResultRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              tip={record.tip}
+              tipClassName="text-red-500"
+              className={`border-transparent h-full text-sm text-right`}
+            />
+          );
+        },
+      },
+      {
+        key: "cumulative",
+        title: "累積",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: ProgressResultRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              tip={record.tip}
+              tipClassName="text-red-500"
+              className={`border-transparent h-full text-sm text-right`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
+
+  const fixedExpenseTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 120,
+        align: "left",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: FixedExpenseRowDataType) => {
+          return (
+            <div
+              className={cn(
+                record.bgcolor || "bg-white",
+                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium"
+              )}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+      {
+        key: "target",
+        title: "目標",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: FixedExpenseRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              tip={record.tip}
+              tipClassName="text-red-500"
+              className={`border-transparent h-full text-sm text-right`}
+            />
+          );
+        },
+      },
+      {
+        key: "actual",
+        title: "実績",
+        width: 80,
+        align: "right",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: FixedExpenseRowDataType) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              disabled={record.type === 0}
+              readOnly={record.type === 2}
+              tip={record.tip}
+              tipClassName="text-red-500"
+              className={`border-transparent h-full text-sm text-right`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
+
+  // Show loading spinner while fetching data
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+          <p className="text-gray-600">データを読み込んでいます...</p>
+        </div>
       </div>
-      <div>
-        <label className="block text-xs text-gray-600">実績</label>
-        <input
-          type="number"
-          value={value.actual}
-          onChange={(e) => onChange('actual', Number(e.target.value))}
-          className="w-full px-2 py-1 text-sm border rounded"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-gray-600">累積</label>
-        <input
-          type="number"
-          value={value.cumulative}
-          onChange={(e) => onChange('cumulative', Number(e.target.value))}
-          className="w-full px-2 py-1 text-sm border rounded"
-        />
-      </div>
-    </div>
-  )
-}
-
-// Category section component
-const CategorySection: React.FC<{
-  title: string
-  data: any
-  onUpdate: (field: string, key: keyof TrackedValue, value: number) => void
-}> = ({ title, data, onUpdate }) => {
-  return (
-    <div className="mb-6">
-      <h3 className="text-lg font-semibold mb-3 border-b pb-2">{title}</h3>
-      <div className="space-y-2">
-        {Object.entries(data).map(([key, value]) => (
-          <TrackedValueField
-            key={key}
-            label={getFieldLabel(key)}
-            value={value as TrackedValue}
-            onChange={(field, newValue) => onUpdate(key, field, newValue)}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// Helper function to get Japanese labels
-const getFieldLabel = (key: string): string => {
-  const labels: Record<string, string> = {
-    recentSales: "直近売上",
-    targetSales: "目標売上",
-    grossProfit: "売上総利益",
-    grossProfitMargin: "粗利益率(%)",
-    manufacturingCost: "製造原価",
-    fixedCosts: "固定費",
-    operatingIncome: "営業利益",
-    netIncome: "純利益",
-    strategy: "事業戦略費",
-    materials: "消耗資材費",
-    outsourcing: "外注加工費",
-    salaries: "社員給料",
-    bonuses: "賞与",
-    welfare: "福利厚生費",
-    statutoryWelfare: "法定福利費",
-    advertising: "広告宣伝費",
-    samples: "試供品DM費",
-    planning: "販売企画費",
-    total: "計"
-  }
-  return labels[key] || key
-}
-
-// Main component
-interface Props {
-  data?: ProgressData
-  onSave?: (data: ProgressData) => void
-}
-
-const defaultData: ProgressData = {
-  basicInfo: { period: "2025年度", targetSalesGrowthRate: 0, lastUpdated: new Date() },
-  settlementTarget: {
-    recentSales: { target: 0, actual: 0, cumulative: 0 },
-    targetSales: { target: 0, actual: 0, cumulative: 0 },
-    grossProfit: { target: 0, actual: 0, cumulative: 0 },
-    grossProfitMargin: { target: 0, actual: 0, cumulative: 0 },
-    manufacturingCost: { target: 0, actual: 0, cumulative: 0 },
-    fixedCosts: { target: 0, actual: 0, cumulative: 0 },
-    operatingIncome: { target: 0, actual: 0, cumulative: 0 },
-    netIncome: { target: 0, actual: 0, cumulative: 0 },
-  },
-  expenseCategories: {
-    business: {
-      strategy: { target: 0, actual: 0, cumulative: 0 },
-      materials: { target: 0, actual: 0, cumulative: 0 },
-      outsourcing: { target: 0, actual: 0, cumulative: 0 },
-      total: { target: 0, actual: 0, cumulative: 0 },
-    },
-    personnel: {
-      salaries: { target: 0, actual: 0, cumulative: 0 },
-      bonuses: { target: 0, actual: 0, cumulative: 0 },
-      welfare: { target: 0, actual: 0, cumulative: 0 },
-      statutoryWelfare: { target: 0, actual: 0, cumulative: 0 },
-      total: { target: 0, actual: 0, cumulative: 0 },
-    },
-    promotion: {
-      advertising: { target: 0, actual: 0, cumulative: 0 },
-      samples: { target: 0, actual: 0, cumulative: 0 },
-      planning: { target: 0, actual: 0, cumulative: 0 },
-      total: { target: 0, actual: 0, cumulative: 0 },
-    },
-  },
-};
-
-export default function ProgressResultInputSheet({ data = defaultData, onSave = () => {} }: Props) {
-  const [formData, setFormData] = useState<ProgressData>(data)
-
-  const handleUpdate = (category: string, field: string, key: keyof TrackedValue, value: number) => {
-    setFormData(prev => ({
-      ...prev,
-      [category]: {
-        ...(prev as any)[category],
-        [field]: {
-          ...(prev as any)[category][field],
-          [key]: value
-        }
-      }
-    }))
+    );
   }
 
-  const handleSave = () => {
-    onSave(formData)
-  }
-
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-4">進捗実績入力シート</h1>
-        <div className="flex justify-between items-center">
-          <div>
-            <span className="font-medium">期間: {formData.basicInfo.period}</span>
-            <span className="ml-4 font-medium">
-              目標売上成長率: {formData.basicInfo.targetSalesGrowthRate}%
-            </span>
+  // Show error message with retry option
+  if (errorMessage) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 max-w-md mx-auto p-6 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-red-600 text-center">
+            <p className="text-lg font-semibold mb-2">エラーが発生しました</p>
+            <p className="text-sm">{errorMessage}</p>
           </div>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          <Button
+            variant="outline"
+            onClick={retry}
+            className="border-red-300 text-red-700 hover:bg-red-100"
+          >
+            再試行
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col space-y-4 overflow-hidden">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            進捗実績入力シート
+          </h1>
+          <p className="text-gray-600">4期短期計画 - 目標売上成長率: 126.8%</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="success"
+            leftIcon={Save}
+            loading={saving}
+            loadingText="保存中..."
+            onClick={onSave}
+            disabled={saving || !hasChanges}
           >
             保存
-          </button>
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileSpreadsheet}
+            className="border-green-500 text-green-700 hover:bg-green-50"
+            onClick={() => {
+              /* TODO: implement export to Excel logic */
+            }}
+          >
+            Excel出力
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileText}
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              /* TODO: implement export to PDF logic */
+            }}
+          >
+            PDF出力
+          </Button>
         </div>
       </div>
 
-      {/* 決算目標 */}
-      <CategorySection
-        title="決算目標"
-        data={formData.settlementTarget}
-        onUpdate={(field, key, value) => handleUpdate('settlementTarget', field, key, value)}
-      />
+      {/* Warning message */}
+      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+        <p className="text-sm text-red-700">
+          毎月の試算表が届き次第、実績を加算していく。その際に目標より高くなればその項目は目標よりオーバーしている事になり、注意が必要。経費が掛かりすぎてないか、
+        </p>
+      </div>
 
-      {/* 経費カテゴリ */}
-      <CategorySection
-        title="経費カテゴリ - 事業費"
-        data={formData.expenseCategories.business}
-        onUpdate={(field, key, value) => handleUpdate('expenseCategories.business', field, key, value)}
-      />
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="h-full overflow-y-auto">
+          <div className="grid grid-cols-2 gap-4 p-1">
+            {/* Left Column - 決算目標 & 経費(固定) */}
+            <div className="flex flex-col space-y-4">
+              {/* 決算目標 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-blue-500 text-white px-3 py-2 text-sm font-semibold">
+                  決算目標
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={settlementTarget_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
 
-      <CategorySection
-        title="経費カテゴリ - 人件費"
-        data={formData.expenseCategories.personnel}
-        onUpdate={(field, key, value) => handleUpdate('expenseCategories.personnel', field, key, value)}
-      />
+              {/* 経費(固定) */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-orange-500 text-white px-3 py-2 text-sm font-semibold">
+                  経費(固定)
+                </div>
+                <AdvancedTable
+                  columns={fixedExpenseTableColumns}
+                  data={fixedExpenses_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
 
-      <CategorySection
-        title="経費カテゴリ - 販売促進費"
-        data={formData.expenseCategories.promotion}
-        onUpdate={(field, key, value) => handleUpdate('expenseCategories.promotion', field, key, value)}
-      />
+              {/* 製造原価内訳 - 事業費 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-blue-400 text-white px-3 py-2 text-sm font-semibold">
+                  製造原価内訳 - 事業費
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={manufacturingBusinessExpenses_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4 mt-8">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-blue-800">総売上</h4>
-          <p className="text-2xl font-bold text-blue-600">
-            {formData.settlementTarget.targetSales.target}万円
-          </p>
-          <p className="text-sm text-gray-600">
-            実績: {formData.settlementTarget.targetSales.actual}万円
-          </p>
-        </div>
-        
-        <div className="bg-green-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-green-800">純利益</h4>
-          <p className="text-2xl font-bold text-green-600">
-            {formData.settlementTarget.netIncome.target}万円
-          </p>
-          <p className="text-sm text-gray-600">
-            実績: {formData.settlementTarget.netIncome.actual}万円
-          </p>
-        </div>
-        
-        <div className="bg-orange-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-orange-800">総経費</h4>
-          <p className="text-2xl font-bold text-orange-600">
-            {Object.values(formData.expenseCategories).reduce((sum, category) => 
-              sum + (category.total?.target || 0), 0
-            )}万円
-          </p>
+              {/* 製造原価内訳 - 人件費 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-teal-400 text-white px-3 py-2 text-sm font-semibold">
+                  製造原価内訳 - 人件費
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={manufacturingPersonnelCost_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+            </div>
+
+            {/* Right Column - 経費内訳 & 製造原価内訳 */}
+            <div className="flex flex-col space-y-4">
+              {/* 事業費 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-blue-400 text-white px-3 py-2 text-sm font-semibold">
+                  事業費
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={businessExpenses_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+
+              {/* 人件費内訳 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-yellow-400 text-white px-3 py-2 text-sm font-semibold">
+                  人件費内訳
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={personnelCost_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+
+              {/* 販売促進費 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-green-400 text-white px-3 py-2 text-sm font-semibold">
+                  販売促進費
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={salesPromotion_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+
+              {/* 製造原価内訳 - 販売促進費 */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-green-400 text-white px-3 py-2 text-sm font-semibold">
+                  製造原価内訳 - 販売促進費
+                </div>
+                <AdvancedTable
+                  columns={progressTableColumns}
+                  data={manufacturingSalesPromotion_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+
+              {/* 製造原価内訳 - 経費(固定) */}
+              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+                <div className="bg-orange-400 text-white px-3 py-2 text-sm font-semibold">
+                  製造原価内訳 - 経費(固定)
+                </div>
+                <AdvancedTable
+                  columns={fixedExpenseTableColumns}
+                  data={manufacturingFixedExpenses_cells}
+                  bordered
+                  dense
+                  hideHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

@@ -89,7 +89,7 @@ export const DataProvider: React.FC<{
       setErrorMessage(null);
 
       const backendData: BackendDataType[] = await userService.getUserInputs();
-      console.clear()
+      console.clear();
       console.log("Backend data received:", backendData.length, "items");
 
       // Store original data for change tracking
@@ -256,14 +256,15 @@ export const DataProvider: React.FC<{
       if (typeof value === "string") {
         // Check for error values
         if (
-          value.includes("#ERROR!") ||
-          value.includes("#REF!") ||
-          value.includes("#VALUE!") ||
-          value.includes("#NAME?") ||
           value.includes("#DIV/0!") ||
           value.includes("#N/A") ||
+          value.includes("#NAME?") ||
           value.includes("#NUM!") ||
-          value.includes("#NULL!")
+          value.includes("#REF!") ||
+          value.includes("#VALUE!") ||
+          value.includes("#CYCLE!") ||
+          value.includes("#ERROR!") ||
+          value.includes("#LIC!")
         ) {
           console.warn(
             `Attempted to set error value in ${sheet}:${cell}: ${value}, using empty string instead`

@@ -62,6 +62,7 @@ export default function ExpensesSheet() {
               type="number"
               sheet={sheetName}
               cell={value}
+              readOnly={record.readonly}
               className={`border-transparent h-full text-xs text-center`}
             />
           );

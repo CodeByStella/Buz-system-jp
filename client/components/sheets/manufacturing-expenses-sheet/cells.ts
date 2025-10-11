@@ -1,11 +1,12 @@
-export interface ExpensesRowDataType {
+export interface ManufacturingExpensesRowDataType {
   label: string;
   value: string;
   bgcolor: string;
   readonly?: boolean;
+  tip?: string;
 }
 
-export interface ExpensesSummaryRowDataType {
+export interface ManufacturingExpensesSummaryRowDataType {
   label: string;
   value: string;
   bgcolor: string;
@@ -22,7 +23,7 @@ const colors = {
 };
 
 // 経費(固定) - Fixed Expenses
-export const fixedExpensesRows: ExpensesRowDataType[] = [
+export const fixedExpensesRows: ManufacturingExpensesRowDataType[] = [
   {
     label: "電力費",
     value: "C5",
@@ -215,7 +216,7 @@ export const fixedExpensesRows: ExpensesRowDataType[] = [
   },
 ];
 
-export const fixedExpensesSummary: ExpensesSummaryRowDataType[] = [
+export const fixedExpensesSummary: ManufacturingExpensesSummaryRowDataType[] = [
   {
     label: "計",
     value: "C43",
@@ -229,34 +230,34 @@ export const fixedExpensesSummary: ExpensesSummaryRowDataType[] = [
 ];
 
 // 販売促進費 - Sales Promotion Expenses
-export const salesPromotionRows: ExpensesRowDataType[] = [
+export const salesPromotionRows: ManufacturingExpensesRowDataType[] = [
   {
-    label: "テナント料",
+    label: "販促企画費",
     value: "F4",
     bgcolor: colors.white,
   },
   {
-    label: "試供品DM費",
+    label: "消耗資材費",
     value: "F5",
     bgcolor: colors.white,
   },
   {
-    label: "販売企画費",
+    label: "広告宣伝費",
     value: "F6",
     bgcolor: colors.white,
   },
   {
-    label: "試供品DM費",
+    label: "募集費",
     value: "F7",
     bgcolor: colors.white,
   },
   {
-    label: "販売促進費",
+    label: "教育研修",
     value: "F8",
     bgcolor: colors.white,
   },
   {
-    label: "広告宣伝費",
+    label: "予備",
     value: "F9",
     bgcolor: colors.white,
   },
@@ -277,7 +278,7 @@ export const salesPromotionRows: ExpensesRowDataType[] = [
   },
 ];
 
-export const salesPromotionSummary: ExpensesSummaryRowDataType[] = [
+export const salesPromotionSummary: ManufacturingExpensesSummaryRowDataType[] = [
   {
     label: "計",
     value: "F13",
@@ -291,7 +292,7 @@ export const salesPromotionSummary: ExpensesSummaryRowDataType[] = [
 ];
 
 // 人件費 - Personnel Expenses
-export const personnelExpensesRows: ExpensesRowDataType[] = [
+export const personnelExpensesRows: ManufacturingExpensesRowDataType[] = [
   {
     label: "社員給料",
     value: "I5",
@@ -311,174 +312,156 @@ export const personnelExpensesRows: ExpensesRowDataType[] = [
     readonly: true,
   },
   {
-    label: "退職金",
+    label: "賞与",
     value: "I8",
     bgcolor: colors.white,
   },
   {
-    label: "賞与",
+    label: "福利厚生費",
     value: "I9",
     bgcolor: colors.white,
   },
   {
-    label: "通勤手当",
+    label: "法定福利費",
     value: "I10",
     bgcolor: colors.white,
   },
   {
-    label: "役員報酬",
+    label: "通勤手当",
     value: "I11",
     bgcolor: colors.white,
   },
   {
-    label: "諸費用",
+    label: "予備",
     value: "I12",
     bgcolor: colors.white,
   },
   {
-    label: "募集費",
+    label: "予備",
     value: "I13",
     bgcolor: colors.white,
   },
   {
-    label: "教育研修",
+    label: "予備",
     value: "I14",
     bgcolor: colors.white,
   },
   {
-    label: "研修費",
+    label: "その他",
     value: "I15",
-    bgcolor: colors.white,
-  },
-  {
-    label: "会議費",
-    value: "I16",
-    bgcolor: colors.white,
-  },
-  {
-    label: "福利厚生費",
-    value: "I17",
-    bgcolor: colors.white,
-  },
-  {
-    label: "法定福利費",
-    value: "I18",
-    bgcolor: colors.white,
-  },
-  {
-    label: "予備",
-    value: "I19",
-    bgcolor: colors.white,
-  },
-  {
-    label: "予備",
-    value: "I20",
-    bgcolor: colors.white,
-  },
-  {
-    label: "予備",
-    value: "I21",
-    bgcolor: colors.white,
-  },
-  {
-    label: "予備",
-    value: "I22",
-    bgcolor: colors.white,
-  },
-  {
-    label: "予備",
-    value: "I23",
     bgcolor: colors.white,
   },
 ];
 
-export const personnelExpensesSummary: ExpensesSummaryRowDataType[] = [
+export const personnelExpensesSummary: ManufacturingExpensesSummaryRowDataType[] = [
   {
     label: "計",
-    value: "I24",
+    value: "I16",
     bgcolor: colors.lightGreen,
   },
   {
     label: "現状計",
-    value: "I25",
+    value: "I17",
     bgcolor: colors.lightGreen,
   },
 ];
 
 // 事業費 - Business Expenses
-export const businessExpensesRows: ExpensesRowDataType[] = [
+export const businessExpensesRows: ManufacturingExpensesRowDataType[] = [
   {
-    label: "事業戦略費",
+    label: "期首商品棚卸高",
     value: "L5",
     bgcolor: colors.white,
   },
   {
-    label: "社長戦略費Ａ",
+    label: "期首製品棚卸高",
     value: "L6",
     bgcolor: colors.white,
   },
   {
-    label: "社長戦略費Ｂ",
+    label: "商品仕入高",
     value: "L7",
     bgcolor: colors.white,
   },
   {
-    label: "開拓手数料(外交員)",
+    label: "製品仕入高",
     value: "L8",
     bgcolor: colors.white,
   },
   {
-    label: "消耗資材費",
+    label: "期末商品棚卸高",
     value: "L9",
     bgcolor: colors.white,
+    tip: "（マイナスを入れてから入力）",
   },
   {
-    label: "ロイヤリティー",
-    value: "L10",
+    label: "期末製品棚卸高",
+    value: "L10", 
     bgcolor: colors.white,
+    tip: "（マイナスを入れてから入力）",
   },
   {
-    label: "外注加工費",
+    label: "期首原材料棚卸高",
     value: "L11",
     bgcolor: colors.white,
   },
   {
-    label: "運賃荷造費",
+    label: "原材料仕入高1",
     value: "L12",
     bgcolor: colors.white,
   },
   {
-    label: "予備",
+    label: "原材料仕入高2",
     value: "L13",
     bgcolor: colors.white,
   },
   {
-    label: "予備",
+    label: "原材料仕入高3",
     value: "L14",
     bgcolor: colors.white,
   },
   {
-    label: "予備",
+    label: "仕掛品",
     value: "L15",
+    bgcolor: colors.white,
+  },
+  {
+    label: "期末原材料棚卸高",
+    value: "L16",
+    bgcolor: colors.white,
+  },
+  {
+    label: "在庫",
+    value: "L17",
+    bgcolor: colors.white,
+  },
+  {
+    label: "外注",
+    value: "L18",
+    bgcolor: colors.white,
+  },
+  {
+    label: "外注加工費",
+    value: "L19",
     bgcolor: colors.white,
   },
 ];
 
-export const businessExpensesSummary: ExpensesSummaryRowDataType[] = [
+export const businessExpensesSummary: ManufacturingExpensesSummaryRowDataType[] = [
   {
     label: "計",
-    value: "L16",
+    value: "L20",
     bgcolor: colors.lightPink,
   },
   {
     label: "現状計",
-    value: "L17",
+    value: "L21",
     bgcolor: colors.lightPink,
   },
 ];
 
 // Grand Total
-export const grandTotalRow: ExpensesSummaryRowDataType = {
+export const grandTotalRow: ManufacturingExpensesSummaryRowDataType = {
   label: "合計",
   value: "I2",
   bgcolor: colors.yellow,

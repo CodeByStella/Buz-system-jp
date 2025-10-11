@@ -1,230 +1,1721 @@
-'use client'
+"use client";
 
-import React, { useEffect, useMemo, useState } from 'react'
-import { CustomInput } from '@/components/ui/customInput'
-import { Button } from '@/components/ui/button'
-import { userService } from '@/lib/services'
-
-interface ProfitPlanInputs {
-  base_sales: number
-  base_variable_costs: number
-  base_fixed_costs: number
-}
-
-interface ScenarioRow {
-  label: string
-  gp_rate: number
-  sales: number
-  variable_costs: number
-  gross_profit: number
-  fixed_costs: number
-  operating_profit: number
-  profit_rate: number
-}
+import React from "react";
+import { CustomInput } from "@/components/ui/customInput";
+import { Button } from "@/components/ui/button";
+import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { useDataContext } from "@/lib/contexts";
+import { SheetNameType } from "@/lib/transformers/dataTransformer";
+import { cn } from "@/lib/utils";
 
 export default function ProfitPlanSheet() {
-  const [data, setData] = useState<ProfitPlanInputs>({
-    base_sales: 450_000_000,
-    base_variable_costs: 279_200_000,
-    base_fixed_costs: 124_900_000,
-  })
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
+    useDataContext();
 
-  useEffect(() => {
-    initializeData()
-  }, [])
+  const sheetName: SheetNameType = "profit_planing_table";
 
-  const initializeData = async () => {
-    try {
-      const result = await api.user.getInputs('profit-plan')
-      const inputMap: Partial<ProfitPlanInputs> = {}
-      ;(result.inputs || []).forEach((i: any) => {
-        if (i.cellKey === 'base_sales') inputMap.base_sales = Number(i.value) || 0
-        if (i.cellKey === 'base_variable_costs') inputMap.base_variable_costs = Number(i.value) || 0
-        if (i.cellKey === 'base_fixed_costs') inputMap.base_fixed_costs = Number(i.value) || 0
-      })
-      setData((prev) => ({ ...prev, ...inputMap }))
-    } catch (e) {
-      console.error('Failed to load profit plan inputs', e)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const baseGpRate = useMemo(() => {
-    return data.base_sales > 0
-      ? (data.base_sales - data.base_variable_costs) / data.base_sales
-      : 0
-  }, [data.base_sales, data.base_variable_costs])
-
-  const makeScenario = (label: string, gpRate: number): ScenarioRow => {
-    const sales = data.base_sales
-    const variable_costs = Math.max(0, Math.round(sales * (1 - gpRate)))
-    const gross_profit = sales - variable_costs
-    const fixed_costs = data.base_fixed_costs
-    const operating_profit = gross_profit - fixed_costs
-    const profit_rate = sales > 0 ? operating_profit / sales : 0
-    return {
-      label,
-      gp_rate: gpRate,
-      sales,
-      variable_costs,
-      gross_profit,
-      fixed_costs,
-      operating_profit,
-      profit_rate,
-    }
-  }
-
-  const upScenarios: ScenarioRow[] = useMemo(() => {
-    const list: ScenarioRow[] = []
-    const basePct = Math.round(baseGpRate * 1000) / 10 // one decimal
-    list.push(makeScenario('現状', basePct / 100))
-    for (let i = 1; i <= 10; i++) {
-      list.push(makeScenario(`粗利${i}%UP`, (basePct + i) / 100))
-    }
-    return list
-  }, [baseGpRate, data])
-
-  const downScenarios: ScenarioRow[] = useMemo(() => {
-    const list: ScenarioRow[] = []
-    const basePct = Math.round(baseGpRate * 1000) / 10
-    for (let i = 1; i <= 10; i++) {
-      list.push(makeScenario(`粗利${i}%DOWN`, (basePct - i) / 100))
-    }
-    return list
-  }, [baseGpRate, data])
-
-  const handleChange = async (key: keyof ProfitPlanInputs, value: number) => {
-    const newData = { ...data, [key]: value }
-    setData(newData)
-    try {
-      await userService.saveUserInput({ sheet: 'profit-plan', cell: key, value })
-    } catch (e) {
-      console.error('Failed to save input', e)
-    }
-  }
-
-  const handleSaveAll = async () => {
-    setSaving(true)
-    try {
-      await Promise.all([
-        userService.saveUserInput('profit-plan', 'base_sales', data.base_sales),
-        userService.saveUserInput('profit-plan', 'base_variable_costs', data.base_variable_costs),
-        userService.saveUserInput('profit-plan', 'base_fixed_costs', data.base_fixed_costs),
-      ])
-    } finally {
-      setSaving(false)
-    }
-  }
-
+  // Show loading spinner while fetching data
   if (loading) {
-    return <div className="p-3 text-sm">読み込み中...</div>
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+          <p className="text-gray-600">データを読み込んでいます...</p>
+        </div>
+      </div>
+    );
   }
 
-  const MONTH_COL_MIN_WIDTH = 140
-
-  const renderScenarioHeader = (row: ScenarioRow) => (
-    <div className="space-y-1">
-      <div className="text-xs text-gray-600">粗利率</div>
-      <div className="text-sm font-medium">{(row.gp_rate * 100).toFixed(1)}%</div>
-    </div>
-  )
-
-  const renderScenarioColumn = (row: ScenarioRow) => (
-    <td className="border border-gray-300 p-2 align-top" style={{ minWidth: MONTH_COL_MIN_WIDTH }}>
-      {renderScenarioHeader(row)}
-      <div className="mt-2 space-y-2 text-xs">
-        <div className="flex justify-between"><span>売上</span><span>{row.sales.toLocaleString()}</span></div>
-        <div className="flex justify-between"><span>変動費</span><span>{row.variable_costs.toLocaleString()}</span></div>
-        <div className="flex justify-between"><span>粗利</span><span>{row.gross_profit.toLocaleString()}</span></div>
-        <div className="flex justify-between"><span>固定費</span><span>{row.fixed_costs.toLocaleString()}</span></div>
-        <div className="flex justify-between"><span>営業利益</span><span>{row.operating_profit.toLocaleString()}</span></div>
-        <div className="flex justify-between"><span>益率</span><span>{(row.profit_rate * 100).toFixed(1)}%</span></div>
+  // Show error message with retry option
+  if (errorMessage) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 max-w-md mx-auto p-6 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-red-600 text-center">
+            <p className="text-lg font-semibold mb-2">エラーが発生しました</p>
+            <p className="text-sm">{errorMessage}</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={retry}
+            className="border-red-300 text-red-700 hover:bg-red-100"
+          >
+            再試行
+          </Button>
+        </div>
       </div>
-    </td>
-  )
+    );
+  }
 
   return (
-    <div className="h-full flex flex-col min-h-0 p-3 space-y-3 text-sm">
-      <div className="flex justify-between items-center">
-        <h1 className="text-lg font-semibold">利益計画表</h1>
-        <Button onClick={handleSaveAll} disabled={saving} className="h-8 px-3 text-xs">
-          {saving ? '保存中...' : 'すべて保存'}
-        </Button>
+    <div className="h-full flex flex-col space-y-4 overflow-hidden">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">利益計画表</h1>
+          <p className="text-gray-600">
+            粗利率の変動によるシナリオ分析を行います。
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="success"
+            leftIcon={Save}
+            loading={saving}
+            loadingText="保存中..."
+            onClick={onSave}
+            disabled={saving || !hasChanges}
+          >
+            保存
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileSpreadsheet}
+            className="border-green-500 text-green-700 hover:bg-green-50"
+            onClick={() => {
+              /* TODO: implement export to Excel logic */
+            }}
+          >
+            Excel出力
+          </Button>
+          <Button
+            variant="outline"
+            leftIcon={FileText}
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              /* TODO: implement export to PDF logic */
+            }}
+          >
+            PDF出力
+          </Button>
+        </div>
       </div>
 
-      {/* Inputs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 bg-yellow-50 border border-yellow-200 p-3">
-        <div>
-          <label className="text-xs">売上</label>
-          <Input type="number" value={data.base_sales} onChange={(e) => handleChange('base_sales', Number(e.target.value))} className="h-8 text-xs mt-1" />
+      {/* Main Profit Plan Table */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <div
+          className="h-full overflow-auto pb-2"
+          style={{ scrollbarWidth: "auto", scrollbarColor: "#cbd5e1 #f1f5f9" }}
+        >
+          <div className="w-full border border-gray-300" id="table-container">
+            <table
+              className="w-full border-collapse text-xs table-fixed"
+              style={{ minWidth: "2000px" }}
+            >
+              {/* Title Row */}
+              <thead>
+                <tr>
+                  <th
+                    colSpan={12}
+                    className="border border-gray-300 p-3 text-center bg-yellow-200 text-lg font-bold"
+                  >
+                    利益計画表
+                  </th>
+                </tr>
+              </thead>
+
+              {/* UP Scenarios Section */}
+              <thead>
+                {/* UP Scenario Headers */}
+                <tr className="bg-yellow-100">
+                  <th className="border border-gray-300 p-2 text-center w-32">
+                    現状
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 1% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 2% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 3% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 4% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 5% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 6% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 7% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 8% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 9% UP
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 10% UP
+                  </th>
+                </tr>
+
+                {/* UP Gross Profit Rate Row */}
+                <tr className="bg-yellow-100">
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    粗利率
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L3"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+              </thead>
+
+              {/* UP Scenario Data Rows */}
+              <tbody>
+                {/* Sales Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    売上
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L4"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Variable Costs Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    変動費
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L5"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Gross Profit Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    粗利
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L6"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Fixed Costs Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    固定費
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L7"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Operating Profit Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    営業利益
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L8"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Profit Margin Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    益率
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L9"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+
+              {/* DOWN Scenarios Section */}
+              <thead>
+                {/* DOWN Scenario Headers */}
+                <tr className="bg-yellow-100">
+                  <th className="border border-gray-300 p-2 text-center w-32">
+                    現状
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 1% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 2% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 3% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 4% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 5% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 6% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 7% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 8% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 9% DOWN
+                  </th>
+                  <th className="border border-gray-300 p-2 text-center">
+                    粗利 10% DOWN
+                  </th>
+                </tr>
+
+                {/* DOWN Gross Profit Rate Row */}
+                <tr className="bg-yellow-100">
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    粗利率
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L11"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+              </thead>
+
+              {/* DOWN Scenario Data Rows */}
+              <tbody>
+                {/* Sales Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    売上
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L12"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Variable Costs Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    変動費
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L13"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Gross Profit Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    粗利
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L14"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Fixed Costs Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    固定費
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L15"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Operating Profit Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    営業利益
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L16"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+
+                {/* Profit Margin Row */}
+                <tr>
+                  <td className="border border-gray-300 p-2 text-center font-medium">
+                    益率
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="B17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="C17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="D17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="E17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="F17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="G17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="H17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="I17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="J17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="K17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                  <td className="border border-gray-300 p-2 text-center relative">
+                    <CustomInput
+                      type="number"
+                      sheet={sheetName}
+                      cell="L17"
+                      readOnly
+                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Notes Section */}
+          <div className="mt-4 space-y-2">
+            <div className="text-sm text-gray-700">
+              <CustomInput
+                type="text"
+                sheet={sheetName}
+                cell="A18"
+                className="border-transparent bg-transparent text-sm"
+                placeholder="粗利が増えれば純利益が増えます。メモ"
+              />
+            </div>
+            <div className="text-sm text-gray-700">
+              <CustomInput
+                type="text"
+                sheet={sheetName}
+                cell="A19"
+                className="border-transparent bg-transparent text-sm"
+                placeholder="しかし10%落とすと・・・?"
+              />
+            </div>
+          </div>
+
+          {/* Logo Section */}
+          <div className="mt-4 flex justify-end">
+            <div className="bg-red-600 text-white p-3 rounded text-xs">
+              <div className="font-bold">JM JAPAN MULTISKILL WORKERS</div>
+              <div className="text-xs mt-1">粗利が増えれば純利益が増えます。粗利率の変動をシミュレーションできます。</div>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="text-xs">変動費</label>
-          <Input type="number" value={data.base_variable_costs} onChange={(e) => handleChange('base_variable_costs', Number(e.target.value))} className="h-8 text-xs mt-1" />
-        </div>
-        <div>
-          <label className="text-xs">固定費</label>
-          <Input type="number" value={data.base_fixed_costs} onChange={(e) => handleChange('base_fixed_costs', Number(e.target.value))} className="h-8 text-xs mt-1" />
-        </div>
-      </div>
-
-      {/* Scenarios Table */}
-      <div className="flex-1 min-h-0 overflow-auto">
-        <table className="w-full min-w-[1600px] border-collapse border border-gray-300 text-xs">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2 text-left w-32">シナリオ</th>
-              {upScenarios.map((s) => (
-                <th key={s.label} className="border border-gray-300 p-2 text-center" style={{ minWidth: MONTH_COL_MIN_WIDTH }}>
-                  <div className="font-medium">{s.label}</div>
-                  <div className="text-xs text-gray-600">{(s.gp_rate * 100).toFixed(1)}%</div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-300 p-2 align-top">粗利率UP</td>
-              {upScenarios.map((s) => (
-                <React.Fragment key={s.label}>{renderScenarioColumn(s)}</React.Fragment>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-
-        <div className="h-3" />
-
-        <table className="w-full min-w-[1600px] border-collapse border border-gray-300 text-xs">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2 text-left w-32">シナリオ</th>
-              {downScenarios.map((s) => (
-                <th key={s.label} className="border border-gray-300 p-2 text-center" style={{ minWidth: MONTH_COL_MIN_WIDTH }}>
-                  <div className="font-medium">{s.label}</div>
-                  <div className="text-xs text-gray-600">{(s.gp_rate * 100).toFixed(1)}%</div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-300 p-2 align-top">粗利率DOWN</td>
-              {downScenarios.map((s) => (
-                <React.Fragment key={s.label}>{renderScenarioColumn(s)}</React.Fragment>
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className="bg-red-600 text-white p-3 text-xs">
-        <p>粗利が増えれば純利益が増えます。粗利率の変動をシミュレーションできます。</p>
       </div>
     </div>
-  )
+  );
 }
-
-

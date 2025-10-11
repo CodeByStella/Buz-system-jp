@@ -177,15 +177,20 @@ export default function MQFutureSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">② MQ会計(未来)</h1>
-          <p className="text-gray-600">
+    <div className="h-full flex flex-col space-y-3 sm:space-y-4 overflow-hidden p-2 sm:p-4 lg:p-0">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
+        <div className="flex-1">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            ② MQ会計(未来)
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
             目標値と客単価・数量を設定してMQ会計の未来計画を立てます。
           </p>
         </div>
-        <div className="flex gap-2">
+        
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-2 sm:gap-2">
           <Button
             variant="success"
             leftIcon={Save}
@@ -193,42 +198,46 @@ export default function MQFutureSheet() {
             loadingText="保存中..."
             onClick={onSave}
             disabled={saving || !hasChanges}
+            className="flex-1 sm:flex-none text-sm sm:text-base"
           >
             保存
           </Button>
           <Button
             variant="outline"
             leftIcon={FileSpreadsheet}
-            className="border-green-500 text-green-700 hover:bg-green-50"
+            className="flex-1 sm:flex-none border-green-500 text-green-700 hover:bg-green-50 text-sm sm:text-base"
             onClick={() => {
               /* TODO: implement export to Excel logic */
             }}
           >
-            Excel出力
+            <span className="hidden sm:inline">Excel出力</span>
+            <span className="sm:hidden">Excel</span>
           </Button>
           <Button
             variant="outline"
             leftIcon={FileText}
-            className="border-red-500 text-red-700 hover:bg-red-50"
+            className="flex-1 sm:flex-none border-red-500 text-red-700 hover:bg-red-50 text-sm sm:text-base"
             onClick={() => {
               /* TODO: implement export to PDF logic */
             }}
           >
-            PDF出力
+            <span className="hidden sm:inline">PDF出力</span>
+            <span className="sm:hidden">PDF</span>
           </Button>
         </div>
       </div>
 
-      {/* Header with unit note */}
-      <div className="bg-yellow-100 p-3 rounded-lg border border-yellow-300">
-        <p className="text-sm text-gray-700">
+      {/* Unit Note */}
+      <div className="bg-yellow-100 p-2 sm:p-3 rounded-lg border border-yellow-300">
+        <p className="text-xs sm:text-sm text-gray-700">
           <span className="font-semibold">(百万円)</span>
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto lg:overflow-hidden">
         {/* Left side - MQ Results */}
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
           <AdvancedTable
             columns={resultTableColumns}
             data={mqFutureResults_cells}
@@ -236,31 +245,33 @@ export default function MQFutureSheet() {
             dense
             hideHeader
             cellClassName="!p-0"
-            className="!h-full"
+            // className="!h-fu ll"
             footerContent={
-              <div className="text-xs bg-yellow-300 p-2">
-                <p>
+              <div className="text-xs sm:text-sm bg-yellow-300 p-3 sm:p-4 space-y-2">
+                <p className="leading-relaxed">
                   ①まず初めにGの目標値を決めましょう。これは社長自身がいくらの利益を残したいのかを決定させる重要な課題です。
                 </p>
-                <p>
+                <p className="leading-relaxed">
                   すべての決断は社長自身にあります。思い切った利益を追求しましょう！
                 </p>
-                <p>
+                <p className="leading-relaxed">
                   ②～⑤まで順番に現状から推移して115％～200％UPまで好きな数字を目標値に入れてください。
                 </p>
-                <p>数字が合うように計算しましょう</p>
-                <p>１，GはM-Fです。</p>
-                <p>２，FはM-Gです。</p>
-                <p>３．MはP-Vです。</p>
-                <p>４．VはP-Mです。</p>
-                <p>５．PはM＋Vです。</p>
+                <p className="leading-relaxed">数字が合うように計算しましょう</p>
+                <div className="space-y-1 mt-2">
+                  <p>１，GはM-Fです。</p>
+                  <p>２，FはM-Gです。</p>
+                  <p>３．MはP-Vです。</p>
+                  <p>４．VはP-Mです。</p>
+                  <p>５．PはM＋Vです。</p>
+                </div>
               </div>
             }
           />
         </div>
 
         {/* Right side - Unit Price per Customer */}
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
           <AdvancedTable
             columns={unitPriceTableColumns}
             data={mqFutureUnitPrice_cells}
@@ -269,16 +280,18 @@ export default function MQFutureSheet() {
             hideHeader
             maxHeight={"400px"}
             footerContent={
-              <div className="h-full overflow-hidden border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
-                <div className="flex-shrink-0 p-3 border-b border-gray-200">
-                  <label className="font-semibold text-gray-900">メモ:</label>
+              <div className="h-[200px] sm:h-[250px] lg:h-full overflow-hidden border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
+                <div className="flex-shrink-0 p-2 sm:p-3 border-b border-gray-200">
+                  <label className="font-semibold text-sm sm:text-base text-gray-900">
+                    メモ:
+                  </label>
                 </div>
-                <div className="flex-1 p-3 min-h-0">
+                <div className="flex-1 p-2 sm:p-3 min-h-0 overflow-auto">
                   <CustomTextarea
                     sheet={sheetName}
                     cell="L25"
                     placeholder="メモを入力してください..."
-                    className="w-full h-full border-0 resize-none focus:ring-0 focus:outline-none text-gray-700"
+                    className="w-full h-full min-h-[120px] border-0 resize-none focus:ring-0 focus:outline-none text-sm sm:text-base text-gray-700"
                     rows={6}
                   />
                 </div>

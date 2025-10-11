@@ -56,7 +56,6 @@ export default function DashboardLayout() {
       const savedTab = localStorage.getItem("lastVisitedTab");
       // Validate that the saved tab is a valid tab
       if (savedTab && VALID_TABS.includes(savedTab as any)) {
-        console.log(`Restored last visited tab: ${savedTab}`);
         return savedTab;
       }
     }
@@ -72,7 +71,6 @@ export default function DashboardLayout() {
   useEffect(() => {
     if (typeof window !== "undefined" && activeTab) {
       localStorage.setItem("lastVisitedTab", activeTab);
-      console.log(`Saved last visited tab: ${activeTab}`);
     }
   }, [activeTab]);
 

@@ -173,38 +173,44 @@ export const DataProvider: React.FC<{
     });
     sheetIdsRef.current.clear();
 
-    // Add sheets from frontendData (already transformed)
     Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
       try {
-        // Add sheet to HyperFormula
         hf.addSheet(sheetName);
         const sheetId = hf.getSheetId(sheetName);
-
         if (sheetId !== undefined) {
           sheetIdsRef.current.set(sheetName, sheetId);
-
-          // Set sheet content directly from transformed data
-          if (sheetData && sheetData.length > 0) {
-            // Additional sanitization before sending to HyperFormula
-            const sanitizedSheetData = sheetData.map((row) =>
-              row.map((cell) => {
-                // Ensure no error values slip through
-                if (typeof cell === "string" && cell.includes("#")) {
-                  console.warn(
-                    `Found error value in ${sheetName}: ${cell}, replacing with empty string`
-                  );
-                  return "";
-                }
-                return cell;
-              })
-            );
-
-            hf.setSheetContent(sheetId, sanitizedSheetData);
-          }
         }
       } catch (error) {
-        console.error(`Error initializing sheet ${sheetName}:`, error);
-        // Continue with other sheets even if one fails
+        console.error(`Error adding sheet ${sheetName}:`, error);
+      }
+    });
+
+    // Then, set cell values (content) for all sheets
+    Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
+      const sheetId = hf.getSheetId(sheetName);
+      if (sheetId === undefined) return;
+
+      // Set sheet content directly from transformed data
+      if (sheetData && sheetData.length > 0) {
+        // Additional sanitization before sending to HyperFormula
+        const sanitizedSheetData = sheetData.map((row) =>
+          row.map((cell) => {
+            // Ensure no error values slip through
+            if (typeof cell === "string" && cell.includes("#")) {
+              console.warn(
+                `Found error value in ${sheetName}: ${cell}, replacing with empty string`
+              );
+              return "";
+            }
+            return cell;
+          })
+        );
+
+        try {
+          hf.setSheetContent(sheetId, sanitizedSheetData);
+        } catch (error) {
+          console.error(`Error setting content for sheet ${sheetName}:`, error);
+        }
       }
     });
   };

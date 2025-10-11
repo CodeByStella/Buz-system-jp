@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
+import { CustomTextarea } from "@/components/ui/customTextarea";
 
 export default function ProfitPlanSheet() {
   const { onSave, saving, hasChanges, loading, errorMessage, retry } =
@@ -1844,23 +1845,22 @@ export default function ProfitPlanSheet() {
             </table>
           </div>
 
-          {/* Notes Section */}
-          <div className="mt-4 space-y-2">
-            <div className="text-sm text-gray-700 relative">
-              <CustomInput
-                type="text"
+          {/* Notes Section - Sticky on horizontal scroll */}
+          <div className="mt-4 space-y-2 p-4 bg-gray-50 border border-gray-200 sticky left-0 h-[250px] flex flex-col justify-between z-10">
+            <h3 className="text-sm font-semibold text-gray-800 mb-2">メモ:</h3>
+            <div className="flex items-center relative h-full">
+            <CustomTextarea
                 sheet={sheetName}
                 cell="A18"
-                className="border-transparent bg-transparent text-sm"
+                className="flex-1 border border-gray-300 bg-white h-full"
                 placeholder="粗利が増えれば純利益が増えます。メモ"
               />
             </div>
-            <div className="text-sm text-gray-700 relative">
-              <CustomInput
-                type="text"
+            <div className="flex items-center relative h-full">
+              <CustomTextarea
                 sheet={sheetName}
                 cell="A19"
-                className="border-transparent bg-transparent text-sm"
+                className="flex-1 border border-gray-300 bg-white h-full"
                 placeholder="しかし10%落とすと・・・?"
               />
             </div>

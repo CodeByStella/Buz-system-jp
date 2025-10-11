@@ -272,7 +272,7 @@ export default function ProgressResultInputSheet() {
               {/* Top Section */}
               <div className="flex-1 flex flex-col space-y-2">
                 {/* 決算目標 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     columns={leftTableColumns}
                     data={settlementTarget_cells}
@@ -284,7 +284,7 @@ export default function ProgressResultInputSheet() {
                 </div>
 
                 {/* 経費(固定) */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     columns={leftTableColumns}
                     data={fixedExpenses_cells}
@@ -303,7 +303,7 @@ export default function ProgressResultInputSheet() {
               {/* Bottom Section */}
               <div className="flex-1 flex flex-col space-y-2">
                 {/* 事業費 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     title={
                       <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
@@ -319,7 +319,7 @@ export default function ProgressResultInputSheet() {
                 </div>
 
                 {/* 人件費内訳 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     title={
                       <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
@@ -335,7 +335,7 @@ export default function ProgressResultInputSheet() {
                 </div>
 
                 {/* 販売促進費 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     title={
                       <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
@@ -357,7 +357,7 @@ export default function ProgressResultInputSheet() {
               {/* Top Section */}
               <div className="flex-1 flex flex-col space-y-2">
                 {/* 製造原価内訳 - 事業費 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     columns={rightTableColumns}
                     data={manufacturingBusinessExpenses_cells}
@@ -374,7 +374,7 @@ export default function ProgressResultInputSheet() {
                 </div>
 
                 {/* 製造原価内訳 - 人件費 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     columns={rightTableColumns}
                     data={manufacturingPersonnelCost_cells}
@@ -393,7 +393,7 @@ export default function ProgressResultInputSheet() {
               {/* Bottom Section */}
               <div className="flex-1 flex flex-col space-y-2">
                 {/* 製造原価内訳 - 販売促進費 */}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     title={
                       <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
@@ -409,7 +409,7 @@ export default function ProgressResultInputSheet() {
                 </div>
 
                 {/* 製造原価内訳 - 経費（固定）*/}
-                <div className="flex-1">
+                <div>
                   <AdvancedTable
                     title={
                       <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">

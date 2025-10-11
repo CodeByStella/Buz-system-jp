@@ -34,6 +34,17 @@ export interface Column<T = any> {
   className?: string;
   headerClassName?: string;
   cellClassName?: string;
+  colspan?: number;
+  rowspan?: number;
+}
+
+// Cell span configuration for complex tables
+export interface CellSpan<T = any> {
+  rowIndex: number;
+  colIndex: number;
+  colspan?: number;
+  rowspan?: number;
+  isSpanned?: boolean; // For cells that are covered by rowspan/colspan
 }
 
 export interface ColorSettings {
@@ -77,6 +88,8 @@ export interface AdvancedTableProps<T = any> {
   emptyText?: string;
   loadingText?: string;
   hideHeader?: boolean;
+  cellSpans?: CellSpan<T>[]; // For complex table layouts with colspan/rowspan
+  getCellSpan?: (record: T, index: number, column: Column<T>) => CellSpan<T> | null;
 }
 
 export function AdvancedTable<T = any>({
@@ -107,6 +120,8 @@ export function AdvancedTable<T = any>({
   emptyText = "データがありません",
   loadingText = "読み込み中...",
   hideHeader = false,
+  cellSpans = [],
+  getCellSpan,
 }: AdvancedTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{
@@ -208,6 +223,40 @@ export function AdvancedTable<T = any>({
       ...prev,
       [column.key]: value,
     }));
+  };
+
+  // Helper function to check if a cell should be skipped due to rowspan/colspan
+  const shouldSkipCell = (rowIndex: number, colIndex: number): boolean => {
+    if (getCellSpan) {
+      const record = paginatedData[rowIndex];
+      const column = columns[colIndex];
+      const cellSpan = getCellSpan(record, rowIndex, column);
+      return cellSpan?.isSpanned || false;
+    }
+    
+    // Check cellSpans array
+    const span = cellSpans.find(s => s.rowIndex === rowIndex && s.colIndex === colIndex);
+    return span?.isSpanned || false;
+  };
+
+  // Helper function to get cell span attributes
+  const getCellSpanAttrs = (rowIndex: number, colIndex: number) => {
+    if (getCellSpan) {
+      const record = paginatedData[rowIndex];
+      const column = columns[colIndex];
+      const cellSpan = getCellSpan(record, rowIndex, column);
+      return {
+        rowSpan: cellSpan?.rowspan || 1,
+        colSpan: cellSpan?.colspan || 1,
+      };
+    }
+    
+    // Check cellSpans array
+    const span = cellSpans.find(s => s.rowIndex === rowIndex && s.colIndex === colIndex);
+    return {
+      rowSpan: span?.rowspan || 1,
+      colSpan: span?.colspan || 1,
+    };
   };
 
   // Render cell content
@@ -377,6 +426,8 @@ export function AdvancedTable<T = any>({
                   {columns.map((column, columnIndex) => (
                     <TableHead
                       key={column.key}
+                      rowSpan={column.rowspan}
+                      colSpan={column.colspan}
                       className={cn(
                         dense ? "text-xs py-1" : undefined,
                         column.headerClassName,
@@ -468,36 +519,47 @@ export function AdvancedTable<T = any>({
                     )}
                     onClick={() => onRowClick?.(record, index)}
                   >
-                    {columns.map((column, columnIndex) => (
-                      <TableCell
-                        key={column.key}
-                        className={cn(
-                          dense ? "py-1" : undefined,
-                          column.cellClassName,
-                          cellClassName,
-                          column.align === "center" && "text-center",
-                          column.align === "right" && "text-right",
-                          bordered && "border border-gray-200",
-                          stickyColumns > 0 &&
-                            columnIndex < stickyColumns &&
-                            "sticky bg-white z-10"
-                        )}
-                        style={{
-                          width: column.width,
-                          left:
-                            stickyColumns > 0 && columnIndex < stickyColumns
-                              ? `${
-                                  columnIndex *
-                                  (typeof column.width === "number"
-                                    ? column.width
-                                    : 150)
-                                }px`
-                              : undefined,
-                        }}
-                      >
-                        {renderCell(column, record, index)}
-                      </TableCell>
-                    ))}
+                    {columns.map((column, columnIndex) => {
+                      // Skip cell if it's covered by rowspan/colspan
+                      if (shouldSkipCell(index, columnIndex)) {
+                        return null;
+                      }
+
+                      const spanAttrs = getCellSpanAttrs(index, columnIndex);
+                      
+                      return (
+                        <TableCell
+                          key={column.key}
+                          rowSpan={spanAttrs.rowSpan}
+                          colSpan={spanAttrs.colSpan}
+                          className={cn(
+                            dense ? "py-1" : undefined,
+                            column.cellClassName,
+                            cellClassName,
+                            column.align === "center" && "text-center",
+                            column.align === "right" && "text-right",
+                            bordered && "border border-gray-200",
+                            stickyColumns > 0 &&
+                              columnIndex < stickyColumns &&
+                              "sticky bg-white z-10"
+                          )}
+                          style={{
+                            width: column.width,
+                            left:
+                              stickyColumns > 0 && columnIndex < stickyColumns
+                                ? `${
+                                    columnIndex *
+                                    (typeof column.width === "number"
+                                      ? column.width
+                                      : 150)
+                                  }px`
+                                : undefined,
+                          }}
+                        >
+                          {renderCell(column, record, index)}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))
               )}

@@ -26,302 +26,141 @@ export default function SalesPlanSheet() {
           {/* Complex Header Structure */}
           <thead>
             {/* First header row */}
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <th
                 rowSpan={2}
-                className="border border-gray-300 p-2 text-center bg-blue-100"
+                className="border border-gray-300 p-2 text-center bg-gray-100"
                 style={{ width: "120px" }}
               >
                 商品名
               </th>
               <th
-                colSpan={2}
-                className="border border-gray-300 p-2 text-center bg-blue-100"
+                className="border border-gray-300 p-2 text-center bg-gray-100"
                 style={{ width: "140px" }}
               >
                 売上目標
               </th>
+              <th
+                className="border border-gray-300 p-2 text-center bg-gray-100"
+                style={{ width: "50px" }}
+                rowSpan={2}
+              />
               {monthNames.map((month) => (
                 <th
                   key={month}
                   colSpan={2}
-                  className="border border-gray-300 p-2 text-center bg-blue-100"
+                  className="border border-gray-300 p-2 text-center bg-gray-100"
                   style={{ width: "140px" }}
                 >
                   {month}
                 </th>
               ))}
-              <th
-                colSpan={2}
-                className="border border-gray-300 p-2 text-center bg-blue-100"
-                style={{ width: "140px" }}
-              >
-                累計
-              </th>
-              <th
-                colSpan={2}
-                className="border border-gray-300 p-2 text-center bg-blue-100"
-                style={{ width: "140px" }}
-              >
-                当月
-              </th>
-              <th
-                colSpan={2}
-                className="border border-gray-300 p-2 text-center bg-blue-100"
-                style={{ width: "140px" }}
-              >
-                累計
-              </th>
             </tr>
 
             {/* Second header row */}
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
+                className="border border-gray-300 p-1 text-center bg-gray-100 relative"
                 style={{ width: "70px" }}
               >
-                累計
-              </th>
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                当月
+                <CustomInput
+                  type="number"
+                  sheet={sheetName}
+                  cell="B2"
+                  readOnly
+                  className="border-transparent h-6 text-xs text-center w-full !bg-gray-100"
+                />
               </th>
               {monthNames.map((month) => (
                 <React.Fragment key={month}>
                   <th
-                    className="border border-gray-300 p-1 text-center bg-blue-100"
-                    style={{ width: "70px" }}
-                  >
-                    累計
-                  </th>
-                  <th
-                    className="border border-gray-300 p-1 text-center bg-blue-100"
+                    className="border border-gray-300 p-1 text-center bg-gray-100"
                     style={{ width: "70px" }}
                   >
                     当月
                   </th>
+                  <th
+                    className="border border-gray-300 p-1 text-center bg-gray-100"
+                    style={{ width: "70px" }}
+                  >
+                    累計
+                  </th>
                 </React.Fragment>
               ))}
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                累計
-              </th>
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                当月
-              </th>
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                累計
-              </th>
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                当月
-              </th>
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                累計
-              </th>
-              <th
-                className="border border-gray-300 p-1 text-center bg-blue-100"
-                style={{ width: "70px" }}
-              >
-                当月
-              </th>
             </tr>
           </thead>
 
           {/* Data rows */}
           <tbody>
-            {/* Global Sales Target Row */}
-            <tr>
-              <td
-                className="border border-gray-300 p-2 text-center font-medium bg-green-100"
-                style={{ width: "120px" }}
-              >
-                合計
-              </td>
-              <td
-                className="border border-gray-300 p-2 text-center font-medium"
-                style={{ width: "140px" }}
-                colSpan={2}
-              >
-                <div className="w-full max-w-[120px] mx-auto">
-                  <CustomInput
-                    type="number"
-                    sheet={sheetName}
-                    cell="global_sales_target"
-                    className="border-transparent h-8 text-sm text-center w-full"
-                  />
-                </div>
-              </td>
-              {monthNames.map((_, monthIndex) => (
-                <React.Fragment key={monthIndex}>
-                  <td
-                    className="border border-gray-300 p-1 text-center"
-                    style={{ width: "70px" }}
-                  >
-                    <div className="w-full max-w-[60px] mx-auto">
-                      <CustomInput
-                        type="number"
-                        sheet={sheetName}
-                        cell={`global_month_${monthIndex}_current`}
-                        className="border-transparent h-6 text-xs text-center w-full"
-                      />
-                    </div>
-                  </td>
-                  <td
-                    className="border border-gray-300 p-1 text-center"
-                    style={{ width: "70px" }}
-                  >
-                    <div className="w-full max-w-[60px] mx-auto">
-                      <CustomInput
-                        type="number"
-                        sheet={sheetName}
-                        cell={`global_month_${monthIndex}_cumulative`}
-                        className="border-transparent h-6 text-xs text-center w-full"
-                      />
-                    </div>
-                  </td>
-                </React.Fragment>
-              ))}
-              {/* Summary columns */}
-              <td
-                className="border border-gray-300 p-1 text-center"
-                style={{ width: "70px" }}
-              >
-                <div className="w-full max-w-[60px] mx-auto">
-                  <CustomInput
-                    type="number"
-                    sheet={sheetName}
-                    cell="global_summary_current"
-                    className="border-transparent h-6 text-xs text-center w-full"
-                  />
-                </div>
-              </td>
-              <td
-                className="border border-gray-300 p-1 text-center"
-                style={{ width: "70px" }}
-              >
-                <div className="w-full max-w-[60px] mx-auto">
-                  <CustomInput
-                    type="number"
-                    sheet={sheetName}
-                    cell="global_summary_cumulative"
-                    className="border-transparent h-6 text-xs text-center w-full"
-                  />
-                </div>
-              </td>
-            </tr>
-
             {/* Category rows */}
-            {salesPlanRows.map((row) => (
-              <tr key={row.id}>
+            {salesPlanRows.map((row, id: number) => (
+              <tr key={row.label}>
                 {/* Product name */}
-                <td
-                  className={cn(
-                    "border border-gray-300 p-2 text-center font-medium",
-                    row.bgcolor
-                  )}
-                  style={{ width: "120px" }}
-                  rowSpan={row.isSpanned ? undefined : 2}
-                >
-                  {row.isSpanned ? null : row.label}
-                </td>
+                {row.rowType === "target" && (
+                  <td
+                    className={cn(
+                      "border border-gray-300 p-2 text-center font-medium relative",
+                      row.rowType === "target" ? "bg-gray-100" : "bg-blue-50"
+                    )}
+                    style={{ width: "120px" }}
+                    rowSpan={2}
+                  >
+                    <CustomInput
+                      type="text"
+                      sheet={sheetName}
+                      cell={row.label}
+                      readOnly={row.label === "その他詳"}
+                      className={`border-transparent w-full h-full ${row.label === "その他詳" ? "!bg-gray-100" : ""}`}
+                    />
+                  </td>
+                )}
 
                 {/* Sales target with label */}
                 <td
-                  className="border border-gray-300 p-2 text-center bg-blue-100"
+                  className="border border-gray-300 p-2 text-center bg-gray-100 relative"
                   style={{ width: "140px" }}
-                  colSpan={2}
                 >
-                  <div className="flex items-center justify-center gap-1">
-                    <div className="w-full max-w-[80px]">
-                      <CustomInput
-                        type="number"
-                        sheet={sheetName}
-                        cell={row.salesTargetCumulative}
-                        className="border-transparent h-6 text-xs text-center w-full"
-                      />
-                    </div>
-                    <span className="text-xs font-medium">
-                      {row.rowType === "target" ? "目標" : "実績"}
-                    </span>
-                  </div>
+                  <CustomInput
+                    type="number"
+                    sheet={sheetName}
+                    cell={
+                      row.rowType === "target"
+                        ? row.salesTarget
+                        : row.salesActual
+                    }
+                    readOnly
+                    className="border-transparent w-full h-full !bg-gray-100"
+                  />
+                </td>
+                <td className="border border-gray-300 p-2 text-center bg-gray-100">
+                  {row.rowType === "target" ? "目標" : "実績"}
                 </td>
 
                 {/* Monthly data */}
                 {row.monthlyData.map((monthData, index) => (
                   <React.Fragment key={index}>
                     <td
-                      className="border border-gray-300 p-1 text-center bg-blue-100"
+                      className="border border-gray-300 p-2 text-center bg-gray-100 relative"
                       style={{ width: "70px" }}
                     >
-                      <div className="w-full max-w-[60px] mx-auto">
-                        <CustomInput
-                          type="number"
-                          sheet={sheetName}
-                          cell={monthData.cumulative}
-                          className="border-transparent h-6 text-xs text-center w-full"
-                        />
-                      </div>
+                      <CustomInput
+                        type="number"
+                        sheet={sheetName}
+                        cell={monthData.current}
+                        className="border-transparent h-full w-full"
+                      />
                     </td>
                     <td
-                      className="border border-gray-300 p-1 text-center bg-blue-100"
+                      className="border border-gray-300 p-2 text-center bg-gray-100 relative"
                       style={{ width: "70px" }}
                     >
-                      <div className="w-full max-w-[60px] mx-auto">
-                        <CustomInput
-                          type="number"
-                          sheet={sheetName}
-                          cell={monthData.monthly}
-                          className="border-transparent h-6 text-xs text-center w-full"
-                        />
-                      </div>
-                    </td>
-                  </React.Fragment>
-                ))}
-
-                {/* Summary data */}
-                {row.summaryData.map((summaryData, index) => (
-                  <React.Fragment key={index}>
-                    <td
-                      className="border border-gray-300 p-1 text-center bg-blue-100"
-                      style={{ width: "70px" }}
-                    >
-                      <div className="w-full max-w-[60px] mx-auto">
-                        <CustomInput
-                          type="number"
-                          sheet={sheetName}
-                          cell={summaryData.cumulative}
-                          className="border-transparent h-6 text-xs text-center w-full"
-                        />
-                      </div>
-                    </td>
-                    <td
-                      className="border border-gray-300 p-1 text-center bg-blue-100"
-                      style={{ width: "70px" }}
-                    >
-                      <div className="w-full max-w-[60px] mx-auto">
-                        <CustomInput
-                          type="number"
-                          sheet={sheetName}
-                          cell={summaryData.monthly}
-                          className="border-transparent h-6 text-xs text-center w-full"
-                        />
-                      </div>
+                      <CustomInput
+                        type="number"
+                        sheet={sheetName}
+                        cell={monthData.total}
+                        readOnly
+                        className="border-transparent h-full w-full !bg-gray-100"
+                      />
                     </td>
                   </React.Fragment>
                 ))}

@@ -45,9 +45,9 @@ export default function SalesPlanSheet() {
                 style={{ width: "50px" }}
                 rowSpan={2}
               />
-              {monthNames.map((month) => (
+              {monthNames.map((month, index) => (
                 <th
-                  key={month}
+                  key={`${month}-header`}
                   colSpan={2}
                   className="border border-gray-300 p-2 text-center bg-gray-100"
                   style={{ width: "140px" }}
@@ -72,7 +72,7 @@ export default function SalesPlanSheet() {
                 />
               </th>
               {monthNames.map((month) => (
-                <React.Fragment key={month}>
+                <React.Fragment key={`${month}-header1`}>
                   <th
                     className="border border-gray-300 p-1 text-center bg-gray-100"
                     style={{ width: "70px" }}
@@ -94,7 +94,7 @@ export default function SalesPlanSheet() {
           <tbody>
             {/* Category rows */}
             {salesPlanRows.map((row, id: number) => (
-              <tr key={row.label}>
+              <tr key={`${id}-row`}>
                 {/* Product name */}
                 {row.rowType === "target" && (
                   <td
@@ -138,7 +138,7 @@ export default function SalesPlanSheet() {
 
                 {/* Monthly data */}
                 {row.monthlyData.map((monthData, index) => (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={`${index}-monthlyData-${monthData.current}`}>
                     <td
                       className="border border-gray-300 p-2 text-center bg-gray-100 relative"
                       style={{ width: "70px" }}

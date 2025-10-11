@@ -72,6 +72,7 @@ export default function MQFutureSheet() {
               tip={record.tip}
               tipClassName="text-red-500"
               suffix="%"
+              renderValue={v=>Number(v)*100}
               className={"border-transparent h-full text-lg text-center"}
             />
           );

@@ -390,7 +390,6 @@ export function AdvancedTable<T = any>({
           style={
             scrollable
               ? {
-                  maxHeight,
                   position: "relative",
                 }
               : undefined

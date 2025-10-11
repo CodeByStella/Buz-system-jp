@@ -4,7 +4,6 @@ import React, { useMemo } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   ProgressResultRowDataType,
-  FixedExpenseRowDataType,
   settlementTarget_cells,
   fixedExpenses_cells,
   businessExpenses_cells,
@@ -28,21 +27,20 @@ export default function ProgressResultInputSheet() {
 
   const sheetName: SheetNameType = "progress_result_input";
 
-  const progressTableColumns: Column[] = useMemo(
+  const leftTableColumns: Column[] = useMemo(
     () => [
       {
         key: "label",
-        title: "",
+        title: "目標",
         width: 120,
         align: "left",
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: ProgressResultRowDataType) => {
           return (
             <div
-              className={cn(
-                record.bgcolor || "bg-white",
-                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium"
-              )}
+              className={
+                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium bg-gray-300"
+              }
             >
               {value}
             </div>
@@ -55,28 +53,38 @@ export default function ProgressResultInputSheet() {
         width: 80,
         align: "right",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ProgressResultRowDataType) => {
+        render: (
+          value: string,
+          record: ProgressResultRowDataType,
+          index: number
+        ) => {
           return (
             <CustomInput
               type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2}
+              readOnly
               tip={record.tip}
               tipClassName="text-red-500"
-              className={`border-transparent h-full text-sm text-right`}
+              className={`border-transparent h-full text-sm text-right ${
+                record.type == 2 ? "!bg-gray-300" : ""
+              }`}
             />
           );
         },
       },
       {
         key: "actual",
-        title: "実績",
+        title: "実績｜累積",
         width: 80,
         align: "right",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ProgressResultRowDataType) => {
+        render: (
+          value: string,
+          record: ProgressResultRowDataType,
+          index: number
+        ) => {
           return (
             <CustomInput
               type="number"
@@ -86,28 +94,9 @@ export default function ProgressResultInputSheet() {
               readOnly={record.type === 2}
               tip={record.tip}
               tipClassName="text-red-500"
-              className={`border-transparent h-full text-sm text-right`}
-            />
-          );
-        },
-      },
-      {
-        key: "cumulative",
-        title: "累積",
-        width: 80,
-        align: "right",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ProgressResultRowDataType) => {
-          return (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              disabled={record.type === 0}
-              readOnly={record.type === 2}
-              tip={record.tip}
-              tipClassName="text-red-500"
-              className={`border-transparent h-full text-sm text-right`}
+              className={`border-transparent h-full text-sm text-right ${
+                record.type == 2 ? "!bg-gray-300" : ""
+              }`}
             />
           );
         },
@@ -115,22 +104,20 @@ export default function ProgressResultInputSheet() {
     ],
     [sheetName]
   );
-
-  const fixedExpenseTableColumns: Column[] = useMemo(
+  const rightTableColumns: Column[] = useMemo(
     () => [
       {
         key: "label",
-        title: "",
+        title: "目標",
         width: 120,
         align: "left",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: FixedExpenseRowDataType) => {
+        render: (value: string, record: ProgressResultRowDataType) => {
           return (
             <div
-              className={cn(
-                record.bgcolor || "bg-white",
-                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium"
-              )}
+              className={
+                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium bg-gray-300"
+              }
             >
               {value}
             </div>
@@ -143,28 +130,37 @@ export default function ProgressResultInputSheet() {
         width: 80,
         align: "right",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: FixedExpenseRowDataType) => {
+        render: (
+          value: string,
+          record: ProgressResultRowDataType,
+          index: number
+        ) => {
           return (
             <CustomInput
               type="number"
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
-              readOnly={record.type === 2}
               tip={record.tip}
               tipClassName="text-red-500"
-              className={`border-transparent h-full text-sm text-right`}
+              className={`border-transparent h-full text-sm text-right ${
+                record.type == 2 ? "!bg-gray-300" : ""
+              }`}
             />
           );
         },
       },
       {
         key: "actual",
-        title: "実績",
+        title: "実績｜累積",
         width: 80,
         align: "right",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: FixedExpenseRowDataType) => {
+        render: (
+          value: string,
+          record: ProgressResultRowDataType,
+          index: number
+        ) => {
           return (
             <CustomInput
               type="number"
@@ -174,7 +170,9 @@ export default function ProgressResultInputSheet() {
               readOnly={record.type === 2}
               tip={record.tip}
               tipClassName="text-red-500"
-              className={`border-transparent h-full text-sm text-right`}
+              className={`border-transparent h-full text-sm text-right ${
+                record.type == 2 ? "!bg-gray-300" : ""
+              }`}
             />
           );
         },
@@ -223,7 +221,7 @@ export default function ProgressResultInputSheet() {
           <h1 className="text-2xl font-bold text-gray-900">
             進捗実績入力シート
           </h1>
-          <p className="text-gray-600">4期短期計画 - 目標売上成長率: 126.8%</p>
+          <p className="text-gray-600">短期計画 - 目標売上成長率</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -267,146 +265,164 @@ export default function ProgressResultInputSheet() {
       </div>
 
       <div className="flex-1 min-h-0 overflow-hidden">
-        <div className="h-full overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4 p-1">
-            {/* Left Column - 決算目標 & 経費(固定) */}
-            <div className="flex flex-col space-y-4">
-              {/* 決算目標 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-blue-500 text-white px-3 py-2 text-sm font-semibold">
-                  決算目標
+        <div className="h-full overflow-auto">
+          <div className="grid grid-cols-2 gap-4 p-4 h-full">
+            {/* Left Column */}
+            <div className="flex flex-col space-y-4 h-full">
+              {/* Top Section */}
+              <div className="flex-1 flex flex-col space-y-2">
+                {/* 決算目標 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    columns={leftTableColumns}
+                    data={settlementTarget_cells}
+                    bordered
+                    className="h-full"
+                    dense
+                    cellClassName="!p-0"
+                  />
                 </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={settlementTarget_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
+
+                {/* 経費(固定) */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    columns={leftTableColumns}
+                    data={fixedExpenses_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                    title={
+                      <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                        経費(固定)
+                      </div>
+                    }
+                  />
+                </div>
               </div>
 
-              {/* 経費(固定) */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-orange-500 text-white px-3 py-2 text-sm font-semibold">
-                  経費(固定)
+              {/* Bottom Section */}
+              <div className="flex-1 flex flex-col space-y-2">
+                {/* 事業費 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    title={
+                      <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                        経費内訳 - 事業費
+                      </div>
+                    }
+                    columns={leftTableColumns}
+                    data={businessExpenses_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                  />
                 </div>
-                <AdvancedTable
-                  columns={fixedExpenseTableColumns}
-                  data={fixedExpenses_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
-              </div>
 
-              {/* 製造原価内訳 - 事業費 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-blue-400 text-white px-3 py-2 text-sm font-semibold">
-                  製造原価内訳 - 事業費
+                {/* 人件費内訳 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    title={
+                      <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                        人件費内訳
+                      </div>
+                    }
+                    columns={leftTableColumns}
+                    data={personnelCost_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                  />
                 </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={manufacturingBusinessExpenses_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
-              </div>
 
-              {/* 製造原価内訳 - 人件費 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-teal-400 text-white px-3 py-2 text-sm font-semibold">
-                  製造原価内訳 - 人件費
+                {/* 販売促進費 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    title={
+                      <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                        販売促進費
+                      </div>
+                    }
+                    columns={leftTableColumns}
+                    data={salesPromotion_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                  />
                 </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={manufacturingPersonnelCost_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
               </div>
             </div>
 
-            {/* Right Column - 経費内訳 & 製造原価内訳 */}
-            <div className="flex flex-col space-y-4">
-              {/* 事業費 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-blue-400 text-white px-3 py-2 text-sm font-semibold">
-                  事業費
+            {/* Right Column */}
+            <div className="flex flex-col space-y-4 h-full">
+              {/* Top Section */}
+              <div className="flex-1 flex flex-col space-y-2">
+                {/* 製造原価内訳 - 事業費 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    columns={rightTableColumns}
+                    data={manufacturingBusinessExpenses_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                    className="h-full"
+                    title={
+                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                        製造原価内訳 - 事業費
+                      </div>
+                    }
+                  />
                 </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={businessExpenses_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
+
+                {/* 製造原価内訳 - 人件費 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    columns={rightTableColumns}
+                    data={manufacturingPersonnelCost_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                    title={
+                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                        製造原価内訳 - 人件費
+                      </div>
+                    }
+                  />
+                </div>
               </div>
 
-              {/* 人件費内訳 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-yellow-400 text-white px-3 py-2 text-sm font-semibold">
-                  人件費内訳
+              {/* Bottom Section */}
+              <div className="flex-1 flex flex-col space-y-2">
+                {/* 製造原価内訳 - 販売促進費 */}
+                <div className="flex-1">
+                  <AdvancedTable
+                    title={
+                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                        製造原価内訳 - 販売促進費
+                      </div>
+                    }
+                    columns={rightTableColumns}
+                    data={manufacturingSalesPromotion_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                  />
                 </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={personnelCost_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
-              </div>
 
-              {/* 販売促進費 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-green-400 text-white px-3 py-2 text-sm font-semibold">
-                  販売促進費
+                {/* 製造原価内訳 - 経費（固定）*/}
+                <div className="flex-1">
+                  <AdvancedTable
+                    title={
+                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                        製造原価内訳 - 経費（固定）
+                      </div>
+                    }
+                    columns={rightTableColumns}
+                    data={manufacturingFixedExpenses_cells}
+                    bordered
+                    dense
+                    cellClassName="!p-0"
+                  />
                 </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={salesPromotion_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
-              </div>
-
-              {/* 製造原価内訳 - 販売促進費 */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-green-400 text-white px-3 py-2 text-sm font-semibold">
-                  製造原価内訳 - 販売促進費
-                </div>
-                <AdvancedTable
-                  columns={progressTableColumns}
-                  data={manufacturingSalesPromotion_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
-              </div>
-
-              {/* 製造原価内訳 - 経費(固定) */}
-              <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-                <div className="bg-orange-400 text-white px-3 py-2 text-sm font-semibold">
-                  製造原価内訳 - 経費(固定)
-                </div>
-                <AdvancedTable
-                  columns={fixedExpenseTableColumns}
-                  data={manufacturingFixedExpenses_cells}
-                  bordered
-                  dense
-                  hideHeader
-                  cellClassName="!p-0"
-                />
               </div>
             </div>
           </div>

@@ -6,7 +6,6 @@ export { default as pdfService } from "./pdfService";
 
 // Export types
 export type { LoginRequest, LoginResponse, User } from "./authService";
-export type { UserInputRequest, UserInput } from "./userService";
 export type {
   Parameter,
   ParameterUpdateRequest,

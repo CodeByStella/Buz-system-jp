@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
-import { cn } from "@/lib/utils";
 
 export default function ProfitPlanSheet() {
   const { onSave, saving, hasChanges, loading, errorMessage, retry } =
@@ -101,22 +100,11 @@ export default function ProfitPlanSheet() {
               className="w-full border-collapse text-xs table-fixed"
               style={{ minWidth: "2000px" }}
             >
-              {/* Title Row */}
-              <thead>
-                <tr>
-                  <th
-                    colSpan={12}
-                    className="border border-gray-300 p-3 text-center bg-yellow-200 text-lg font-bold"
-                  >
-                    利益計画表
-                  </th>
-                </tr>
-              </thead>
-
               {/* UP Scenarios Section */}
               <thead>
                 {/* UP Scenario Headers */}
-                <tr className="bg-yellow-100">
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 p-2 text-center w-32"></th>
                   <th className="border border-gray-300 p-2 text-center w-32">
                     現状
                   </th>
@@ -151,9 +139,12 @@ export default function ProfitPlanSheet() {
                     粗利 10% UP
                   </th>
                 </tr>
+              </thead>
 
+              {/* UP Scenario Data Rows */}
+              <tbody>
                 {/* UP Gross Profit Rate Row */}
-                <tr className="bg-yellow-100">
+                <tr>
                   <td className="border border-gray-300 p-2 text-center font-medium">
                     粗利率
                   </td>
@@ -163,7 +154,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -172,7 +167,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -181,7 +180,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -190,7 +193,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -199,7 +206,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -208,7 +219,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -217,7 +232,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -226,7 +245,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -235,7 +258,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -244,7 +271,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -253,14 +284,14 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L3"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                 </tr>
-              </thead>
-
-              {/* UP Scenario Data Rows */}
-              <tbody>
                 {/* Sales Row */}
                 <tr>
                   <td className="border border-gray-300 p-2 text-center font-medium">
@@ -272,7 +303,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -281,7 +312,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -290,7 +321,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -299,7 +330,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -308,7 +339,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -317,7 +348,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -326,7 +357,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -335,7 +366,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -344,7 +375,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -353,7 +384,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -362,7 +393,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L4"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -378,7 +409,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -387,7 +418,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -396,7 +427,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -405,7 +436,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -414,7 +445,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -423,7 +454,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -432,7 +463,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -441,7 +472,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -450,7 +481,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -459,7 +490,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -468,7 +499,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L5"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -484,7 +515,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -493,7 +524,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -502,7 +533,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -511,7 +542,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -520,7 +551,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -529,7 +560,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -538,7 +569,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -547,7 +578,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -556,7 +587,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -565,7 +596,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -574,7 +605,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L6"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -590,7 +621,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -599,7 +630,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -608,7 +639,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -617,7 +648,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -626,7 +657,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -635,7 +666,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -644,7 +675,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -653,7 +684,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -662,7 +693,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -671,7 +702,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -680,7 +711,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L7"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -696,7 +727,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -705,7 +736,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -714,7 +745,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -723,7 +754,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -732,7 +763,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -741,7 +772,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -750,7 +781,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -759,7 +790,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -768,7 +799,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -777,7 +808,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -786,7 +817,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L8"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -802,7 +833,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -811,7 +846,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -820,7 +859,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -829,7 +872,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -838,7 +885,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -847,7 +898,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -856,7 +911,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -865,7 +924,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -874,7 +937,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -883,7 +950,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -892,7 +963,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L9"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                 </tr>
@@ -901,7 +976,8 @@ export default function ProfitPlanSheet() {
               {/* DOWN Scenarios Section */}
               <thead>
                 {/* DOWN Scenario Headers */}
-                <tr className="bg-yellow-100">
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 p-2 text-center w-32"></th>
                   <th className="border border-gray-300 p-2 text-center w-32">
                     現状
                   </th>
@@ -936,9 +1012,12 @@ export default function ProfitPlanSheet() {
                     粗利 10% DOWN
                   </th>
                 </tr>
+              </thead>
 
+              {/* DOWN Scenario Data Rows */}
+              <tbody>
                 {/* DOWN Gross Profit Rate Row */}
-                <tr className="bg-yellow-100">
+                <tr>
                   <td className="border border-gray-300 p-2 text-center font-medium">
                     粗利率
                   </td>
@@ -948,7 +1027,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -957,7 +1036,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -966,7 +1049,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -975,7 +1062,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -984,7 +1075,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -993,7 +1088,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1002,7 +1101,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1011,7 +1114,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1020,7 +1127,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1029,7 +1140,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1038,14 +1153,14 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L11"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                 </tr>
-              </thead>
-
-              {/* DOWN Scenario Data Rows */}
-              <tbody>
                 {/* Sales Row */}
                 <tr>
                   <td className="border border-gray-300 p-2 text-center font-medium">
@@ -1057,7 +1172,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1066,7 +1181,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1075,7 +1190,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1084,7 +1199,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1093,7 +1208,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1102,7 +1217,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1111,7 +1226,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1120,7 +1235,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1129,7 +1244,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1138,7 +1253,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1147,7 +1262,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L12"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -1163,7 +1278,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1172,7 +1287,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1181,7 +1296,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1190,7 +1305,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1199,7 +1314,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1208,7 +1323,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1217,7 +1332,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1226,7 +1341,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1235,7 +1350,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1244,7 +1359,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1253,7 +1368,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L13"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -1269,7 +1384,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1278,7 +1393,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1287,7 +1402,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1296,7 +1411,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1305,7 +1420,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1314,7 +1429,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1323,7 +1438,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1332,7 +1447,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1341,7 +1456,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1350,7 +1465,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1359,7 +1474,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L14"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -1375,7 +1490,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1384,7 +1499,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1393,7 +1508,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1402,7 +1517,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1411,7 +1526,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1420,7 +1535,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1429,7 +1544,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1438,7 +1553,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1447,7 +1562,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1456,7 +1571,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1465,7 +1580,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L15"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -1481,7 +1596,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1490,7 +1605,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1499,7 +1614,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1508,7 +1623,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1517,7 +1632,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1526,7 +1641,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1535,7 +1650,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1544,7 +1659,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1553,7 +1668,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1562,7 +1677,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1571,7 +1686,7 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L16"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
                     />
                   </td>
                 </tr>
@@ -1587,7 +1702,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="B17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1596,7 +1715,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="C17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1605,7 +1728,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="D17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1614,7 +1741,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="E17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1623,7 +1754,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="F17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1632,7 +1767,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="G17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1641,7 +1780,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="H17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1650,7 +1793,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="I17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1659,7 +1806,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="J17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1668,7 +1819,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="K17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                   <td className="border border-gray-300 p-2 text-center relative">
@@ -1677,7 +1832,11 @@ export default function ProfitPlanSheet() {
                       sheet={sheetName}
                       cell="L17"
                       readOnly
-                      className="border-transparent h-full text-sm text-center w-full !bg-yellow-100"
+                      className="border-transparent h-full text-sm text-center w-full !bg-white"
+                      suffix="%"
+                      renderValue={(v) => {
+                        return Number(v) * 100;
+                      }}
                     />
                   </td>
                 </tr>
@@ -1686,7 +1845,7 @@ export default function ProfitPlanSheet() {
           </div>
 
           {/* Notes Section */}
-          <div className="mt-4 space-y-2">
+          {/* <div className="mt-4 space-y-2">
             <div className="text-sm text-gray-700">
               <CustomInput
                 type="text"
@@ -1705,15 +1864,7 @@ export default function ProfitPlanSheet() {
                 placeholder="しかし10%落とすと・・・?"
               />
             </div>
-          </div>
-
-          {/* Logo Section */}
-          <div className="mt-4 flex justify-end">
-            <div className="bg-red-600 text-white p-3 rounded text-xs">
-              <div className="font-bold">JM JAPAN MULTISKILL WORKERS</div>
-              <div className="text-xs mt-1">粗利が増えれば純利益が増えます。粗利率の変動をシミュレーションできます。</div>
-            </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

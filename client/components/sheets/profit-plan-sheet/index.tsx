@@ -1845,8 +1845,8 @@ export default function ProfitPlanSheet() {
           </div>
 
           {/* Notes Section */}
-          {/* <div className="mt-4 space-y-2">
-            <div className="text-sm text-gray-700">
+          <div className="mt-4 space-y-2">
+            <div className="text-sm text-gray-700 relative">
               <CustomInput
                 type="text"
                 sheet={sheetName}
@@ -1855,7 +1855,7 @@ export default function ProfitPlanSheet() {
                 placeholder="粗利が増えれば純利益が増えます。メモ"
               />
             </div>
-            <div className="text-sm text-gray-700">
+            <div className="text-sm text-gray-700 relative">
               <CustomInput
                 type="text"
                 sheet={sheetName}
@@ -1864,7 +1864,7 @@ export default function ProfitPlanSheet() {
                 placeholder="しかし10%落とすと・・・?"
               />
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

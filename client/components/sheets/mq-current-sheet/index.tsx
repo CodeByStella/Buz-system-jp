@@ -42,6 +42,7 @@ export default function MQCurrentSheet() {
             sheet={sheetName}
             cell={value}
             readOnly
+            tip={record.tip}
             tipClassName="text-red-500"
             prefix="¥"
             className={`border-transparent h-full text-lg`}
@@ -141,13 +142,13 @@ export default function MQCurrentSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden ">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4  ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">MQ会計(現状)</h1>
           <p className="text-gray-600">このページで元データを入力します。</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -182,21 +183,14 @@ export default function MQCurrentSheet() {
       </div>
       <div className="grid grid-rows-4 gap-2 flex-1 min-h-0">
         {/* Row 1 - Horizontal Grid */}
-        <div className="grid grid-cols-2 gap-2 row-span-3 h-full overflow-hidden">
+        <div className="grid lg:grid-cols-2 gap-2 row-span-3 h-full ">
           <AdvancedTable
             columns={resultTableColumns}
             data={resultTable_cells}
             bordered
             dense
             hideHeader
-            maxHeight={"460px"}
             cellClassName="!bg-yellow-300"
-            footerContent={
-              <div className="text-xs text-red-500">
-                <p>P×Qを入れるとここに売り上げが反映。</p>
-                <p>上と同じ数字になるように①と②で調整しましょう。</p>
-              </div>
-            }
           />
           <AdvancedTable
             columns={inputTableColumns}
@@ -204,12 +198,11 @@ export default function MQCurrentSheet() {
             bordered
             dense
             hideHeader
-            maxHeight={"full"}
           />
         </div>
 
         {/* Row 2 - Memo Section */}
-        <div className="h-full overflow-hidden border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
+        <div className="h-full   border border-gray-300rounded-lg shadow-sm flex flex-c2l bg-white">
           <div className="flex-shrink-0 p-3 border-b border-gray-200">
             <label className="font-semibold text-gray-900">メモ:</label>
           </div>

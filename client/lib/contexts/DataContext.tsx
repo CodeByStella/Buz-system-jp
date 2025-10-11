@@ -57,7 +57,7 @@ export const DataProvider: React.FC<{
   const userEditedCellsRef = useRef<Set<string>>(new Set());
 
   // Helper function to check if a value is a formula
-  // A formula is a string that starts with "=" 
+  // A formula is a string that starts with "="
   // Regular strings (like "Total", "Sales", etc.) do NOT start with "="
   const isFormula = (value: any): boolean => {
     if (typeof value !== "string") return false;
@@ -87,9 +87,9 @@ export const DataProvider: React.FC<{
     try {
       setLoading(true);
       setErrorMessage(null);
-      
-      console.log("Fetching user inputs...");
+
       const backendData: BackendDataType[] = await userService.getUserInputs();
+      console.clear();
       console.log("Backend data received:", backendData.length, "items");
 
       // Store original data for change tracking
@@ -104,11 +104,12 @@ export const DataProvider: React.FC<{
         if (isFormula(item.value)) {
           const key = `${item.sheet}:${item.cell}`;
           formulaCellsRef.current.add(key);
-          console.log(`Identified formula cell: ${key} = ${item.value}`);
         }
       });
 
-      console.log(`Loaded ${formulaCellsRef.current.size} formula cells from database`);
+      console.log(
+        `Loaded ${formulaCellsRef.current.size} formula cells from database`
+      );
 
       // Transform to frontend format
       console.log("Transforming data...");
@@ -128,24 +129,26 @@ export const DataProvider: React.FC<{
       console.log("Data loading completed successfully");
     } catch (error) {
       console.error("Failed to fetch user inputs:", error);
-      
+
       // Provide more specific error messages
       let errorMessage = "データの読み込みに失敗しました";
-      
+
       if (error instanceof Error) {
         if (error.message.includes("サーバーに接続できません")) {
-          errorMessage = "サーバーに接続できません。ネットワーク接続を確認してください。";
+          errorMessage =
+            "サーバーに接続できません。ネットワーク接続を確認してください。";
         } else if (error.message.includes("認証が必要です")) {
           errorMessage = "認証が必要です。ページを再読み込みしてください。";
         } else if (error.message.includes("timeout")) {
-          errorMessage = "リクエストがタイムアウトしました。再試行してください。";
+          errorMessage =
+            "リクエストがタイムアウトしました。再試行してください。";
         } else {
           errorMessage = `データの読み込みに失敗しました: ${error.message}`;
         }
       }
-      
+
       setErrorMessage(errorMessage);
-      
+
       // Auto-clear error message after 8 seconds for better UX
       setTimeout(() => {
         setErrorMessage(null);
@@ -170,36 +173,44 @@ export const DataProvider: React.FC<{
     });
     sheetIdsRef.current.clear();
 
-    // Add sheets from frontendData (already transformed)
     Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
       try {
-        // Add sheet to HyperFormula
         hf.addSheet(sheetName);
         const sheetId = hf.getSheetId(sheetName);
-
         if (sheetId !== undefined) {
           sheetIdsRef.current.set(sheetName, sheetId);
-
-          // Set sheet content directly from transformed data
-          if (sheetData && sheetData.length > 0) {
-            // Additional sanitization before sending to HyperFormula
-            const sanitizedSheetData = sheetData.map(row => 
-              row.map(cell => {
-                // Ensure no error values slip through
-                if (typeof cell === 'string' && cell.includes('#')) {
-                  console.warn(`Found error value in ${sheetName}: ${cell}, replacing with empty string`);
-                  return "";
-                }
-                return cell;
-              })
-            );
-            
-            hf.setSheetContent(sheetId, sanitizedSheetData);
-          }
         }
       } catch (error) {
-        console.error(`Error initializing sheet ${sheetName}:`, error);
-        // Continue with other sheets even if one fails
+        console.error(`Error adding sheet ${sheetName}:`, error);
+      }
+    });
+
+    // Then, set cell values (content) for all sheets
+    Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
+      const sheetId = hf.getSheetId(sheetName);
+      if (sheetId === undefined) return;
+
+      // Set sheet content directly from transformed data
+      if (sheetData && sheetData.length > 0) {
+        // Additional sanitization before sending to HyperFormula
+        const sanitizedSheetData = sheetData.map((row) =>
+          row.map((cell) => {
+            // Ensure no error values slip through
+            if (typeof cell === "string" && cell.includes("#")) {
+              console.warn(
+                `Found error value in ${sheetName}: ${cell}, replacing with empty string`
+              );
+              return "";
+            }
+            return cell;
+          })
+        );
+
+        try {
+          hf.setSheetContent(sheetId, sanitizedSheetData);
+        } catch (error) {
+          console.error(`Error setting content for sheet ${sheetName}:`, error);
+        }
       }
     });
   };
@@ -231,7 +242,11 @@ export const DataProvider: React.FC<{
   };
 
   // Handle cell change
-  const handleChangeCell = (sheet: string, cell: string, value: number | string) => {
+  const handleChangeCell = (
+    sheet: string,
+    cell: string,
+    value: number | string
+  ) => {
     const hf = hfInstanceRef.current;
     if (!hf) return;
 
@@ -244,17 +259,29 @@ export const DataProvider: React.FC<{
     try {
       // Sanitize the value before setting it
       let sanitizedValue = value;
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         // Check for error values
-        if (value.includes('#ERROR!') || value.includes('#REF!') || value.includes('#VALUE!') || value.includes('#NAME?') || value.includes('#DIV/0!') || value.includes('#N/A') || value.includes('#NUM!') || value.includes('#NULL!')) {
-          console.warn(`Attempted to set error value in ${sheet}:${cell}: ${value}, using empty string instead`);
+        if (
+          value.includes("#DIV/0!") ||
+          value.includes("#N/A") ||
+          value.includes("#NAME?") ||
+          value.includes("#NUM!") ||
+          value.includes("#REF!") ||
+          value.includes("#VALUE!") ||
+          value.includes("#CYCLE!") ||
+          value.includes("#ERROR!") ||
+          value.includes("#LIC!")
+        ) {
+          console.warn(
+            `Attempted to set error value in ${sheet}:${cell}: ${value}, using empty string instead`
+          );
           sanitizedValue = "";
         }
       }
 
       // Track this cell as user-edited
       userEditedCellsRef.current.add(cellKey);
-      
+
       // If user enters a formula, track it as a formula cell
       if (isFormula(sanitizedValue)) {
         formulaCellsRef.current.add(cellKey);
@@ -263,7 +290,9 @@ export const DataProvider: React.FC<{
         // If user overwrites a formula cell with a value, remove it from formula cells
         if (formulaCellsRef.current.has(cellKey)) {
           formulaCellsRef.current.delete(cellKey);
-          console.log(`User replaced formula in ${cellKey} with value: ${sanitizedValue}`);
+          console.log(
+            `User replaced formula in ${cellKey} with value: ${sanitizedValue}`
+          );
         }
       }
 
@@ -275,7 +304,10 @@ export const DataProvider: React.FC<{
 
       setUserInput(calculatedData);
     } catch (error) {
-      console.error(`Error setting cell ${sheet}:${cell} to value ${value}:`, error);
+      console.error(
+        `Error setting cell ${sheet}:${cell} to value ${value}:`,
+        error
+      );
       // Don't update the UI if there was an error
     }
   };
@@ -298,24 +330,27 @@ export const DataProvider: React.FC<{
     userEditedCellsRef.current.forEach((cellKey) => {
       const [sheetName, cellRef] = cellKey.split(":");
       const sheetId = sheetIdsRef.current.get(sheetName);
-      
+
       if (sheetId === undefined) return;
 
       const { row, col } = cellToIndices(cellRef);
-      
+
       // Get the cell contents (formula or value)
       const cellContents = hf.getCellSerialized({ sheet: sheetId, row, col });
-      
+
       // Determine the value to save
       let valueToSave: number | string | null = null;
-      
-      if (typeof cellContents === "string" && cellContents.trim().startsWith("=")) {
+
+      if (
+        typeof cellContents === "string" &&
+        cellContents.trim().startsWith("=")
+      ) {
         // This is a formula - save the formula string
         valueToSave = cellContents;
       } else {
         // This is a regular value - get the actual value
         const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
-        
+
         // If cell is empty, mark for deletion
         if (cellValue === null || cellValue === undefined || cellValue === "") {
           valueToSave = "";
@@ -369,7 +404,7 @@ export const DataProvider: React.FC<{
 
       if (changedCells.length === 0) {
         setSuccessMessage("変更はありません");
-        
+
         // Auto-clear info message after 3 seconds
         setTimeout(() => {
           setSuccessMessage(null);
@@ -416,7 +451,7 @@ export const DataProvider: React.FC<{
     } catch (error) {
       console.error("Failed to save changes:", error);
       setErrorMessage("保存に失敗しました。もう一度お試しください。");
-      
+
       // Auto-clear error message after 5 seconds
       setTimeout(() => {
         setErrorMessage(null);
@@ -427,10 +462,7 @@ export const DataProvider: React.FC<{
   };
 
   // Helper to get cell value by reference
-  const getCell = (
-    sheet: string,
-    cell: string
-  ): string | number => {
+  const getCell = (sheet: string, cell: string): string | number => {
     const sheetData = userInput[sheet];
     if (!sheetData) return cell; // Return the text itself if sheet doesn't exist
 
@@ -475,12 +507,12 @@ export const DataProvider: React.FC<{
  *
  * Usage in sheet components:
  * ```tsx
- * const { 
- *   data, 
- *   onChange, 
- *   onSave, 
- *   saving, 
- *   hasChanges, 
+ * const {
+ *   data,
+ *   onChange,
+ *   onSave,
+ *   saving,
+ *   hasChanges,
  *   getCell,
  *   errorMessage,
  *   successMessage,

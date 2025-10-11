@@ -1,6 +1,7 @@
 export interface ResultTableCell {
   label: string;
   value: string;
+  tip?: string;
 }
 
 export interface InputTableCell {
@@ -8,8 +9,8 @@ export interface InputTableCell {
   op: string;
   y: string;
   editable: boolean;
-  xDesc?: string,
-  yDesc?: string,
+  xDesc?: string;
+  yDesc?: string;
 }
 
 export const resultTable_cells: ResultTableCell[] = [
@@ -20,6 +21,7 @@ export const resultTable_cells: ResultTableCell[] = [
   {
     label: "③",
     value: "B13",
+    tip: "P×Qを入れるとここに売り上げが反映。上と同じ数字になるように①と②で調整しましょう。",
   },
   {
     label: "VQ(変動費）",
@@ -51,7 +53,7 @@ export const inputTable_cells: InputTableCell[] = [
   {
     x: "L3",
     op: "×",
-    y: 'Q3',
+    y: "Q3",
     editable: true,
   },
   {

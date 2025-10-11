@@ -138,8 +138,8 @@ export default function ManufacturingExpensesSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             ⑥ (V) 経費を入力する
@@ -148,7 +148,7 @@ export default function ManufacturingExpensesSheet() {
             製造業の経費の詳細を入力して、事業計画を立てます。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -200,7 +200,7 @@ export default function ManufacturingExpensesSheet() {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 flex-1 min-h-0">
+      <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4 flex-1 min-h-0">
         {/* 経費(固定) - Fixed Expenses */}
         <div className="flex flex-col space-y-2">
             <AdvancedTable

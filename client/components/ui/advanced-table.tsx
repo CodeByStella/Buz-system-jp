@@ -288,26 +288,30 @@ export function AdvancedTable<T = any>({
   // Loading state
   if (loading) {
     return (
-      <Card className={className}>
+      <Card className={cn("p-2 sm:p-4", className)}>
         {(title || description) && (
-          <CardHeader className={dense ? "p-0" : "py-0"}>
-            <CardTitle className={dense ? "text-sm" : undefined}>
+          <CardHeader className={dense ? "p-0" : "py-0 px-2 sm:px-4"}>
+            <CardTitle className={cn(
+              dense ? "text-sm" : "text-base sm:text-lg"
+            )}>
               {title}
             </CardTitle>
-            <CardDescription className={dense ? "text-xs" : undefined}>
+            <CardDescription className={cn(
+              dense ? "text-xs" : "text-xs sm:text-sm"
+            )}>
               {loadingText}
             </CardDescription>
           </CardHeader>
         )}
-        <CardContent className={dense ? "py-3" : undefined}>
-          <div className={dense ? "space-y-2" : "space-y-4"}>
+        <CardContent className={dense ? "py-2 sm:py-3 px-0" : "p-2 sm:p-4"}>
+          <div className={dense ? "space-y-2" : "space-y-3 sm:space-y-4"}>
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
                 className={
                   dense
-                    ? "h-6 bg-gray-200 animate-pulse rounded"
-                    : "h-12 bg-gray-200 animate-pulse rounded"
+                    ? "h-6 sm:h-8 bg-gray-200 animate-pulse rounded"
+                    : "h-8 sm:h-12 bg-gray-200 animate-pulse rounded"
                 }
               />
             ))}
@@ -322,10 +326,18 @@ export function AdvancedTable<T = any>({
       className={cn("h-full min-h-0 flex flex-col cardcardcard", className)}
     >
       {(title || description) && (
-        <CardHeader className={dense ? "p-0" : "py-0"}>
-          <div className="flex justify-between items-center relative">
-            {title}
-            <CardDescription className={dense ? "text-xs" : undefined}>
+        <CardHeader className={cn(
+          dense ? "p-0" : "py-0 px-2 sm:px-4"
+        )}>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 relative">
+            <div className={cn(
+              dense ? "text-sm sm:text-base" : "text-base sm:text-lg"
+            )}>
+              {title}
+            </div>
+            <CardDescription className={cn(
+              dense ? "text-xs" : "text-xs sm:text-sm"
+            )}>
               {description}
             </CardDescription>
           </div>
@@ -333,23 +345,28 @@ export function AdvancedTable<T = any>({
       )}
 
       <CardContent
-        className={
-          dense
-            ? "p-0 flex-1 min-h-0 overflow-hidden"
-            : "flex-1 min-h-0 overflow-hidden"
-        }
+        className={cn(
+          "flex-1 min-h-0 ",
+          dense ? "p-0" : "p-2 sm:p-4 lg:p-6"
+        )}
       >
         {/* Search and Filters */}
         {(searchable || filterable) && (
-          <div className={dense ? "mb-2 space-y-2" : "mb-4 space-y-3"}>
+          <div className={cn(
+            "space-y-2 sm:space-y-3",
+            dense ? "mb-2" : "mb-3 sm:mb-4"
+          )}>
             {searchable && (
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
                 <CustomInput
                   placeholder={searchPlaceholder}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={dense ? "pl-9 h-7 text-xs" : "pl-9"}
+                  className={cn(
+                    "pl-8 sm:pl-9",
+                    dense ? "h-6 sm:h-7 text-xs" : "h-8 sm:h-9 text-sm"
+                  )}
                 />
               </div>
             )}
@@ -360,9 +377,12 @@ export function AdvancedTable<T = any>({
                   .map((column) => (
                     <div
                       key={column.key}
-                      className="flex items-center space-x-2"
+                      className="flex items-center space-x-1 sm:space-x-2"
                     >
-                      <span className={dense ? "text-xs" : "text-sm"}>
+                      <span className={cn(
+                        "whitespace-nowrap",
+                        dense ? "text-xs" : "text-xs sm:text-sm"
+                      )}>
                         {column.title}:
                       </span>
                       <CustomInput
@@ -371,7 +391,11 @@ export function AdvancedTable<T = any>({
                         onChange={(e) =>
                           handleFilterChange(column, e.target.value)
                         }
-                        className={dense ? "h-6 w-24 text-xs" : "h-8 w-32"}
+                        className={cn(
+                          dense 
+                            ? "h-6 w-20 sm:w-24 text-xs" 
+                            : "h-7 sm:h-8 w-24 sm:w-32 text-xs sm:text-sm"
+                        )}
                       />
                     </div>
                   ))}
@@ -382,23 +406,24 @@ export function AdvancedTable<T = any>({
         {/* Table */}
         <div
           className={cn(
-            "h-full min-h-0",
+            "min-h-0",
             scrollable
-              ? "overflow-auto scroll-pb-24 border border-gray-200 rounded-md"
-              : "overflow-hidden"
+              ? "overflow-x-auto overflow-y-auto scroll-pb-24 border border-gray-200 rounded-sm sm:rounded-md"
+              : "",
+            "touch-pan-x touch-pan-y" // Better touch scrolling on mobile
           )}
           style={
             scrollable
               ? {
-                  maxHeight,
                   position: "relative",
+                  WebkitOverflowScrolling: "touch", // Smooth scrolling on iOS
                 }
               : undefined
           }
         >
           <Table
             className={cn(
-              "pb-4",
+              "pb-4 w-full min-w-full",
               bordered && "border border-gray-200",
               tableClassName
             )}
@@ -421,7 +446,10 @@ export function AdvancedTable<T = any>({
                 }
               >
                 <TableRow
-                  className={cn(dense ? "h-8" : undefined, colors.headerBg)}
+                  className={cn(
+                    dense ? "h-6 sm:h-8" : "h-8 sm:h-10", 
+                    colors.headerBg
+                  )}
                 >
                   {columns.map((column, columnIndex) => (
                     <TableHead
@@ -429,7 +457,7 @@ export function AdvancedTable<T = any>({
                       rowSpan={column.rowspan}
                       colSpan={column.colspan}
                       className={cn(
-                        dense ? "text-xs py-1" : undefined,
+                        dense ? "text-[10px] sm:text-xs py-0.5 sm:py-1 px-1 sm:px-2" : "text-xs sm:text-sm py-1 sm:py-2 px-2 sm:px-3",
                         column.headerClassName,
                         colors.headerText,
                         column.align === "center" && "text-center",
@@ -444,6 +472,9 @@ export function AdvancedTable<T = any>({
                       )}
                       style={{
                         width: column.width,
+                        minWidth: typeof column.width === "number" 
+                          ? `${column.width * 0.7}px` 
+                          : column.width,
                         left:
                           stickyColumns > 0 && columnIndex < stickyColumns
                             ? `${
@@ -458,17 +489,17 @@ export function AdvancedTable<T = any>({
                     >
                       <div
                         className={cn(
-                          "flex items-center space-x-1",
+                          "flex items-center space-x-0.5 sm:space-x-1",
                           column.align === "center" && "justify-center",
                           column.align === "right" && "justify-end"
                         )}
                       >
-                        <span>{column.title}</span>
+                        <span className="truncate">{column.title}</span>
                         {sortable && column.sortable && (
-                          <div className="flex flex-col">
+                          <div className="flex flex-col flex-shrink-0">
                             <ChevronUp
                               className={cn(
-                                "h-3 w-3",
+                                "h-2 w-2 sm:h-3 sm:w-3",
                                 sortConfig?.key === column.key &&
                                   sortConfig.direction === "asc"
                                   ? "text-blue-600"
@@ -477,7 +508,7 @@ export function AdvancedTable<T = any>({
                             />
                             <ChevronDown
                               className={cn(
-                                "h-3 w-3 -mt-1",
+                                "h-2 w-2 sm:h-3 sm:w-3 -mt-0.5 sm:-mt-1",
                                 sortConfig?.key === column.key &&
                                   sortConfig.direction === "desc"
                                   ? "text-blue-600"
@@ -498,7 +529,7 @@ export function AdvancedTable<T = any>({
                   <TableCell
                     colSpan={columns.length}
                     className={cn(
-                      "text-center py-8 text-gray-500",
+                      "text-center py-6 sm:py-8 text-sm sm:text-base text-gray-500",
                       bordered && "border border-gray-200",
                       cellClassName
                     )}
@@ -511,7 +542,7 @@ export function AdvancedTable<T = any>({
                   <TableRow
                     key={getRowKey(record, index)}
                     className={cn(
-                      dense ? "h-8" : undefined,
+                      dense ? "h-6 sm:h-8" : "h-8 sm:h-10",
                       colors.rowBg,
                       colors.rowHover,
                       colors.striped && index % 2 === 1 && colors.stripedColor,
@@ -533,7 +564,7 @@ export function AdvancedTable<T = any>({
                           rowSpan={spanAttrs.rowSpan}
                           colSpan={spanAttrs.colSpan}
                           className={cn(
-                            dense ? "py-1" : undefined,
+                            dense ? "py-0.5 sm:py-1 px-1 sm:px-2 text-[10px] sm:text-xs" : "py-1 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm",
                             column.cellClassName,
                             cellClassName,
                             column.align === "center" && "text-center",
@@ -545,6 +576,9 @@ export function AdvancedTable<T = any>({
                           )}
                           style={{
                             width: column.width,
+                            minWidth: typeof column.width === "number" 
+                              ? `${column.width * 0.7}px` 
+                              : column.width,
                             left:
                               stickyColumns > 0 && columnIndex < stickyColumns
                                 ? `${
@@ -569,23 +603,30 @@ export function AdvancedTable<T = any>({
 
         {/* Pagination */}
         {pagination && sortedData.length > pageSize && (
-          <div className="flex justify-between items-center mt-4 pt-4 border-t">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t">
             <div
-              className={
-                dense ? "text-xs text-gray-500" : "text-sm text-gray-500"
-              }
+              className={cn(
+                "text-gray-500",
+                dense ? "text-[10px] sm:text-xs" : "text-xs sm:text-sm"
+              )}
             >
-              {currentPage} / {Math.ceil(sortedData.length / pageSize)} ページ (
-              {sortedData.length} 件中{" "}
-              {Math.min((currentPage - 1) * pageSize + 1, sortedData.length)}-
-              {Math.min(currentPage * pageSize, sortedData.length)} 件を表示)
+              <span className="hidden sm:inline">
+                {currentPage} / {Math.ceil(sortedData.length / pageSize)} ページ (
+                {sortedData.length} 件中{" "}
+                {Math.min((currentPage - 1) * pageSize + 1, sortedData.length)}-
+                {Math.min(currentPage * pageSize, sortedData.length)} 件を表示)
+              </span>
+              <span className="sm:hidden">
+                {currentPage}/{Math.ceil(sortedData.length / pageSize)} ({sortedData.length}件)
+              </span>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 w-full sm:w-auto">
               <Button
                 variant="outline"
                 size={dense ? "sm" : "default"}
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
+                className="flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 前へ
               </Button>
@@ -603,6 +644,7 @@ export function AdvancedTable<T = any>({
                 disabled={
                   currentPage >= Math.ceil(sortedData.length / pageSize)
                 }
+                className="flex-1 sm:flex-none text-xs sm:text-sm"
               >
                 次へ
               </Button>
@@ -611,7 +653,7 @@ export function AdvancedTable<T = any>({
         )}
 
         {/* Footer */}
-        {footerContent && <div className="border-t">{footerContent}</div>}
+        {footerContent && <div className="border-t mt-2 sm:mt-3">{footerContent}</div>}
       </CardContent>
     </Card>
   );

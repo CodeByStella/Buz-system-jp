@@ -48,15 +48,15 @@ export default function ProfitPlanSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">利益計画表</h1>
           <p className="text-gray-600">
             粗利率の変動によるシナリオ分析を行います。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -91,7 +91,7 @@ export default function ProfitPlanSheet() {
       </div>
 
       {/* Main Profit Plan Table */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 ">
         <div
           className="h-full overflow-auto pb-2"
           style={{ scrollbarWidth: "auto", scrollbarColor: "#cbd5e1 #f1f5f9" }}

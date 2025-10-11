@@ -217,15 +217,15 @@ export default function StartSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden ">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4  ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
           <p className="text-gray-600">
             このページで元データを入力します（画像の項目に対応）。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -259,7 +259,7 @@ export default function StartSheet() {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
-        <div className="col-span-2 flex flex-col overflow-hidden">
+        <div className="lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
           <AdvancedTable
             columns={startSheetCols_main as any}
             data={startSheet_main as any}
@@ -269,9 +269,10 @@ export default function StartSheet() {
             stickyHeader
           />
         </div>
+    
 
-        <div className=" grid col-span-1 h-full overflow-hidden grid-rows-6 gap-2">
-          <div className="row-span-1 border border-black bg-yellow-200 p-1 h-full">
+        <div className="lg:w-full grid lg:col-span-1 col-span-3 h-full  grid-rows-6 gap-2">
+          <div className="row-span-1 border border-black bg-yellow-200 p-1 lg:h-full">
             <p className="text-xs text-gray-600">
               決算書を見ながら一つ一つ直近の数字を入力していく。
             </p>

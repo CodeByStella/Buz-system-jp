@@ -10,7 +10,6 @@ router.use(authenticateToken)
 // Get user inputs
 router.get('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
-    console.log('Fetching user inputs...')
     const startTime = Date.now()
     
     const userInputs = await Data.find({}).lean() // Use lean() for better performance

@@ -45,9 +45,9 @@ export default function SalesPlanSheet() {
                 style={{ width: "50px" }}
                 rowSpan={2}
               />
-              {monthNames.map((month) => (
+              {monthNames.map((month, index) => (
                 <th
-                  key={month}
+                  key={`${month}-header`}
                   colSpan={2}
                   className="border border-gray-300 p-2 text-center bg-gray-100"
                   style={{ width: "140px" }}
@@ -72,7 +72,7 @@ export default function SalesPlanSheet() {
                 />
               </th>
               {monthNames.map((month) => (
-                <React.Fragment key={month}>
+                <React.Fragment key={`${month}-header1`}>
                   <th
                     className="border border-gray-300 p-1 text-center bg-gray-100"
                     style={{ width: "70px" }}
@@ -94,7 +94,7 @@ export default function SalesPlanSheet() {
           <tbody>
             {/* Category rows */}
             {salesPlanRows.map((row, id: number) => (
-              <tr key={row.label}>
+              <tr key={`${id}-row`}>
                 {/* Product name */}
                 {row.rowType === "target" && (
                   <td
@@ -138,7 +138,7 @@ export default function SalesPlanSheet() {
 
                 {/* Monthly data */}
                 {row.monthlyData.map((monthData, index) => (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={`${index}-monthlyData-${monthData.current}`}>
                     <td
                       className="border border-gray-300 p-2 text-center bg-gray-100 relative"
                       style={{ width: "70px" }}
@@ -206,15 +206,15 @@ export default function SalesPlanSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">部門別販売計画</h1>
           <p className="text-gray-600">
             各商品カテゴリの月次目標と実績を入力して、売上計画を立てます。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -249,7 +249,7 @@ export default function SalesPlanSheet() {
       </div>
 
       {/* Main Sales Plan Table */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 ">
         <div
           className="h-full overflow-auto pb-2"
           style={{ scrollbarWidth: "auto", scrollbarColor: "#cbd5e1 #f1f5f9" }}

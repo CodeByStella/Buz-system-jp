@@ -7,6 +7,7 @@ import { Header } from "./header";
 import { authService } from "@/lib/services";
 import { DataProvider, useDataContext } from "@/lib/contexts/DataContext";
 import { Toast } from "@/components/ui/toast";
+import { Menu } from "lucide-react";
 
 // Import all sheet components
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
@@ -50,13 +51,13 @@ const VALID_TABS: SheetNameType[] = [
 export default function DashboardLayout() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     // Load last visited tab from localStorage on initial mount
     if (typeof window !== "undefined") {
       const savedTab = localStorage.getItem("lastVisitedTab");
       // Validate that the saved tab is a valid tab
       if (savedTab && VALID_TABS.includes(savedTab as any)) {
-        console.log(`Restored last visited tab: ${savedTab}`);
         return savedTab;
       }
     }
@@ -72,7 +73,6 @@ export default function DashboardLayout() {
   useEffect(() => {
     if (typeof window !== "undefined" && activeTab) {
       localStorage.setItem("lastVisitedTab", activeTab);
-      console.log(`Saved last visited tab: ${activeTab}`);
     }
   }, [activeTab]);
 
@@ -129,7 +129,7 @@ export default function DashboardLayout() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="flex">
-          <div className="w-64 bg-white border-r border-gray-200 h-screen">
+          <div className="hidden lg:block w-64 bg-white border-r border-gray-200 h-screen">
             <div className="p-4">
               <div className="h-6 w-32 bg-gray-200 animate-pulse rounded"></div>
             </div>
@@ -150,6 +150,11 @@ export default function DashboardLayout() {
             </div>
           </div>
         </div>
+        
+        {/* Loading floating button for mobile - positioned at 70% height */}
+        <div className="lg:hidden fixed left-4 z-40 bg-gray-300 p-3 rounded-full shadow-lg animate-pulse" style={{ top: '70%' }}>
+          <div className="h-6 w-6"></div>
+        </div>
       </div>
     );
   }
@@ -159,6 +164,8 @@ export default function DashboardLayout() {
       <DashboardContent
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
         renderContent={renderContent}
       />
     </DataProvider>
@@ -169,33 +176,48 @@ export default function DashboardLayout() {
 function DashboardContent({
   activeTab,
   setActiveTab,
+  sidebarOpen,
+  setSidebarOpen,
   renderContent,
 }: {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
   renderContent: () => React.ReactNode;
 }) {
   const { errorMessage, successMessage, clearMessages } = useDataContext();
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+    <div className="h-screen bg-gray-50  flex flex-col">
       <Header />
-      <div className="flex-1 overflow-hidden flex justify-center">
+      <div className="flex-1  flex justify-center relative">
         <div className="w-full max-w-[1440px] h-full p-4">
-          <div className="h-full border border-gray-200 bg-white overflow-hidden">
+          <div className="h-full border border-gray-200 bg-white ">
             <div className="flex h-full">
               <Sidebar
                 activeTab={activeTab as SheetNameType}
                 onTabChange={setActiveTab}
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
               />
-              <div className="flex-1 flex flex-col overflow-hidden">
-                <main className="flex-1 p-6 overflow-auto">
+              <div className="flex-1 flex flex-col  transition-all duration-300">
+                <main className="flex-1 p-6 lg:p-6 md:p-4 sm:p-4 overflow-auto">
                   {renderContent()}
                 </main>
               </div>
             </div>
           </div>
         </div>
+        
+        {/* Floating Menu Button for Mobile - positioned at 70% height */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="lg:hidden fixed left-4 z-40 bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition-colors"
+          style={{ bottom: '70%' }}
+        >
+          <Menu className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Toast notifications */}

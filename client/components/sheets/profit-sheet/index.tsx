@@ -152,15 +152,15 @@ export default function ProfitSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">① 利益を決めよう</h1>
           <p className="text-gray-600">
             営業利益、営業外収益・費用、特別利益・損失を入力して利益を計算します。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -204,7 +204,7 @@ export default function ProfitSheet() {
       <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
         {/* Left side - Ordinary Profit Calculation */}
         <div className="flex flex-col space-y-4">
-          {/* <div className="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden"> */}
+          {/* <div className="bg-white border border-gray-300 rounded-lg shadow-sm "> */}
             <AdvancedTable
               columns={profitTableColumns}
               data={ordinaryProfit_cells}

@@ -189,11 +189,11 @@ function DashboardContent({
   const { errorMessage, successMessage, clearMessages } = useDataContext();
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+    <div className="h-screen bg-gray-50  flex flex-col">
       <Header />
-      <div className="flex-1 overflow-hidden flex justify-center relative">
+      <div className="flex-1  flex justify-center relative">
         <div className="w-full max-w-[1440px] h-full p-4">
-          <div className="h-full border border-gray-200 bg-white overflow-hidden">
+          <div className="h-full border border-gray-200 bg-white ">
             <div className="flex h-full">
               <Sidebar
                 activeTab={activeTab as SheetNameType}
@@ -201,7 +201,7 @@ function DashboardContent({
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
               />
-              <div className="flex-1 flex flex-col overflow-hidden transition-all duration-300">
+              <div className="flex-1 flex flex-col  transition-all duration-300">
                 <main className="flex-1 p-6 lg:p-6 md:p-4 sm:p-4 overflow-auto">
                   {renderContent()}
                 </main>

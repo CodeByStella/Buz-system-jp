@@ -346,7 +346,7 @@ export function AdvancedTable<T = any>({
 
       <CardContent
         className={cn(
-          "flex-1 min-h-0 overflow-hidden",
+          "flex-1 min-h-0 ",
           dense ? "p-0" : "p-2 sm:p-4 lg:p-6"
         )}
       >
@@ -406,10 +406,10 @@ export function AdvancedTable<T = any>({
         {/* Table */}
         <div
           className={cn(
-            "h-full min-h-0",
+            "min-h-0",
             scrollable
               ? "overflow-x-auto overflow-y-auto scroll-pb-24 border border-gray-200 rounded-sm sm:rounded-md"
-              : "overflow-hidden",
+              : "",
             "touch-pan-x touch-pan-y" // Better touch scrolling on mobile
           )}
           style={

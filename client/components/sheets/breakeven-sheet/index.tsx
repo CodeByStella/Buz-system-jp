@@ -136,7 +136,7 @@ export default function BreakevenSheet() {
     const breakevenY = 320 - (breakevenPoint / displayMaxValue) * 320;
 
     return (
-      <div className="bg-gray-800 border border-gray-600 rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-gray-800 border border-gray-600 rounded-lg shadow-sm ">
         <div className="bg-orange-500 text-white px-3 py-1 text-sm font-semibold">
           {title}
         </div>
@@ -437,15 +437,15 @@ export default function BreakevenSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">損益分岐点分析</h1>
           <p className="text-gray-600">
             現状と来期の損益分岐点を比較分析します。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -479,7 +479,7 @@ export default function BreakevenSheet() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
+      <div className="grid md:grid-cols-2 gap-4 flex-1 min-h-0">
         {/* Current Status (現状) */}
         <div className="flex flex-col space-y-4">
           <AdvancedTable

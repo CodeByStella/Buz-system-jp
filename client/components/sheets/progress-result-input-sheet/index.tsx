@@ -215,15 +215,15 @@ export default function ProgressResultInputSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             進捗実績入力シート
           </h1>
           <p className="text-gray-600">短期計画 - 目標売上成長率</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -264,9 +264,9 @@ export default function ProgressResultInputSheet() {
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 ">
         <div className="h-full overflow-auto">
-          <div className="grid grid-cols-2 gap-4 p-4 h-full">
+          <div className="grid lg:grid-cols-2 gap-4 p-4 h-full">
             {/* Left Column */}
             <div className="flex flex-col space-y-4 h-full">
               {/* Top Section */}

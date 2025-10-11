@@ -218,14 +218,14 @@ export default function StartSheet() {
 
   return (
     <div className="h-full flex flex-col space-y-4  ">
-      <div className="flex items-center justify-between">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
           <p className="text-gray-600">
             このページで元データを入力します（画像の項目に対応）。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}

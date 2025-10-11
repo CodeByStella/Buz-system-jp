@@ -177,7 +177,7 @@ export default function MQFutureSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-3 sm:space-y-4 overflow-hidden p-2 sm:p-4 lg:p-0">
+    <div className="h-full flex flex-col space-y-3 sm:space-y-4  p-2 sm:p-4 lg:p-0">
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
         <div className="flex-1">
@@ -235,7 +235,7 @@ export default function MQFutureSheet() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto lg:overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto lg:">
         {/* Left side - MQ Results */}
         <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
           <AdvancedTable
@@ -245,7 +245,7 @@ export default function MQFutureSheet() {
             dense
             hideHeader
             cellClassName="!p-0"
-            // className="!h-fu ll"
+            // className="!h-full"
             footerContent={
               <div className="text-xs sm:text-sm bg-yellow-300 p-3 sm:p-4 space-y-2">
                 <p className="leading-relaxed">
@@ -278,9 +278,10 @@ export default function MQFutureSheet() {
             bordered
             dense
             hideHeader
-            maxHeight={"400px"}
+            className="flex flex-col"
+            // maxHeight={"400px"}
             footerContent={
-              <div className="h-[200px] sm:h-[250px] lg:h-full overflow-hidden border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
+              <div className="h-[200px] sm:h-[250px] lg:h-full  border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
                 <div className="flex-shrink-0 p-2 sm:p-3 border-b border-gray-200">
                   <label className="font-semibold text-sm sm:text-base text-gray-900">
                     メモ:

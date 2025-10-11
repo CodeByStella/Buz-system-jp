@@ -423,15 +423,15 @@ export default function ManufacturingIncomeSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col space-y-4 ">
+      <div className="lg:flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">⑦(PQ)原価の詳細</h1>
           <p className="text-gray-600">
             製造業の原価詳細を入力して、製品別の粗利益を分析します。
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}

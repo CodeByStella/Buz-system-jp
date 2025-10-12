@@ -13,6 +13,10 @@ import userRoutes from './routes/user'
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// Trust proxy - REQUIRED for cookies to work behind reverse proxies (nginx, load balancers, etc.)
+// This allows Express to read X-Forwarded-* headers
+app.set('trust proxy', 1)
+
 // Middleware
 // CORS configuration - allow frontend origin
 const allowedOrigins = [
@@ -49,6 +53,27 @@ app.use('/api/user', userRoutes)
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() })
+})
+
+// Configuration check endpoint (for debugging - remove in production or add auth)
+app.get('/api/config-check', (req, res) => {
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    isProduction: process.env.NODE_ENV === 'production',
+    frontendUrl: process.env.FRONTEND_URL,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    hasMongoDB: !!process.env.MONGODB_URI,
+    protocol: req.protocol,
+    secure: req.secure,
+    trustProxy: app.get('trust proxy'),
+    requestOrigin: req.headers.origin,
+    cookieSettings: {
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      path: '/'
+    }
+  })
 })
 
 // Error handling middleware

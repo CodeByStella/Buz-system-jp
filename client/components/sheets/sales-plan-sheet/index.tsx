@@ -19,10 +19,7 @@ export default function SalesPlanSheet() {
   const renderSalesPlanTable = () => {
     return (
       <div className="w-full border border-gray-300" id="table-container">
-        <table
-          className="w-full border-collapse text-xs table-fixed"
-          style={{ minWidth: "2000px" }}
-        >
+        <table className="border-collapse text-xs table-fixed">
           {/* Complex Header Structure */}
           <thead>
             {/* First header row */}
@@ -110,7 +107,9 @@ export default function SalesPlanSheet() {
                       sheet={sheetName}
                       cell={row.label}
                       readOnly={row.label === "その他詳"}
-                      className={`border-transparent w-full h-full ${row.label === "その他詳" ? "!bg-gray-100" : ""}`}
+                      className={`border-transparent w-full h-full ${
+                        row.label === "その他詳" ? "!bg-gray-100" : ""
+                      }`}
                     />
                   </td>
                 )}
@@ -138,7 +137,9 @@ export default function SalesPlanSheet() {
 
                 {/* Monthly data */}
                 {row.monthlyData.map((monthData, index) => (
-                  <React.Fragment key={`${index}-monthlyData-${monthData.current}`}>
+                  <React.Fragment
+                    key={`${index}-monthlyData-${monthData.current}`}
+                  >
                     <td
                       className="border border-gray-300 p-2 text-center bg-gray-100 relative"
                       style={{ width: "70px" }}
@@ -249,9 +250,9 @@ export default function SalesPlanSheet() {
       </div>
 
       {/* Main Sales Plan Table */}
-      <div className="flex-1 min-h-0 ">
+      <div className="w-full overflow-auto flex-1 min-h-0 ">
         <div
-          className="h-full overflow-auto pb-2"
+          className="h-full overflow-auto"
           style={{ scrollbarWidth: "auto", scrollbarColor: "#cbd5e1 #f1f5f9" }}
         >
           {renderSalesPlanTable()}

@@ -259,7 +259,7 @@ export default function StartSheet() {
         </div>
       </div>
       <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
-        <div className="lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
+        <div className="overflow-auto lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
           <AdvancedTable
             columns={startSheetCols_main as any}
             data={startSheet_main as any}

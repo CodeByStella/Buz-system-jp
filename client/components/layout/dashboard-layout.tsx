@@ -191,7 +191,7 @@ function DashboardContent({
   return (
     <div className="h-screen bg-gray-50  flex flex-col">
       <Header />
-      <div className="flex-1  flex justify-center relative">
+      <div className="flex-1  flex justify-center relative custom_main_container" >
         <div className="w-full max-w-[1440px] h-full p-4">
           <div className="h-full border border-gray-200 bg-white ">
             <div className="flex h-full">
@@ -201,7 +201,7 @@ function DashboardContent({
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}
               />
-              <div className="flex-1 flex flex-col  transition-all duration-300">
+              <div className="w-full flex-1 flex flex-col  transition-all duration-300">
                 <main className="flex-1 p-6 lg:p-6 md:p-4 sm:p-4 overflow-auto">
                   {renderContent()}
                 </main>

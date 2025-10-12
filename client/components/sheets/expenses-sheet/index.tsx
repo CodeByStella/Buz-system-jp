@@ -199,7 +199,7 @@ export default function ExpensesSheet() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4 flex-1 min-h-0">
+      <div className="overflow-auto grid lg:grid-cols-2 xl:grid-cols-4 gap-4 flex-1 min-h-0">
         {/* 経費(固定) - Fixed Expenses */}
         <div className="flex flex-col space-y-2">
             <AdvancedTable

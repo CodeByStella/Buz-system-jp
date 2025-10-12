@@ -475,9 +475,9 @@ export default function ManufacturingIncomeSheet() {
           cellClassName="!p-0"
         />
       </div>
-      <div className="grid grid-rows-4 gap-4 flex-1 min-h-0">
+      <div className="overflow-auto gap-4 flex-1 min-h-0">
         {/* Row 1 - Main Product Table */}
-        <div className="row-span-3 flex flex-col space-y-2">
+        <div className="flex flex-col space-y-2">
           <AdvancedTable
             columns={productTableColumns}
             data={manufacturingIncomeProducts}
@@ -490,7 +490,7 @@ export default function ManufacturingIncomeSheet() {
         </div>
 
         {/* Row 2 - Summary Section (実績) */}
-        <div className="row-span-1">
+        <div >
           <AdvancedTable
             columns={summaryTableColumns}
             data={manufacturingIncomeSummary}

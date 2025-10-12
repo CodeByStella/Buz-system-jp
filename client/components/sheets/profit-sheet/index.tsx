@@ -201,7 +201,7 @@ export default function ProfitSheet() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
+      <div className="lg:grid lg:grid-cols-2 gap-4 flex-1 min-h-0">
         {/* Left side - Ordinary Profit Calculation */}
         <div className="flex flex-col space-y-4">
           {/* <div className="bg-white border border-gray-300 rounded-lg shadow-sm "> */}
@@ -218,7 +218,7 @@ export default function ProfitSheet() {
         </div>
 
         {/* Right side - Profit Before Tax Calculation */}
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 lg:m-0 mt-8">
             <AdvancedTable
               columns={profitTableColumns}
               data={profitBeforeTax_cells}

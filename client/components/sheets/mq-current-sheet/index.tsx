@@ -202,7 +202,7 @@ export default function MQCurrentSheet() {
         </div>
 
         {/* Row 2 - Memo Section */}
-        <div className="h-full   border border-gray-300rounded-lg shadow-sm flex flex-c2l bg-white">
+        <div className="border border-gray-300rounded-lg shadow-sm flex flex-c2l bg-white">
           <div className="flex-shrink-0 p-3 border-b border-gray-200">
             <label className="font-semibold text-gray-900">メモ:</label>
           </div>

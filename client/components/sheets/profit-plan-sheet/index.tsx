@@ -91,15 +91,14 @@ export default function ProfitPlanSheet() {
       </div>
 
       {/* Main Profit Plan Table */}
-      <div className="flex-1 min-h-0 ">
+      <div className="overflow-auto flex-1 min-h-0 ">
         <div
-          className="h-full overflow-auto pb-2"
+          className="h-full min-w-[1000px] pb-2"
           style={{ scrollbarWidth: "auto", scrollbarColor: "#cbd5e1 #f1f5f9" }}
         >
           <div className="w-full border border-gray-300" id="table-container">
             <table
-              className="w-full border-collapse text-xs table-fixed"
-              style={{ minWidth: "2000px" }}
+              className="border-collapse text-xs table-fixed"
             >
               {/* UP Scenarios Section */}
               <thead>

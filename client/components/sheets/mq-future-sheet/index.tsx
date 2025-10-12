@@ -244,7 +244,8 @@ export default function MQFutureSheet() {
             bordered
             dense
             hideHeader
-            cellClassName="!p-0"
+            cellClassName="!p-0 "
+            className="overflow-auto"
             // className="!h-full"
             footerContent={
               <div className="text-xs sm:text-sm bg-yellow-300 p-3 sm:p-4 space-y-2">

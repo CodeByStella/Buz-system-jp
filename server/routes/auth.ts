@@ -1,79 +1,79 @@
-import express from 'express'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { authService } from '../services/auth-service'
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { authService } from "../services/auth-service";
 
-const router = express.Router()
+const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret'
+const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret";
 
 // Login
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'メールアドレスとパスワードが必要です' })
+      return res
+        .status(400)
+        .json({ error: "メールアドレスとパスワードが必要です" });
     }
 
-    const result = await authService.login(email, password)
+    const result = await authService.login(email, password);
     if (!result) {
-      return res.status(401).json({ error: 'ユーザーが見つかりません' })
+      return res.status(401).json({ error: "ユーザーが見つかりません" });
     }
-    const { token, user } = result
+    const { token, user } = result;
 
     // Set HTTP-only cookie
-    const isProduction = process.env.NODE_ENV === 'production'
-    res.cookie('auth-token', token, {
-      sameSite: 'none',
-      // httpOnly: true,
-      // secure: isProduction,
-      // sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-origin in production
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("auth-token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "lax" : "none", // 'none' required for cross-origin in production
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      // path: '/'
-    })
+      path: "/",
+    });
 
-    res.json({ user })
+    res.json({ user });
   } catch (error) {
-    console.error('Login error:', error)
-    res.status(500).json({ error: 'ログインに失敗しました' })
+    console.error("Login error:", error);
+    res.status(500).json({ error: "ログインに失敗しました" });
   }
-})
+});
 
 // Logout
-router.post('/logout', (req, res) => {
-  const isProduction = process.env.NODE_ENV === 'production'
-  res.clearCookie('auth-token', {
+router.post("/logout", (req, res) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  res.clearCookie("auth-token", {
     httpOnly: true,
     secure: isProduction,
-    sameSite: isProduction ? 'none' : 'lax',
-    path: '/'
-  })
-  res.json({ message: 'ログアウトしました' })
-})
+    sameSite: isProduction ? "lax" : "none",
+    path: "/",
+  });
+  res.json({ message: "ログアウトしました" });
+});
 
 // Get current user
-router.get('/me', async (req, res) => {
+router.get("/me", async (req, res) => {
   try {
-    console.log(req.cookies, 'req.cookies')
-    const token = req.cookies['auth-token']
+    const token = req.cookies["auth-token"];
 
     if (!token) {
-      return res.status(401).json({ error: '認証が必要です' })
+      return res.status(401).json({ error: "認証が必要です" });
     }
 
-    const payload = jwt.verify(token, JWT_SECRET) as any
+    const payload = jwt.verify(token, JWT_SECRET) as any;
 
-    const user = await authService.me(payload.id)
+    const user = await authService.me(payload.id);
 
     if (!user) {
-      return res.status(404).json({ error: 'ユーザーが見つかりません' })
+      return res.status(404).json({ error: "ユーザーが見つかりません" });
     }
 
-    res.json({ user })
+    res.json({ user });
   } catch (error) {
-    res.status(401).json({ error: '認証に失敗しました' })
+    res.status(401).json({ error: "認証に失敗しました" });
   }
-})
+});
 
-export default router
+export default router;

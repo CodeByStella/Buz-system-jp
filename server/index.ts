@@ -68,7 +68,7 @@ app.get('/api/config-check', (req, res) => {
     trustProxy: app.get('trust proxy'),
     requestOrigin: req.headers.origin,
     cookieSettings: {
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ?  'lax' :'none',
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       path: '/'

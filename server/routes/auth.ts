@@ -25,11 +25,11 @@ router.post('/login', async (req, res) => {
     // Set HTTP-only cookie
     const isProduction = process.env.NODE_ENV === 'production'
     res.cookie('auth-token', token, {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-origin in production
+      // httpOnly: true,
+      // secure: isProduction,
+      // sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-origin in production
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/'
+      // path: '/'
     })
 
     res.json({ user })

@@ -54,6 +54,7 @@ router.post('/logout', (req, res) => {
 // Get current user
 router.get('/me', async (req, res) => {
   try {
+    console.log(req.cookies, 'req.cookies')
     const token = req.cookies['auth-token']
 
     if (!token) {

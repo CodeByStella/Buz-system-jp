@@ -23,11 +23,13 @@ router.post('/login', async (req, res) => {
     const { token, user } = result
 
     // Set HTTP-only cookie
+    const isProduction = process.env.NODE_ENV === 'production'
     res.cookie('auth-token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-origin in production
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
     })
 
     res.json({ user })
@@ -39,7 +41,13 @@ router.post('/login', async (req, res) => {
 
 // Logout
 router.post('/logout', (req, res) => {
-  res.clearCookie('auth-token')
+  const isProduction = process.env.NODE_ENV === 'production'
+  res.clearCookie('auth-token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/'
+  })
   res.json({ message: 'ログアウトしました' })
 })
 

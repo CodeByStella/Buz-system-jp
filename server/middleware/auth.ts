@@ -15,12 +15,17 @@ export interface AuthenticatedRequest extends Request {
 export const authenticateToken = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies['auth-token']
+    console.log(req.cookies, 'req.cookies')
+    console.log(token, 'token')
+    console.log(JWT_SECRET, 'JWT_SECRET')
 
     if (!token) {
       return res.status(401).json({ error: '認証が必要です' })
     }
 
     const payload = jwt.verify(token, JWT_SECRET) as any
+
+    console.log(payload, 'payload')
 
     const user = await User.findById(payload.id).select('email name role').lean()
 

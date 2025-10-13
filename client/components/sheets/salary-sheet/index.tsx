@@ -461,8 +461,8 @@ export default function SalarySheet() {
           ここの数字は百万円単位で記入する事！ 530万円(年収)の場合5.3と記入
         </p>
       </div>
-
-      <div className="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
+      <div className="flex flex-col space-y-4">
+        <div className="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
         {/* Employee Salary Details Table */}
         <div className="flex flex-col space-y-2">
           <div className="flex-1">
@@ -569,6 +569,7 @@ export default function SalarySheet() {
             前期よりも2%~10%以上の昇給、増員の計画を入れる事。アバウトでも良い。この社長の採用と昇給の意思決定が有無で会社の未来は大きく変わります!上昇率が100%以上になる事が望ましい。
           </p>
         </div>
+      </div>
       </div>
     </div>
   );

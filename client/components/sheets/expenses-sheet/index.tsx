@@ -39,14 +39,13 @@ export default function ExpensesSheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: ExpensesRowDataType) => {
           return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              readOnly={record.readonly}
+              className={`border-transparent h-full text-xs text-center`}
+            />
           );
         },
       },
@@ -202,83 +201,83 @@ export default function ExpensesSheet() {
       <div className="overflow-auto grid lg:grid-cols-2 xl:grid-cols-4 gap-4 flex-1 min-h-0">
         {/* 経費(固定) - Fixed Expenses */}
         <div className="flex flex-col space-y-2">
-            <AdvancedTable
-              columns={expensesTableColumns}
-              data={fixedExpensesRows}
-              bordered
-              dense
-              title={
-                <h3 className="text-lg font-semibold text-center w-full p-1">
-                  経費(固定)
-                </h3>
-              }
-              cellClassName="!p-0"
-              footerContent={
-                <AdvancedTable
-                  columns={summaryTableColumns}
-                  data={fixedExpensesSummary}
-                  bordered
-                  dense
-                  hideHeader
-                  maxHeight={"100px"}
-                  cellClassName="!p-0"
-                />
-              }
-            />
+          <AdvancedTable
+            columns={expensesTableColumns}
+            data={fixedExpensesRows}
+            bordered
+            dense
+            title={
+              <h3 className="text-lg font-semibold text-center w-full p-1">
+                経費(固定)
+              </h3>
+            }
+            cellClassName="!p-0"
+            footerContent={
+              <AdvancedTable
+                columns={summaryTableColumns}
+                data={fixedExpensesSummary}
+                bordered
+                dense
+                hideHeader
+                maxHeight={"100px"}
+                cellClassName="!p-0"
+              />
+            }
+          />
         </div>
 
         {/* 販売促進費 - Sales Promotion Expenses */}
         <div className="flex flex-col space-y-2">
-            <AdvancedTable
-              columns={expensesTableColumns}
-              data={salesPromotionRows}
-              bordered
-              dense
-              title={
-                <h3 className="text-lg font-semibold text-center w-full p-1">
-                  販売促進費
-                </h3>
-              }
-              cellClassName="!p-0"
-              footerContent={
-                <AdvancedTable
-                  columns={summaryTableColumns}
-                  data={salesPromotionSummary}
-                  bordered
-                  dense
-                  hideHeader
-                  maxHeight={"100px"}
-                  cellClassName="!p-0"
-                />
-              }
-            />
+          <AdvancedTable
+            columns={expensesTableColumns}
+            data={salesPromotionRows}
+            bordered
+            dense
+            title={
+              <h3 className="text-lg font-semibold text-center w-full p-1">
+                販売促進費
+              </h3>
+            }
+            cellClassName="!p-0"
+            footerContent={
+              <AdvancedTable
+                columns={summaryTableColumns}
+                data={salesPromotionSummary}
+                bordered
+                dense
+                hideHeader
+                maxHeight={"100px"}
+                cellClassName="!p-0"
+              />
+            }
+          />
         </div>
 
         {/* 人件費 - Personnel Expenses */}
         <div className="flex flex-col space-y-2">
-            <AdvancedTable
-              columns={expensesTableColumns}
-              data={personnelExpensesRows}
-              bordered
-              dense
-              title={
-                <h3 className="text-lg font-semibold text-center w-full p-1">
-                  人件費
-                </h3>
-              }
-              cellClassName="!p-0"
-              footerContent={
-                <AdvancedTable
-                  columns={summaryTableColumns}
-                  data={personnelExpensesSummary}
-                  bordered
-                  dense
-                  hideHeader
-                  maxHeight={"100px"}
-                  cellClassName="!p-0"
-                />
-              }
-            />
+          <AdvancedTable
+            columns={expensesTableColumns}
+            data={personnelExpensesRows}
+            bordered
+            dense
+            title={
+              <h3 className="text-lg font-semibold text-center w-full p-1">
+                人件費
+              </h3>
+            }
+            cellClassName="!p-0"
+            footerContent={
+              <AdvancedTable
+                columns={summaryTableColumns}
+                data={personnelExpensesSummary}
+                bordered
+                dense
+                hideHeader
+                maxHeight={"100px"}
+                cellClassName="!p-0"
+              />
+            }
+          />
         </div>
 
         {/* 事業費 - Business Expenses */}

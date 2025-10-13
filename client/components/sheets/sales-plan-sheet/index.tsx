@@ -15,7 +15,6 @@ export default function SalesPlanSheet() {
 
   const sheetName: SheetNameType = "sales_plan_by_department";
 
-  // Create a custom table component to handle the complex header structure
   const renderSalesPlanTable = () => {
     return (
       <div

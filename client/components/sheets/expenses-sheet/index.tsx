@@ -186,7 +186,7 @@ export default function ExpensesSheet() {
         <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
           <span className="font-semibold">(百万円)</span>
         </div>
-        <div className="max-w-md w-full">
+        <div className="max-w-xs w-full">
           <AdvancedTable
             columns={summaryTableColumns}
             data={[grandTotalRow]}

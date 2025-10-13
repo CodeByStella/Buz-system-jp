@@ -116,6 +116,8 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     C19: '=IFERROR((E15+J15+O15)/(N15+I15+D15),"0")',
 
     E18: "=C18/C19",
+
+    O1: "=E14+J14+O14",
   },
   expenses: {
     C43: "=SUM(C5:C42)",
@@ -175,6 +177,8 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     C19: '=IFERROR((E15+J15+O15)/(N15+I15+D15),"0")',
 
     E18: "=C18/C19",
+
+    O1: "=E14+J14+O14",
   },
   manufacturing_expenses: {
     C43: "=SUM(C5:C42)",

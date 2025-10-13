@@ -18,8 +18,11 @@ export default function SalesPlanSheet() {
   // Create a custom table component to handle the complex header structure
   const renderSalesPlanTable = () => {
     return (
-      <div className="w-full border border-gray-300" id="table-container">
-        <table className="border-collapse text-xs table-fixed">
+      <div
+        className="w-full border border-gray-300 relative"
+        id="table-container"
+      >
+        <table className="border-collapse text-xs table-fixed w-full absolute overflow-auto">
           {/* Complex Header Structure */}
           <thead>
             {/* First header row */}

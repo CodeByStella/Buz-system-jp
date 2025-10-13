@@ -28,7 +28,7 @@ export default function ManufacturingLaborSheet() {
   const sheetName: SheetNameType = "manufacturing_labor";
 
   // Define column configurations for each table
-  const employeeTableColumns: Column[] = useMemo(
+  const dataTableColumns: Column[] = useMemo(
     () => [
       {
         key: "label",
@@ -38,168 +38,12 @@ export default function ManufacturingLaborSheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: ManufacturingLaborRowDataType) => {
           return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
-          );
-        },
-      },
-      {
-        key: "unitPrice",
-        title: "単価",
-        width: 60,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
             <CustomInput
-              type="number"
+              type="text"
               sheet={sheetName}
               cell={value}
               className={`border-transparent h-full text-xs text-center`}
             />
-          );
-        },
-      },
-      {
-        key: "count",
-        title: "人数",
-        width: 60,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              className={`border-transparent h-full text-xs text-center`}
-            />
-          );
-        },
-      },
-      {
-        key: "total",
-        title: "合計",
-        width: 60,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              readOnly
-              className={`border-transparent h-full text-xs text-center`}
-            />
-          );
-        },
-      },
-    ],
-    [sheetName]
-  );
-
-  const miscTableColumns: Column[] = useMemo(
-    () => [
-      {
-        key: "label",
-        title: "区分・テーブル",
-        width: 120,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
-          );
-        },
-      },
-      {
-        key: "unitPrice",
-        title: "単価",
-        width: 60,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              className={`border-transparent h-full text-xs text-center`}
-            />
-          );
-        },
-      },
-      {
-        key: "count",
-        title: "人数",
-        width: 60,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              className={`border-transparent h-full text-xs text-center`}
-            />
-          );
-        },
-      },
-      {
-        key: "total",
-        title: "合計",
-        width: 60,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <CustomInput
-              type="number"
-              sheet={sheetName}
-              cell={value}
-              readOnly
-              className={`border-transparent h-full text-xs text-center`}
-            />
-          );
-        },
-      },
-    ],
-    [sheetName]
-  );
-
-  const dispatchedTableColumns: Column[] = useMemo(
-    () => [
-      {
-        key: "label",
-        title: "区分・テーブル",
-        width: 120,
-        align: "center",
-        cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ManufacturingLaborRowDataType) => {
-          return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
           );
         },
       },
@@ -523,7 +367,7 @@ export default function ManufacturingLaborSheet() {
           <div className="flex flex-col space-y-2">
             <div className="flex-1">
               <AdvancedTable
-                columns={employeeTableColumns}
+                columns={dataTableColumns}
                 data={manufacturingLaborEmployeeRows}
                 bordered
                 dense
@@ -553,7 +397,7 @@ export default function ManufacturingLaborSheet() {
           <div className="flex flex-col space-y-2">
             <div className="flex-1">
               <AdvancedTable
-                columns={miscTableColumns}
+                columns={dataTableColumns}
                 data={manufacturingLaborMiscRows}
                 bordered
                 dense
@@ -583,7 +427,7 @@ export default function ManufacturingLaborSheet() {
           <div className="flex flex-col space-y-2">
             <div className="flex-1">
               <AdvancedTable
-                columns={dispatchedTableColumns}
+                columns={dataTableColumns}
                 data={manufacturingLaborDispatchedRows}
                 bordered
                 dense

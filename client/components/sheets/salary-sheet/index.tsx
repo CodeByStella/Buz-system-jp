@@ -38,14 +38,12 @@ export default function SalarySheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: SalaryRowDataType) => {
           return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              className={`border-transparent h-full text-xs text-center`}
+            />
           );
         },
       },
@@ -115,14 +113,12 @@ export default function SalarySheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: SalaryRowDataType) => {
           return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              className={`border-transparent h-full text-xs text-center`}
+            />
           );
         },
       },
@@ -192,14 +188,12 @@ export default function SalarySheet() {
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: SalaryRowDataType) => {
           return (
-            <div
-              className={cn(
-                record.bgcolor,
-                `flex items-center justify-center h-full w-full absolute top-0 left-0 text-xs`
-              )}
-            >
-              {value}
-            </div>
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              className={`border-transparent h-full text-xs text-center`}
+            />
           );
         },
       },

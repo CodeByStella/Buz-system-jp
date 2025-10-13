@@ -89,7 +89,11 @@ export interface AdvancedTableProps<T = any> {
   loadingText?: string;
   hideHeader?: boolean;
   cellSpans?: CellSpan<T>[]; // For complex table layouts with colspan/rowspan
-  getCellSpan?: (record: T, index: number, column: Column<T>) => CellSpan<T> | null;
+  getCellSpan?: (
+    record: T,
+    index: number,
+    column: Column<T>
+  ) => CellSpan<T> | null;
 }
 
 export function AdvancedTable<T = any>({
@@ -233,9 +237,11 @@ export function AdvancedTable<T = any>({
       const cellSpan = getCellSpan(record, rowIndex, column);
       return cellSpan?.isSpanned || false;
     }
-    
+
     // Check cellSpans array
-    const span = cellSpans.find(s => s.rowIndex === rowIndex && s.colIndex === colIndex);
+    const span = cellSpans.find(
+      (s) => s.rowIndex === rowIndex && s.colIndex === colIndex
+    );
     return span?.isSpanned || false;
   };
 
@@ -250,9 +256,11 @@ export function AdvancedTable<T = any>({
         colSpan: cellSpan?.colspan || 1,
       };
     }
-    
+
     // Check cellSpans array
-    const span = cellSpans.find(s => s.rowIndex === rowIndex && s.colIndex === colIndex);
+    const span = cellSpans.find(
+      (s) => s.rowIndex === rowIndex && s.colIndex === colIndex
+    );
     return {
       rowSpan: span?.rowspan || 1,
       colSpan: span?.colspan || 1,
@@ -291,14 +299,14 @@ export function AdvancedTable<T = any>({
       <Card className={cn("p-2 sm:p-4", className)}>
         {(title || description) && (
           <CardHeader className={dense ? "p-0" : "py-0 px-2 sm:px-4"}>
-            <CardTitle className={cn(
-              dense ? "text-sm" : "text-base sm:text-lg"
-            )}>
+            <CardTitle
+              className={cn(dense ? "text-sm" : "text-base sm:text-lg")}
+            >
               {title}
             </CardTitle>
-            <CardDescription className={cn(
-              dense ? "text-xs" : "text-xs sm:text-sm"
-            )}>
+            <CardDescription
+              className={cn(dense ? "text-xs" : "text-xs sm:text-sm")}
+            >
               {loadingText}
             </CardDescription>
           </CardHeader>
@@ -322,22 +330,20 @@ export function AdvancedTable<T = any>({
   }
 
   return (
-    <Card
-      className={cn("h-full min-h-0 flex flex-col cardcardcard", className)}
-    >
+    <Card className={cn("h-full min-h-0 flex flex-col", className)}>
       {(title || description) && (
-        <CardHeader className={cn(
-          dense ? "p-0" : "py-0 px-2 sm:px-4"
-        )}>
+        <CardHeader className={cn(dense ? "p-0" : "py-0 px-2 sm:px-4")}>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 relative">
-            <div className={cn(
-              dense ? "text-sm sm:text-base" : "text-base sm:text-lg"
-            )}>
+            <div
+              className={cn(
+                dense ? "text-sm sm:text-base" : "text-base sm:text-lg"
+              )}
+            >
               {title}
             </div>
-            <CardDescription className={cn(
-              dense ? "text-xs" : "text-xs sm:text-sm"
-            )}>
+            <CardDescription
+              className={cn(dense ? "text-xs" : "text-xs sm:text-sm")}
+            >
               {description}
             </CardDescription>
           </div>
@@ -346,16 +352,19 @@ export function AdvancedTable<T = any>({
 
       <CardContent
         className={cn(
-          "flex-1 min-h-0 ",
-          dense ? "p-0" : "p-2 sm:p-4 lg:p-6"
+          "flex-1 min-h-0",
+          dense ? "p-0" : "p-2 sm:p-4 lg:p-6",
+          scrollable ? "overflow-auto" : ""
         )}
       >
         {/* Search and Filters */}
         {(searchable || filterable) && (
-          <div className={cn(
-            "space-y-2 sm:space-y-3",
-            dense ? "mb-2" : "mb-3 sm:mb-4"
-          )}>
+          <div
+            className={cn(
+              "space-y-2 sm:space-y-3",
+              dense ? "mb-2" : "mb-3 sm:mb-4"
+            )}
+          >
             {searchable && (
               <div className="relative">
                 <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-gray-400" />
@@ -379,10 +388,12 @@ export function AdvancedTable<T = any>({
                       key={column.key}
                       className="flex items-center space-x-1 sm:space-x-2"
                     >
-                      <span className={cn(
-                        "whitespace-nowrap",
-                        dense ? "text-xs" : "text-xs sm:text-sm"
-                      )}>
+                      <span
+                        className={cn(
+                          "whitespace-nowrap",
+                          dense ? "text-xs" : "text-xs sm:text-sm"
+                        )}
+                      >
                         {column.title}:
                       </span>
                       <CustomInput
@@ -392,8 +403,8 @@ export function AdvancedTable<T = any>({
                           handleFilterChange(column, e.target.value)
                         }
                         className={cn(
-                          dense 
-                            ? "h-6 w-20 sm:w-24 text-xs" 
+                          dense
+                            ? "h-6 w-20 sm:w-24 text-xs"
                             : "h-7 sm:h-8 w-24 sm:w-32 text-xs sm:text-sm"
                         )}
                       />
@@ -447,7 +458,7 @@ export function AdvancedTable<T = any>({
               >
                 <TableRow
                   className={cn(
-                    dense ? "h-6 sm:h-8" : "h-8 sm:h-10", 
+                    dense ? "h-6 sm:h-8" : "h-8 sm:h-10",
                     colors.headerBg
                   )}
                 >
@@ -457,7 +468,9 @@ export function AdvancedTable<T = any>({
                       rowSpan={column.rowspan}
                       colSpan={column.colspan}
                       className={cn(
-                        dense ? "text-[10px] sm:text-xs py-0.5 sm:py-1 px-1 sm:px-2" : "text-xs sm:text-sm py-1 sm:py-2 px-2 sm:px-3",
+                        dense
+                          ? "text-[10px] sm:text-xs py-0.5 sm:py-1 px-1 sm:px-2"
+                          : "text-xs sm:text-sm py-1 sm:py-2 px-2 sm:px-3",
                         column.headerClassName,
                         colors.headerText,
                         column.align === "center" && "text-center",
@@ -472,9 +485,10 @@ export function AdvancedTable<T = any>({
                       )}
                       style={{
                         width: column.width,
-                        minWidth: typeof column.width === "number" 
-                          ? `${column.width * 0.7}px` 
-                          : column.width,
+                        minWidth:
+                          typeof column.width === "number"
+                            ? `${column.width * 0.7}px`
+                            : column.width,
                         left:
                           stickyColumns > 0 && columnIndex < stickyColumns
                             ? `${
@@ -557,14 +571,16 @@ export function AdvancedTable<T = any>({
                       }
 
                       const spanAttrs = getCellSpanAttrs(index, columnIndex);
-                      
+
                       return (
                         <TableCell
                           key={column.key}
                           rowSpan={spanAttrs.rowSpan}
                           colSpan={spanAttrs.colSpan}
                           className={cn(
-                            dense ? "py-0.5 sm:py-1 px-1 sm:px-2 text-[10px] sm:text-xs" : "py-1 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm",
+                            dense
+                              ? "py-0.5 sm:py-1 px-1 sm:px-2 text-[10px] sm:text-xs"
+                              : "py-1 sm:py-2 px-2 sm:px-3 text-xs sm:text-sm",
                             column.cellClassName,
                             cellClassName,
                             column.align === "center" && "text-center",
@@ -576,9 +592,10 @@ export function AdvancedTable<T = any>({
                           )}
                           style={{
                             width: column.width,
-                            minWidth: typeof column.width === "number" 
-                              ? `${column.width * 0.7}px` 
-                              : column.width,
+                            minWidth:
+                              typeof column.width === "number"
+                                ? `${column.width * 0.7}px`
+                                : column.width,
                             left:
                               stickyColumns > 0 && columnIndex < stickyColumns
                                 ? `${
@@ -611,13 +628,14 @@ export function AdvancedTable<T = any>({
               )}
             >
               <span className="hidden sm:inline">
-                {currentPage} / {Math.ceil(sortedData.length / pageSize)} ページ (
-                {sortedData.length} 件中{" "}
+                {currentPage} / {Math.ceil(sortedData.length / pageSize)} ページ
+                ({sortedData.length} 件中{" "}
                 {Math.min((currentPage - 1) * pageSize + 1, sortedData.length)}-
                 {Math.min(currentPage * pageSize, sortedData.length)} 件を表示)
               </span>
               <span className="sm:hidden">
-                {currentPage}/{Math.ceil(sortedData.length / pageSize)} ({sortedData.length}件)
+                {currentPage}/{Math.ceil(sortedData.length / pageSize)} (
+                {sortedData.length}件)
               </span>
             </div>
             <div className="flex space-x-2 w-full sm:w-auto">
@@ -653,7 +671,9 @@ export function AdvancedTable<T = any>({
         )}
 
         {/* Footer */}
-        {footerContent && <div className="border-t mt-2 sm:mt-3">{footerContent}</div>}
+        {footerContent && (
+          <div className="border-t mt-2 sm:mt-3">{footerContent}</div>
+        )}
       </CardContent>
     </Card>
   );

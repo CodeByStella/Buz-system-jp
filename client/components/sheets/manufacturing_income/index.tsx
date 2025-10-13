@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
-import { getCellValue } from "@/lib/utils/cellHelpers";
 
 export default function ManufacturingIncomeSheet() {
   const { onSave, saving, hasChanges, loading, errorMessage, retry } =
@@ -249,8 +248,8 @@ export default function ManufacturingIncomeSheet() {
               readOnly={index % 2 === 0 || value.type === 2}
               sheet={sheetName}
               cell={value.value}
-              suffix={index===1?"%":""}
-              renderValue={index===1?(v)=>Number(v)*100:undefined}
+              suffix={index === 1 ? "%" : ""}
+              renderValue={index === 1 ? (v) => Number(v) * 100 : undefined}
               className={`border-transparent h-full text-xs text-center ${
                 index % 2 === 0 ? "!bg-gray-100" : ""
               }`}
@@ -464,17 +463,26 @@ export default function ManufacturingIncomeSheet() {
           </Button>
         </div>
       </div>
-      <div className="flex items-center justify-end">
-        <AdvancedTable
-          columns={grandTotalTableColumns}
-          data={[grandTotalRow]}
-          bordered
-          dense
-          hideHeader
-          className="border-none"
-          cellClassName="!p-0"
-        />
+
+      <div className="flex items-center justify-between gap-2">
+        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">
+            ここの数字は1円単位で記入する事! 120万円(工事費)の場合1200000と記入
+          </span>
+        </div>
+        <div className="max-w-xs w-full">
+          <AdvancedTable
+            columns={grandTotalTableColumns}
+            data={[grandTotalRow]}
+            bordered
+            dense
+            hideHeader
+            className="border-none"
+            cellClassName="!p-0"
+          />
+        </div>
       </div>
+
       <div className="overflow-auto gap-4 flex-1 min-h-0">
         {/* Row 1 - Main Product Table */}
         <div className="flex flex-col space-y-2">
@@ -490,7 +498,7 @@ export default function ManufacturingIncomeSheet() {
         </div>
 
         {/* Row 2 - Summary Section (実績) */}
-        <div >
+        <div>
           <AdvancedTable
             columns={summaryTableColumns}
             data={manufacturingIncomeSummary}

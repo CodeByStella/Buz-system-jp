@@ -383,6 +383,37 @@ export default function ManufacturingLaborSheet() {
     [sheetName]
   );
 
+  const totalTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "",
+        width: 100,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative bg-yellow-300 ",
+      },
+      {
+        key: "value",
+        title: "",
+        width: 80,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: { label: string; value: string }) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              readOnly
+              className={`border-none h-full text-xs text-center`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
+
   // Show loading spinner while fetching data
   if (loading) {
     return (
@@ -462,102 +493,121 @@ export default function ManufacturingLaborSheet() {
       </div>
 
       {/* Important notice */}
-      <div className="bg-yellow-100 p-3 rounded-lg border border-yellow-300">
-        <p className="text-red-800 font-medium text-sm">
-          ここの数字は百万円単位で記入する事！ 530万円(年収)の場合5.3と記入
-        </p>
+      <div className="flex items-center justify-between gap-2">
+        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">
+            ここの数字は百万円単位で記入する事！ 530万円(年収)の場合5.3と記入
+          </span>
+        </div>
+        <div className="max-w-xs w-full">
+          <AdvancedTable
+            columns={totalTableColumns}
+            data={[
+              {
+                label: "合計",
+                value: "O1",
+              },
+            ]}
+            bordered
+            dense
+            hideHeader
+            className="border-none"
+            cellClassName="!p-0"
+          />
+        </div>
       </div>
+
       <div className="flex flex-col space-y-4">
         <div className="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
-        {/* Employee Salary Details Table */}
-        <div className="flex flex-col space-y-2">
-          <div className="flex-1">
-            <AdvancedTable
-              columns={employeeTableColumns}
-              data={manufacturingLaborEmployeeRows}
-              bordered
-              dense
-              title={
-                <h3 className="text-lg font-semibold text-center w-full p-1">
-                  人件費明細
-                </h3>
-              }
-              maxHeight={"300px"}
-              cellClassName="!p-0"
-              footerContent={
-                <AdvancedTable
-                  columns={summaryTableColumns}
-                  data={manufacturingLaborEmployeeSummary}
-                  bordered
-                  dense
-                  hideHeader
-                  maxHeight={"100px"}
-                  cellClassName="!p-0"
-                />
-              }
-            />
+          {/* Employee Salary Details Table */}
+          <div className="flex flex-col space-y-2">
+            <div className="flex-1">
+              <AdvancedTable
+                columns={employeeTableColumns}
+                data={manufacturingLaborEmployeeRows}
+                bordered
+                dense
+                title={
+                  <h3 className="text-lg font-semibold text-center w-full p-1">
+                    人件費明細
+                  </h3>
+                }
+                maxHeight={"300px"}
+                cellClassName="!p-0"
+                footerContent={
+                  <AdvancedTable
+                    columns={summaryTableColumns}
+                    data={manufacturingLaborEmployeeSummary}
+                    bordered
+                    dense
+                    hideHeader
+                    maxHeight={"100px"}
+                    cellClassName="!p-0"
+                  />
+                }
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Miscellaneous Salary Table */}
-        <div className="flex flex-col space-y-2">
-          <div className="flex-1">
-            <AdvancedTable
-              columns={miscTableColumns}
-              data={manufacturingLaborMiscRows}
-              bordered
-              dense
-              title={
-                <h3 className="text-lg font-semibold text-center w-full p-1">
-                  雑給料
-                </h3>
-              }
-              maxHeight={"300px"}
-              cellClassName="!p-0"
-              footerContent={
-                <AdvancedTable
-                  columns={summaryTableColumns}
-                  data={manufacturingLaborMiscSummary}
-                  bordered
-                  dense
-                  hideHeader
-                  maxHeight={"100px"}
-                  cellClassName="!p-0"
-                />
-              }
-            />
+          {/* Miscellaneous Salary Table */}
+          <div className="flex flex-col space-y-2">
+            <div className="flex-1">
+              <AdvancedTable
+                columns={miscTableColumns}
+                data={manufacturingLaborMiscRows}
+                bordered
+                dense
+                title={
+                  <h3 className="text-lg font-semibold text-center w-full p-1">
+                    雑給料
+                  </h3>
+                }
+                maxHeight={"300px"}
+                cellClassName="!p-0"
+                footerContent={
+                  <AdvancedTable
+                    columns={summaryTableColumns}
+                    data={manufacturingLaborMiscSummary}
+                    bordered
+                    dense
+                    hideHeader
+                    maxHeight={"100px"}
+                    cellClassName="!p-0"
+                  />
+                }
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Dispatched Employees Table */}
-        <div className="flex flex-col space-y-2">
-          <div className="flex-1">
-            <AdvancedTable
-              columns={dispatchedTableColumns}
-              data={manufacturingLaborDispatchedRows}
-              bordered
-              dense
-              title={
-                <h3 className="text-lg font-semibold text-center w-full p-1">
-                  派遣社員
-                </h3>
-              }
-              maxHeight={"300px"}
-              cellClassName="!p-0"
-              footerContent={
-                <AdvancedTable
-                  columns={summaryTableColumns}
-                  data={manufacturingLaborDispatchedSummary}
-                  bordered
-                  dense
-                  hideHeader
-                  maxHeight={"100px"}
-                  cellClassName="!p-0"
-                />
-              }
-            />
+          {/* Dispatched Employees Table */}
+          <div className="flex flex-col space-y-2">
+            <div className="flex-1">
+              <AdvancedTable
+                columns={dispatchedTableColumns}
+                data={manufacturingLaborDispatchedRows}
+                bordered
+                dense
+                title={
+                  <h3 className="text-lg font-semibold text-center w-full p-1">
+                    派遣社員
+                  </h3>
+                }
+                maxHeight={"300px"}
+                cellClassName="!p-0"
+                footerContent={
+                  <AdvancedTable
+                    columns={summaryTableColumns}
+                    data={manufacturingLaborDispatchedSummary}
+                    bordered
+                    dense
+                    hideHeader
+                    maxHeight={"100px"}
+                    cellClassName="!p-0"
+                  />
+                }
+              />
+            </div>
           </div>
-        </div>
         </div>
 
         {/* Instructions */}

@@ -279,7 +279,7 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
 
     G33: "=salary!D14+salary!I14+salary!N14+manufacturing_labor!D14+manufacturing_labor!I14+manufacturing_labor!N14",
 
-    B34: "=mq_future!F17*1000",
+    B34: "=ROUNDDOWN(mq_future!F17*1000/1000000,0)",
     C34: '=IFERROR(B31/F31,"")',
 
     B36: "=B31",

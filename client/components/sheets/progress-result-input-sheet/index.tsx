@@ -66,6 +66,10 @@ export default function ProgressResultInputSheet() {
               disabled={record.type === 0}
               readOnly
               tip={record.tip}
+              suffix={record.label.includes("%") ? "%" : ""}
+              renderValue={
+                record.label.includes("%") ? (v) => Number(v) * 100 : undefined
+              }
               tipClassName="text-red-500"
               className={`border-transparent h-full text-sm text-right ${
                 record.type == 2 ? "!bg-gray-300" : ""
@@ -318,10 +322,10 @@ export default function ProgressResultInputSheet() {
           <AdvancedTable
             columns={totalTableColumns}
             data={[
-             {
-              total: "C3",
-              growth_rate: "L2",
-             }
+              {
+                total: "C3",
+                growth_rate: "L2",
+              },
             ]}
             bordered
             dense

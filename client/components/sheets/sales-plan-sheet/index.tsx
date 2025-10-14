@@ -19,12 +19,13 @@ export default function SalesPlanSheet() {
   const startDate: string = getCell("start", "B2") as string;
   // 年月だけ取得 (YYYY/MM の形式で月部分だけ抽出)
   const startMonth: number | undefined =
-    typeof startDate === "string" ? parseInt(startDate.split("/")[1]) : undefined;
+    typeof startDate === "string"
+      ? parseInt(startDate.split("/")[1])
+      : undefined;
   // 表示用の月配列を作成（開始月から翌年の開始月-1まで）
   const displayMonths: string[] = React.useMemo(() => {
-    const base = typeof startMonth === "number" && !isNaN(startMonth)
-      ? startMonth
-      : 1; // デフォルトは1月開始
+    const base =
+      typeof startMonth === "number" && !isNaN(startMonth) ? startMonth : 1; // デフォルトは1月開始
     return Array.from({ length: 12 }, (_, i) => {
       const m = ((base - 1 + i) % 12) + 1;
       return `${m}月`;
@@ -124,10 +125,8 @@ export default function SalesPlanSheet() {
                       type="text"
                       sheet={sheetName}
                       cell={row.label}
-                      readOnly={row.label === "その他詳"}
-                      className={`border-transparent w-full h-full ${
-                        row.label === "その他詳" ? "!bg-gray-100" : ""
-                      }`}
+                      readOnly
+                      className={`border-transparent text-center w-full h-full !bg-gray-100`}
                     />
                   </td>
                 )}

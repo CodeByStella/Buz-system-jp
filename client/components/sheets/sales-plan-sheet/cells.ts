@@ -40,7 +40,7 @@ function numberToExcelColumn(num: number): string {
 }
 
 export const salesPlanRows: SalesPlanRowDataType[] = [
-  ...Array.from({ length: 21 }, (_, i) => [
+  ...Array.from({ length: 22 }, (_, i) => [
     {
       label: `A${3 + i * 2}`,
       salesTarget: `B${3 + i * 2}`,
@@ -74,38 +74,4 @@ export const salesPlanRows: SalesPlanRowDataType[] = [
       rowType: "actual" as const,
     },
   ]).flat(),
-
-  // その他詳 (Other Details)
-  {
-    label: "その他詳",
-    salesTarget: "B45",
-    salesActual: "B46",
-    monthlyData: monthNames.map((_, monthIndex) => {
-      const colStart = 4;
-      const targetRow = 45;
-      const col = numberToExcelColumn(colStart + monthIndex * 2);
-      const nextCol = numberToExcelColumn(colStart + monthIndex * 2 + 1);
-      return {
-        current: `${col}${targetRow}`,
-        total: `${nextCol}${targetRow}`,
-      };
-    }),
-    rowType: "target" as const,
-  },
-  {
-    label: "",
-    salesTarget: "B45",
-    salesActual: "B46",
-    monthlyData: monthNames.map((_, monthIndex) => {
-      const colStart = 4;
-      const actualRow = 46;
-      const col = numberToExcelColumn(colStart + monthIndex * 2);
-      const nextCol = numberToExcelColumn(colStart + monthIndex * 2 + 1);
-      return {
-        current: `${col}${actualRow}`,
-        total: `${nextCol}${actualRow}`,
-      };
-    }),
-    rowType: "actual" as const,
-  },
 ];

@@ -181,6 +181,56 @@ export default function ProgressResultInputSheet() {
     [sheetName]
   );
 
+  const totalTableColumns: Column[] = useMemo(
+    () => [
+      {
+        key: "total",
+        title: "決算目標",
+        width: 100,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative bg-yellow-300 ",
+        render: (
+          value: string,
+          record: { total: string; growth_rate: string }
+        ) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              readOnly
+              className={`border-none h-full text-xs text-center`}
+            />
+          );
+        },
+      },
+      {
+        key: "growth_rate",
+        title: "目標売上成長率",
+        width: 80,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (
+          value: string,
+          record: { total: string; growth_rate: string }
+        ) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              readOnly
+              suffix="%"
+              renderValue={(v) => Number(v) * 100}
+              className={`border-none h-full text-xs text-center`}
+            />
+          );
+        },
+      },
+    ],
+    [sheetName]
+  );
+
   // Show loading spinner while fetching data
   if (loading) {
     return (
@@ -257,16 +307,33 @@ export default function ProgressResultInputSheet() {
         </div>
       </div>
 
-      {/* Warning message */}
-      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-        <p className="text-sm text-red-700">
-          毎月の試算表が届き次第、実績を加算していく。その際に目標より高くなればその項目は目標よりオーバーしている事になり、注意が必要。経費が掛かりすぎてないか、
-        </p>
+      {/* Important notice */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">
+            毎月の試算表が届き次第、実績を加算していく。その際に目標より高くなればその項目は目標よりオーバーしている事になり、注意が必要。経費が掛かりすぎてないか、
+          </span>
+        </div>
+        <div className="max-w-xs w-full">
+          <AdvancedTable
+            columns={totalTableColumns}
+            data={[
+             {
+              total: "C3",
+              growth_rate: "L2",
+             }
+            ]}
+            bordered
+            dense
+            className="border-none"
+            cellClassName="!p-0"
+          />
+        </div>
       </div>
 
       <div className="flex-1 min-h-0 ">
         <div className="h-full overflow-auto">
-          <div className="grid lg:grid-cols-2 gap-4 p-4 h-full">
+          <div className="grid lg:grid-cols-2 gap-4 h-full">
             {/* Left Column */}
             <div className="flex flex-col space-y-4 h-full">
               {/* Top Section */}

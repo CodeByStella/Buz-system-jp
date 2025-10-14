@@ -230,6 +230,33 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Allow parent handlers to run first
+      props.onKeyDown?.(e);
+      if (e.defaultPrevented) return;
+
+      // Enter navigation: move focus to next input in same sheet (DOM order)
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const selector = sheet
+          ? `input[data-sheet="${sheet}"]`
+          : "input";
+        const allInputs = Array.from(
+          document.querySelectorAll<HTMLInputElement>(selector)
+        ).filter((el) => !el.disabled && el.tabIndex !== -1);
+        const current = e.currentTarget;
+        const idx = allInputs.indexOf(current);
+        const next = idx >= 0 && idx + 1 < allInputs.length
+          ? allInputs[idx + 1]
+          : allInputs[0];
+        // Move focus and select content for quick overwrite
+        next?.focus();
+        try {
+          next?.select?.();
+        } catch {}
+      }
+    };
+
     const inputElement = (
       <input
         type={type}
@@ -237,6 +264,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         onWheel={handleWheel}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
         onChange={handleChange}
         className={cn(
           "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300",
@@ -249,6 +277,8 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         ref={inputRef}
         value={inputValue}
+        data-sheet={sheet}
+        data-cell={cell}
         {...props}
       />
     );

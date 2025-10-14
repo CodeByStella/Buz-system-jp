@@ -28,6 +28,7 @@ interface DataContextType {
   successMessage: string | null;
   clearMessages: () => void;
   retry: () => Promise<void>;
+  clearSheet: (sheet?: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -460,6 +461,42 @@ export const DataProvider: React.FC<{
     }
   };
 
+  // Reset cells back to last loaded server state (does NOT delete formulas)
+  // If sheet is omitted, reset all sheets
+  const clearSheet = (sheet?: string) => {
+    const hf = hfInstanceRef.current;
+    if (!hf) return;
+
+    // Build frontend snapshot from original backend data
+    const originalFrontend = transformBe2Fe(originalDataRef.current);
+
+    const targetSheets = sheet ? [sheet] : Object.keys(originalFrontend);
+
+    targetSheets.forEach((sheetName) => {
+      const sheetId = sheetIdsRef.current.get(sheetName);
+      if (sheetId === undefined) return;
+
+      // If we have original content for this sheet, apply it entirely
+      const sheetContent = originalFrontend[sheetName] || [];
+      try {
+        hf.setSheetContent(sheetId, sheetContent);
+      } catch (e) {
+        console.error(`Failed to reset sheet ${sheetName}:`, e);
+      }
+
+      // Remove edited flags for this sheet
+      const toDelete: string[] = [];
+      userEditedCellsRef.current.forEach((key) => {
+        if (key.startsWith(`${sheetName}:`)) toDelete.push(key);
+      });
+      toDelete.forEach((k) => userEditedCellsRef.current.delete(k));
+    });
+
+    // Recompute and update UI
+    const calculatedData = getCalculatedData();
+    setUserInput(calculatedData);
+  };
+
   // Helper to get cell value by reference
   const getCell = (sheet: string, cell: string): string | number => {
     const sheetData = userInput[sheet];
@@ -496,6 +533,7 @@ export const DataProvider: React.FC<{
     successMessage,
     clearMessages,
     retry,
+    clearSheet,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

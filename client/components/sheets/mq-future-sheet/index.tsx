@@ -17,8 +17,15 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function MQFutureSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
-    useDataContext();
+  const {
+    onSave,
+    saving,
+    hasChanges,
+    loading,
+    errorMessage,
+    retry,
+    clearSheet,
+  } = useDataContext();
 
   const sheetName: SheetNameType = "mq_future";
 
@@ -72,7 +79,7 @@ export default function MQFutureSheet() {
               tip={record.tip}
               tipClassName="text-red-500"
               suffix="%"
-              renderValue={v=>Number(v)*100}
+              renderValue={(v) => Number(v) * 100}
               className={"border-transparent h-full text-lg text-center"}
             />
           );
@@ -188,7 +195,7 @@ export default function MQFutureSheet() {
             目標値と客単価・数量を設定してMQ会計の未来計画を立てます。
           </p>
         </div>
-        
+
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-2 sm:gap-2">
           <Button
@@ -201,6 +208,21 @@ export default function MQFutureSheet() {
             className="flex-1 sm:flex-none text-sm sm:text-base"
           >
             保存
+          </Button>
+          <Button
+            variant="outline"
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              if (
+                window.confirm(
+                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+                )
+              ) {
+                clearSheet("start");
+              }
+            }}
+          >
+            全入力クリア
           </Button>
           <Button
             variant="outline"
@@ -258,7 +280,9 @@ export default function MQFutureSheet() {
                 <p className="leading-relaxed">
                   ②～⑤まで順番に現状から推移して115％～200％UPまで好きな数字を目標値に入れてください。
                 </p>
-                <p className="leading-relaxed">数字が合うように計算しましょう</p>
+                <p className="leading-relaxed">
+                  数字が合うように計算しましょう
+                </p>
                 <div className="space-y-1 mt-2">
                   <p>１，GはM-Fです。</p>
                   <p>２，FはM-Gです。</p>

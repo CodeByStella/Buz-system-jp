@@ -17,8 +17,15 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function ProfitSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
-    useDataContext();
+  const {
+    onSave,
+    saving,
+    hasChanges,
+    loading,
+    errorMessage,
+    retry,
+    clearSheet,
+  } = useDataContext();
 
   const sheetName: SheetNameType = "profit";
 
@@ -173,6 +180,21 @@ export default function ProfitSheet() {
           </Button>
           <Button
             variant="outline"
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              if (
+                window.confirm(
+                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+                )
+              ) {
+                clearSheet("start");
+              }
+            }}
+          >
+            全入力クリア
+          </Button>
+          <Button
+            variant="outline"
             leftIcon={FileSpreadsheet}
             className="border-green-500 text-green-700 hover:bg-green-50"
             onClick={() => {
@@ -205,40 +227,40 @@ export default function ProfitSheet() {
         {/* Left side - Ordinary Profit Calculation */}
         <div className="flex flex-col space-y-4">
           {/* <div className="bg-white border border-gray-300 rounded-lg shadow-sm "> */}
-            <AdvancedTable
-              columns={profitTableColumns}
-              data={ordinaryProfit_cells}
-              bordered
-              dense
-              hideHeader
-              maxHeight={"300px"}
-              cellClassName="!p-0"
-            />
+          <AdvancedTable
+            columns={profitTableColumns}
+            data={ordinaryProfit_cells}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"300px"}
+            cellClassName="!p-0"
+          />
           {/* </div> */}
         </div>
 
         {/* Right side - Profit Before Tax Calculation */}
         <div className="flex flex-col space-y-4 lg:m-0 mt-8">
-            <AdvancedTable
-              columns={profitTableColumns}
-              data={profitBeforeTax_cells}
-              bordered
-              dense
-              hideHeader
-              maxHeight={"300px"}
-              cellClassName="!p-0"
-            />
+          <AdvancedTable
+            columns={profitTableColumns}
+            data={profitBeforeTax_cells}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"300px"}
+            cellClassName="!p-0"
+          />
 
           {/* Year-on-year comparison */}
-            <AdvancedTable
-              columns={comparisonTableColumns}
-              data={comparison_cells}
-              bordered
-              dense
-              hideHeader
-              maxHeight={"100px"}
-              cellClassName="!p-0"
-            />
+          <AdvancedTable
+            columns={comparisonTableColumns}
+            data={comparison_cells}
+            bordered
+            dense
+            hideHeader
+            maxHeight={"100px"}
+            cellClassName="!p-0"
+          />
         </div>
       </div>
     </div>

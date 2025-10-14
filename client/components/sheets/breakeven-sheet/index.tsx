@@ -15,8 +15,16 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function BreakevenSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, retry, data } =
-    useDataContext();
+  const {
+    onSave,
+    saving,
+    hasChanges,
+    loading,
+    errorMessage,
+    retry,
+    data,
+    clearSheet,
+  } = useDataContext();
 
   const sheetName: SheetNameType = "break_even_point";
 
@@ -79,7 +87,11 @@ export default function BreakevenSheet() {
     }
 
     // Ensure we always show the break-even point with some margin
-    const maxValue = Math.max(sales, breakevenPoint * 1.3, (fixedCosts + variableCosts) * 1.2);
+    const maxValue = Math.max(
+      sales,
+      breakevenPoint * 1.3,
+      (fixedCosts + variableCosts) * 1.2
+    );
     const points = [];
 
     // Generate points for sales line (y = x) and total costs line
@@ -119,19 +131,33 @@ export default function BreakevenSheet() {
     );
 
     // Calculate actual max value from chart data to ensure break-even point is visible
-    const actualMaxValue = chartData.length > 0 ? 
-      Math.max(...chartData.map(d => Math.max(d.x, d.sales, d.totalCosts))) : maxValue;
-    
+    const actualMaxValue =
+      chartData.length > 0
+        ? Math.max(
+            ...chartData.map((d) => Math.max(d.x, d.sales, d.totalCosts))
+          )
+        : maxValue;
+
     // Ensure we have a reasonable scale even for small values
-    const displayMaxValue = Math.max(actualMaxValue, breakevenPoint * 1.5, 1000000);
+    const displayMaxValue = Math.max(
+      actualMaxValue,
+      breakevenPoint * 1.5,
+      1000000
+    );
 
     // Calculate grid intervals based on displayMaxValue
     const gridInterval = displayMaxValue / 10;
-    const gridSteps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i => i * gridInterval);
+    const gridSteps = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(
+      (i) => i * gridInterval
+    );
 
     // Calculate positions for better label placement using displayMaxValue
-    const salesEndY = chartData.length > 0 ? 320 - (sales / displayMaxValue) * 320 : 320;
-    const costsEndY = chartData.length > 0 ? 320 - ((fixedCosts + variableCosts) / displayMaxValue) * 320 : 320;
+    const salesEndY =
+      chartData.length > 0 ? 320 - (sales / displayMaxValue) * 320 : 320;
+    const costsEndY =
+      chartData.length > 0
+        ? 320 - ((fixedCosts + variableCosts) / displayMaxValue) * 320
+        : 320;
     const breakevenX = (breakevenPoint / displayMaxValue) * 500;
     const breakevenY = 320 - (breakevenPoint / displayMaxValue) * 320;
 
@@ -144,17 +170,19 @@ export default function BreakevenSheet() {
           <div className="relative h-80 bg-gray-700 border border-gray-600">
             <svg className="w-full h-full" viewBox="0 0 500 320">
               {/* Grid lines - dark theme */}
-              {[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map((x, i) => (
-                <line
-                  key={`v-${x}`}
-                  x1={x}
-                  y1={0}
-                  x2={x}
-                  y2={320}
-                  stroke={i % 2 === 0 ? "#4b5563" : "#374151"}
-                  strokeWidth={i % 2 === 0 ? "1" : "0.5"}
-                />
-              ))}
+              {[0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500].map(
+                (x, i) => (
+                  <line
+                    key={`v-${x}`}
+                    x1={x}
+                    y1={0}
+                    x2={x}
+                    y2={320}
+                    stroke={i % 2 === 0 ? "#4b5563" : "#374151"}
+                    strokeWidth={i % 2 === 0 ? "1" : "0.5"}
+                  />
+                )
+              )}
               {[0, 40, 80, 120, 160, 200, 240, 280, 320].map((y, i) => (
                 <line
                   key={`h-${y}`}
@@ -172,10 +200,10 @@ export default function BreakevenSheet() {
                 <>
                   <defs>
                     <filter id="glow">
-                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                      <feMerge> 
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
                       </feMerge>
                     </filter>
                   </defs>
@@ -226,7 +254,7 @@ export default function BreakevenSheet() {
                     stroke="#000"
                     strokeWidth="2"
                   />
-                  
+
                   {/* Vertical line to break-even point */}
                   <line
                     x1={breakevenX}
@@ -237,7 +265,7 @@ export default function BreakevenSheet() {
                     strokeWidth="1"
                     strokeDasharray="5,5"
                   />
-                  
+
                   {/* Break-even point value annotation with dynamic positioning */}
                   <text
                     x={Math.min(Math.max(breakevenX + 10, 10), 350)}
@@ -254,7 +282,7 @@ export default function BreakevenSheet() {
 
               {/* Y-axis labels - better spacing and positioning */}
               {gridSteps.map((value, i) => {
-                const yPos = 320 - (i * 32) + 4;
+                const yPos = 320 - i * 32 + 4;
                 const labelValue = Math.round(value / 1000000);
                 return (
                   <text
@@ -376,10 +404,7 @@ export default function BreakevenSheet() {
                   refY="3.5"
                   orient="auto"
                 >
-                  <polygon
-                    points="0 0, 10 3.5, 0 7"
-                    fill="#9ca3af"
-                  />
+                  <polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af" />
                 </marker>
               </defs>
 
@@ -392,8 +417,21 @@ export default function BreakevenSheet() {
               <text x="95" y="20" fontSize="10" fill="#d1d5db" fontWeight="500">
                 売上高
               </text>
-              <circle cx="145" cy="11" r="3" fill="#fff" stroke="#000" strokeWidth="1" />
-              <text x="155" y="20" fontSize="10" fill="#d1d5db" fontWeight="500">
+              <circle
+                cx="145"
+                cy="11"
+                r="3"
+                fill="#fff"
+                stroke="#000"
+                strokeWidth="1"
+              />
+              <text
+                x="155"
+                y="20"
+                fontSize="10"
+                fill="#d1d5db"
+                fontWeight="500"
+              >
                 損益分岐点
               </text>
             </svg>
@@ -455,6 +493,21 @@ export default function BreakevenSheet() {
             disabled={saving || !hasChanges}
           >
             保存
+          </Button>
+          <Button
+            variant="outline"
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              if (
+                window.confirm(
+                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+                )
+              ) {
+                clearSheet("start");
+              }
+            }}
+          >
+            全入力クリア
           </Button>
           <Button
             variant="outline"

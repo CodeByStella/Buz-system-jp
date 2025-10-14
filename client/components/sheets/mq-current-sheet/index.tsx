@@ -16,8 +16,15 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function MQCurrentSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
-    useDataContext();
+  const {
+    onSave,
+    saving,
+    hasChanges,
+    loading,
+    errorMessage,
+    retry,
+    clearSheet,
+  } = useDataContext();
 
   const sheetName: SheetNameType = "mq_current_status";
 
@@ -158,6 +165,21 @@ export default function MQCurrentSheet() {
             disabled={saving || !hasChanges}
           >
             保存
+          </Button>
+          <Button
+            variant="outline"
+            className="border-red-500 text-red-700 hover:bg-red-50"
+            onClick={() => {
+              if (
+                window.confirm(
+                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+                )
+              ) {
+                clearSheet("start");
+              }
+            }}
+          >
+            全入力クリア
           </Button>
           <Button
             variant="outline"

@@ -89,7 +89,6 @@ export const DataProvider: React.FC<{
       setErrorMessage(null);
 
       const backendData: BackendDataType[] = await userService.getUserInputs();
-      console.clear();
       console.log("Backend data received:", backendData.length, "items");
 
       // Store original data for change tracking

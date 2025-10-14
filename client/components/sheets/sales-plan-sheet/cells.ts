@@ -3,10 +3,6 @@
 
 // Month names for headers - must be declared first
 export const monthNames = [
-  "9月",
-  "10月",
-  "11月",
-  "12月",
   "1月",
   "2月",
   "3月",
@@ -15,6 +11,10 @@ export const monthNames = [
   "6月",
   "7月",
   "8月",
+  "9月",
+  "10月",
+  "11月",
+  "12月",
 ];
 
 export interface SalesPlanRowDataType {
@@ -30,7 +30,7 @@ export interface SalesPlanRowDataType {
 
 // Function to convert number to Excel column letter (A, B, C, ..., Z, AA, AB, etc.)
 function numberToExcelColumn(num: number): string {
-  let result = '';
+  let result = "";
   while (num > 0) {
     num--; // Adjust for 0-based indexing
     result = String.fromCharCode(65 + (num % 26)) + result;

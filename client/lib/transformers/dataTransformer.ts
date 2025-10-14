@@ -37,24 +37,37 @@ const sanitizeValue = (value: any): string | number => {
   }
 
   // Handle string values
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     // Check for error values that HyperFormula can't parse
-    if (value.includes('#ERROR!') || value.includes('#REF!') || value.includes('#VALUE!') || value.includes('#NAME?') || value.includes('#DIV/0!') || value.includes('#N/A') || value.includes('#NUM!') || value.includes('#NULL!')) {
-      console.warn(`Detected error value in data: ${value}, converting to empty string`);
+    if (
+      value.includes("#ERROR!") ||
+      value.includes("#REF!") ||
+      value.includes("#VALUE!") ||
+      value.includes("#NAME?") ||
+      value.includes("#DIV/0!") ||
+      value.includes("#N/A") ||
+      value.includes("#NUM!") ||
+      value.includes("#NULL!")
+    ) {
+      console.warn(
+        `Detected error value in data: ${value}, converting to empty string`
+      );
       return "";
     }
-    
+
     // If it's a string that looks like a number, try to convert it
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && isFinite(numValue)) {
-      return numValue;
+    const numericPattern = /^-?\d+(\.\d+)?$/;
+    if (numericPattern.test(value.trim())) {
+      const numValue = Number(value);
+      if (!Number.isNaN(numValue) && Number.isFinite(numValue)) {
+        return numValue;
+      }
     }
-    
     return value;
   }
 
   // Handle number values
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     // Check for invalid numbers
     if (isNaN(value) || !isFinite(value)) {
       console.warn(`Detected invalid number: ${value}, converting to 0`);
@@ -68,7 +81,9 @@ const sanitizeValue = (value: any): string | number => {
 };
 
 // Transform Backend data to Frontend data (2D arrays by sheet)
-export const transformBe2Fe = (backendData: BackendDataType[]): FrontendDataType => {
+export const transformBe2Fe = (
+  backendData: BackendDataType[]
+): FrontendDataType => {
   const frontendData: FrontendDataType = {};
 
   // Group data by sheet

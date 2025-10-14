@@ -81,18 +81,18 @@ export const mqFutureUnitPrice_cells: MQFutureUnitPriceCell[] = [
     y: "Q3",
     editable: true,
   },
-  {
-    x: "V",
-    op: "",
-    y: "Q",
-    editable: false,
-    xDesc: "(ヴァリアブル）",
-    yDesc: "(クォンティティー）②",
-  },
-  {
-    x: "L13",
-    op: "×",
-    y: "Q13",
-    editable: true,
-  },
+  // {
+  //   x: "V",
+  //   op: "",
+  //   y: "Q",
+  //   editable: false,
+  //   xDesc: "(ヴァリアブル）",
+  //   yDesc: "(クォンティティー）②",
+  // },
+  // {
+  //   x: "L13",
+  //   op: "×",
+  //   y: "Q13",
+  //   editable: true,
+  // },
 ];

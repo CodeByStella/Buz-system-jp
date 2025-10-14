@@ -1,3 +1,9 @@
+export interface InfoRowDataType {
+  label: string;
+  from: string;
+  to: string;
+}
+
 export interface MainRowDataType {
   no: string;
   label: string;
@@ -47,6 +53,14 @@ const colors = {
   silver: "bg-slate-200",
   blue: "bg-blue-400",
 };
+
+export const startSheet_info: InfoRowDataType[] = [
+  {
+    label: "C1",
+    from: "B2",
+    to: "B3",
+  },
+];  
 
 export const startSheet_main: MainRowDataType[] = [
   {

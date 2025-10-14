@@ -3,10 +3,6 @@
 
 // Month names for headers - must be declared first
 export const monthNames = [
-  "9月",
-  "10月",
-  "11月",
-  "12月",
   "1月",
   "2月",
   "3月",
@@ -15,6 +11,10 @@ export const monthNames = [
   "6月",
   "7月",
   "8月",
+  "9月",
+  "10月",
+  "11月",
+  "12月",
 ];
 
 export interface SalesPlanRowDataType {
@@ -30,7 +30,7 @@ export interface SalesPlanRowDataType {
 
 // Function to convert number to Excel column letter (A, B, C, ..., Z, AA, AB, etc.)
 function numberToExcelColumn(num: number): string {
-  let result = '';
+  let result = "";
   while (num > 0) {
     num--; // Adjust for 0-based indexing
     result = String.fromCharCode(65 + (num % 26)) + result;
@@ -40,7 +40,7 @@ function numberToExcelColumn(num: number): string {
 }
 
 export const salesPlanRows: SalesPlanRowDataType[] = [
-  ...Array.from({ length: 21 }, (_, i) => [
+  ...Array.from({ length: 22 }, (_, i) => [
     {
       label: `A${3 + i * 2}`,
       salesTarget: `B${3 + i * 2}`,
@@ -74,38 +74,4 @@ export const salesPlanRows: SalesPlanRowDataType[] = [
       rowType: "actual" as const,
     },
   ]).flat(),
-
-  // その他詳 (Other Details)
-  {
-    label: "その他詳",
-    salesTarget: "B45",
-    salesActual: "B46",
-    monthlyData: monthNames.map((_, monthIndex) => {
-      const colStart = 4;
-      const targetRow = 45;
-      const col = numberToExcelColumn(colStart + monthIndex * 2);
-      const nextCol = numberToExcelColumn(colStart + monthIndex * 2 + 1);
-      return {
-        current: `${col}${targetRow}`,
-        total: `${nextCol}${targetRow}`,
-      };
-    }),
-    rowType: "target" as const,
-  },
-  {
-    label: "",
-    salesTarget: "B45",
-    salesActual: "B46",
-    monthlyData: monthNames.map((_, monthIndex) => {
-      const colStart = 4;
-      const actualRow = 46;
-      const col = numberToExcelColumn(colStart + monthIndex * 2);
-      const nextCol = numberToExcelColumn(colStart + monthIndex * 2 + 1);
-      return {
-        current: `${col}${actualRow}`,
-        total: `${nextCol}${actualRow}`,
-      };
-    }),
-    rowType: "actual" as const,
-  },
 ];

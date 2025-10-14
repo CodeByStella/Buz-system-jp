@@ -10,10 +10,27 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 
 export default function SalesPlanSheet() {
-  const { onSave, saving, hasChanges, loading, errorMessage, retry } =
+  const { onSave, saving, hasChanges, loading, errorMessage, retry, getCell } =
     useDataContext();
 
   const sheetName: SheetNameType = "sales_plan_by_department";
+
+  // Read directly from context so it updates when data changes
+  const startDate: string = getCell("start", "B2") as string;
+  // 年月だけ取得 (YYYY/MM の形式で月部分だけ抽出)
+  const startMonth: number | undefined =
+    typeof startDate === "string"
+      ? parseInt(startDate.split("/")[1])
+      : undefined;
+  // 表示用の月配列を作成（開始月から翌年の開始月-1まで）
+  const displayMonths: string[] = React.useMemo(() => {
+    const base =
+      typeof startMonth === "number" && !isNaN(startMonth) ? startMonth : 1; // デフォルトは1月開始
+    return Array.from({ length: 12 }, (_, i) => {
+      const m = ((base - 1 + i) % 12) + 1;
+      return `${m}月`;
+    });
+  }, [startMonth]);
 
   const renderSalesPlanTable = () => {
     return (
@@ -44,7 +61,7 @@ export default function SalesPlanSheet() {
                 style={{ width: "50px" }}
                 rowSpan={2}
               />
-              {monthNames.map((month, index) => (
+              {displayMonths.map((month, index) => (
                 <th
                   key={`${month}-header`}
                   colSpan={2}
@@ -70,7 +87,7 @@ export default function SalesPlanSheet() {
                   className="border-transparent h-6 text-xs text-center w-full !bg-gray-100"
                 />
               </th>
-              {monthNames.map((month) => (
+              {displayMonths.map((month) => (
                 <React.Fragment key={`${month}-header1`}>
                   <th
                     className="border border-gray-300 p-1 text-center bg-gray-100"
@@ -108,10 +125,8 @@ export default function SalesPlanSheet() {
                       type="text"
                       sheet={sheetName}
                       cell={row.label}
-                      readOnly={row.label === "その他詳"}
-                      className={`border-transparent w-full h-full ${
-                        row.label === "その他詳" ? "!bg-gray-100" : ""
-                      }`}
+                      readOnly
+                      className={`border-transparent text-center w-full h-full !bg-gray-100`}
                     />
                   </td>
                 )}

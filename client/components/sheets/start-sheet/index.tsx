@@ -3,9 +3,11 @@
 import React, { useMemo } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
+  InfoRowDataType,
   MainRowDataType,
   OthersRowDataType,
   SummaryRowDataType,
+  startSheet_info,
   startSheet_main,
   startSheet_others,
   startSheet_summary,
@@ -17,10 +19,179 @@ import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 
 export default function StartSheet() {
-  const { onSave, saving, hasChanges, loading } =
-    useDataContext();
+  const { onSave, saving, hasChanges, loading } = useDataContext();
 
   const sheetName = "start";
+
+  const infoCols: Column[] = useMemo(
+    () => [
+      {
+        key: "label",
+        title: "会社名",
+        width: 200,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative text-lg",
+        render: (value: string, record: InfoRowDataType, index: number) => {
+          return (
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              height="full"
+              className={`border-transparent h-full text-lg text-center p-2 font-semibold`}
+            />
+          );
+        },
+      },
+       {
+         key: "from",
+         title: "自",
+         width: 100,
+         align: "center",
+         cellClassName: "!p-0 !h-full relative",
+         render: (value: string, record: InfoRowDataType, index: number) => {
+           return (
+             <CustomInput
+               type="text"
+               sheet={sheetName}
+               cell={value}
+               placeholder="2024/04/01"
+               tip="日付形式: YYYY/MM/DD (例: 2024/04/01)"
+               tipClassName="text-red-500"
+               className={`border-transparent h-full text-lg text-center p-2`}
+               onKeyDown={(e) => {
+                 // Allow only numbers, slash, and control keys
+                 const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+                 if (!allowedKeys.includes(e.key) && !/[\d/]/.test(e.key)) {
+                   e.preventDefault();
+                 }
+               }}
+               onInput={(e) => {
+                 let value = e.currentTarget.value;
+                 // Auto-format as user types
+                 const digitsOnly = value.replace(/[^\d]/g, '');
+                 let formatted = digitsOnly;
+                 
+                 if (digitsOnly.length >= 4) {
+                   formatted = digitsOnly.substring(0, 4) + '/' + digitsOnly.substring(4);
+                 }
+                 if (digitsOnly.length >= 6) {
+                   formatted = digitsOnly.substring(0, 4) + '/' + digitsOnly.substring(4, 6) + '/' + digitsOnly.substring(6, 8);
+                 }
+                 if (digitsOnly.length > 8) {
+                   formatted = digitsOnly.substring(0, 4) + '/' + digitsOnly.substring(4, 6) + '/' + digitsOnly.substring(6, 8);
+                 }
+                 
+                 // Validate date parts
+                 if (formatted.length >= 7) {
+                   const parts = formatted.split('/');
+                   const year = parseInt(parts[0]);
+                   const month = parseInt(parts[1]);
+                   const day = parseInt(parts[2] || '0');
+                   
+                   // Validate month (01-12)
+                   if (month > 12) {
+                     formatted = parts[0] + '/12/' + (parts[2] || '');
+                   }
+                   
+                   // Validate day (01-31)
+                   if (day > 31) {
+                     formatted = parts[0] + '/' + parts[1] + '/31';
+                   }
+                   
+                   // Additional validation for specific months
+                   if (month === 2 && day > 29) {
+                     formatted = parts[0] + '/02/29';
+                   }
+                   if ([4, 6, 9, 11].includes(month) && day > 30) {
+                     formatted = parts[0] + '/' + parts[1] + '/30';
+                   }
+                 }
+                 
+                 if (formatted !== value) {
+                   e.currentTarget.value = formatted;
+                 }
+               }}
+             />
+           );
+         },
+       },
+       {
+         key: "to",
+         title: "至",
+         width: 100,
+         align: "center",
+         cellClassName: "!p-0 !h-full relative",
+         render: (value: string, record: InfoRowDataType, index: number) => {
+           return (
+             <CustomInput
+               type="text"
+               sheet={sheetName}
+               cell={value}
+               placeholder="2024/03/31"
+               tip="日付形式: YYYY/MM/DD (例: 2024/03/31)"
+               tipClassName="text-red-500"
+               className={`border-transparent h-full text-lg text-center p-2`}
+               onKeyDown={(e) => {
+                 // Allow only numbers, slash, and control keys
+                 const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+                 if (!allowedKeys.includes(e.key) && !/[\d/]/.test(e.key)) {
+                   e.preventDefault();
+                 }
+               }}
+               onInput={(e) => {
+                 let value = e.currentTarget.value;
+                 // Auto-format as user types
+                 const digitsOnly = value.replace(/[^\d]/g, '');
+                 let formatted = digitsOnly;
+                 
+                 if (digitsOnly.length >= 4) {
+                   formatted = digitsOnly.substring(0, 4) + '/' + digitsOnly.substring(4);
+                 }
+                 if (digitsOnly.length >= 6) {
+                   formatted = digitsOnly.substring(0, 4) + '/' + digitsOnly.substring(4, 6) + '/' + digitsOnly.substring(6, 8);
+                 }
+                 if (digitsOnly.length > 8) {
+                   formatted = digitsOnly.substring(0, 4) + '/' + digitsOnly.substring(4, 6) + '/' + digitsOnly.substring(6, 8);
+                 }
+                 
+                 // Validate date parts
+                 if (formatted.length >= 7) {
+                   const parts = formatted.split('/');
+                   const year = parseInt(parts[0]);
+                   const month = parseInt(parts[1]);
+                   const day = parseInt(parts[2] || '0');
+                   
+                   // Validate month (01-12)
+                   if (month > 12) {
+                     formatted = parts[0] + '/12/' + (parts[2] || '');
+                   }
+                   
+                   // Validate day (01-31)
+                   if (day > 31) {
+                     formatted = parts[0] + '/' + parts[1] + '/31';
+                   }
+                   
+                   // Additional validation for specific months
+                   if (month === 2 && day > 29) {
+                     formatted = parts[0] + '/02/29';
+                   }
+                   if ([4, 6, 9, 11].includes(month) && day > 30) {
+                     formatted = parts[0] + '/' + parts[1] + '/30';
+                   }
+                 }
+                 
+                 if (formatted !== value) {
+                   e.currentTarget.value = formatted;
+                 }
+               }}
+             />
+           );
+         },
+       },
+    ],
+    [sheetName]
+  );
 
   //コードNo	勘定科目	損益計算書	製造原価報告書
   const startSheetCols_main: Column[] = useMemo(
@@ -76,7 +247,7 @@ export default function StartSheet() {
         ) => {
           // For percentage fields, multiply by 100 for display
           const isPercentage = record.incomeStatement.suffix === "%";
-          
+
           return (
             <CustomInput
               type="number"
@@ -85,7 +256,7 @@ export default function StartSheet() {
               disabled={value.type === 0}
               readOnly={value.type === 2}
               suffix={record.incomeStatement.suffix || ""}
-              renderValue={isPercentage ? (v) => (Number(v) * 100) : undefined}
+              renderValue={isPercentage ? (v) => Number(v) * 100 : undefined}
               inverseRenderValue={isPercentage ? (v) => v / 100 : undefined}
               className={`border-transparent h-full`}
             />
@@ -258,6 +429,16 @@ export default function StartSheet() {
           </Button>
         </div>
       </div>
+      <div>
+        <AdvancedTable
+          columns={infoCols as any}
+          data={startSheet_info as any}
+          dense
+          bordered
+          maxHeight={"full"}
+          stickyHeader
+        />
+      </div>
       <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
         <div className="overflow-auto lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
           <AdvancedTable
@@ -269,8 +450,6 @@ export default function StartSheet() {
             stickyHeader
           />
         </div>
-    
-
         <div className="lg:w-full grid lg:col-span-1 col-span-3 h-full  grid-rows-6 gap-2">
           <div className="row-span-1 border border-black bg-yellow-200 p-1 lg:h-full">
             <p className="text-xs text-gray-600">

@@ -18,6 +18,7 @@
 /server/dist
 /server/node_modules
 /client/node_modules
+/server/templates/data_export.json
 
 # Production
 /build

@@ -71,9 +71,7 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
     I21: "=H18/B3",
     I22: "=profit!I5",
     L3: "=manufacturing_income!E31",
-    L13: 0,
     Q3: "=manufacturing_income!D31",
-    Q13: 0,
   },
   salary: {
     E6: "=C6*D6",

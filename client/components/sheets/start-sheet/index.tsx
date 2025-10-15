@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
+import { excelService } from "@/lib/services/excelService";
 
 export default function StartSheet() {
   const { onSave, saving, hasChanges, loading, clearSheet } = useDataContext();
@@ -511,7 +512,7 @@ export default function StartSheet() {
             leftIcon={FileSpreadsheet}
             className="border-green-500 text-green-700 hover:bg-green-50"
             onClick={() => {
-              /* TODO: implement export to Excel logic */
+              excelService.exportExcel();
             }}
           >
             Excel出力

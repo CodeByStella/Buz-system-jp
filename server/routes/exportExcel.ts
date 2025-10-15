@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import Excel from "exceljs";
 import path from "path";
-import fs from "fs";
+import { Data } from "@/models/data";
+import { writeFileSync } from "fs";
 
 interface CellData {
   sheet: string;
@@ -9,34 +10,67 @@ interface CellData {
   value: string | number;
 }
 
-// Example mock data from DB
-const mockData: CellData[] = [
-  { sheet: "スタート", cell: "B3", value: "ひながた" },
-  { sheet: "スタート", cell: "E5", value: 355 },
-  { sheet: "スタート", cell: "E6", value: "=E5*0.36" },
-  { sheet: "スタート", cell: "E7", value: "36.6%" },
-];
+const sheetNames = {
+  start: "スタート",
+  mq_current_status: "MQ（現状）",
+  profit: "①利益",
+  mq_future: "②⑧MQ（未来）",
+  salary: "③給料",
+  expenses: "④経費",
+  manufacturing_labor: "⑤製造原価 (人）",
+  manufacturing_expenses: "⑥製造（経費)",
+  manufacturing_income: "⑦原価詳細",
+  break_even_point: "損益分岐点",
+  progress_result_input: "進捗実績値入力シート",
+  sales_plan_by_department: "部門別販売計画",
+  profit_planing_table: "利益計画表",
+};
 
 export const exportExcel = async (req: Request, res: Response) => {
   try {
+    // Only Mongoose query to get cell, sheet, value where value is number or does not start with "="
+    const data4Exp: CellData[] = (
+      await Data.find(
+        {
+          $and: [
+            {
+              $or: [
+                { value: { $type: "number" } },
+                { value: { $type: "string", $not: /^=/ } },
+              ],
+            },
+            { $and: [{ value: { $ne: 0 } }, { value: { $ne: "0" } }] },
+          ],
+        },
+        "cell sheet value"
+      )
+    ).map((item: CellData) => ({
+      sheet: sheetNames[item.sheet as keyof typeof sheetNames],
+      cell: item.cell,
+      value:
+        typeof item.value === "string" && !isNaN(Number(item.value))
+          ? Number(item.value)
+          : item.value,
+    }));
+
     const templatePath = path.join(
-      __dirname,
-      "../templates/base_template.xlsx"
+      process.cwd(),
+      "templates/base_template.xlsx"
     );
     const workbook = new Excel.Workbook();
     await workbook.xlsx.readFile(templatePath);
 
-    // Here, you'd fetch DB data like: const data = await prisma.inputs.findMany();
-    const data = mockData;
-
     // Fill cells
-    data.forEach((item) => {
+    data4Exp.forEach((item) => {
       const sheet = workbook.getWorksheet(item.sheet);
       if (!sheet) return;
       const cell = sheet.getCell(item.cell);
       cell.value = item.value;
     });
 
+    // Instead of saving Excel, save data4Exp to JSON
+    const jsonSavePath = path.join(process.cwd(), "templates/data_export.json");
+    writeFileSync(jsonSavePath, JSON.stringify(data4Exp, null, 2), "utf-8");
     // Export file
     const buffer = await workbook.xlsx.writeBuffer();
 

@@ -307,7 +307,7 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
 
     C5: "=mq_current_status!B3",
     C6: "=mq_future!B3",
-    C7: "=mq future!F13",
+    C7: "=mq_future!F13",
     C8: '=IFERROR(mq_future!G16,"")',
     C9: "=L21+L35+L46+Q44",
     C10: "=C11+C12",

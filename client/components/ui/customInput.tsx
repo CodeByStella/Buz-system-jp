@@ -15,6 +15,8 @@ export interface InputProps
   cell?: string;
   renderValue?: (value: number | string) => number | string;
   inverseRenderValue?: (value: number) => number;
+  // When true and type === "number", display with thousands separators (e.g., 10,202,000)
+  formatThousands?: boolean;
 }
 
 const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
@@ -34,6 +36,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       onChange,
       renderValue,
       inverseRenderValue,
+      formatThousands = true,
       ...props
     },
     ref
@@ -67,6 +70,9 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
 
     // If type is number, add text-right to align number to right
     const numberAlignClass = type === "number" ? "text-right" : "";
+
+    // Determine if we should display thousands separators
+    const useThousandsFormatting = type === "number" && !!formatThousands;
 
     // Calculate dynamic padding based on suffix length
     const getSuffixPadding = () => {
@@ -160,6 +166,33 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       }
     }
 
+    // Apply thousands separator formatting for display only
+    if (useThousandsFormatting && inputValue !== "") {
+      const rawString = String(inputValue);
+      // Only attempt to format if string contains only digits, optional minus, commas, and a single dot
+      const numericLikePattern =
+        /^-?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?$|^-?[0-9]*(?:\.[0-9]+)?$/;
+      const canFormat =
+        typeof inputValue === "number" || numericLikePattern.test(rawString);
+      if (canFormat) {
+        const num =
+          typeof inputValue === "number"
+            ? inputValue
+            : parseFloat(rawString.replace(/,/g, ""));
+        if (!isNaN(num)) {
+          // Preserve decimals if present
+          const [, decPart] = rawString.split(".");
+          const formattedInt = new Intl.NumberFormat(undefined).format(
+            Math.trunc(num)
+          );
+          inputValue =
+            decPart !== undefined && decPart !== ""
+              ? `${formattedInt}.${decPart}`
+              : formattedInt;
+        }
+      }
+    }
+
     // Default step for number inputs
     const defaultStep = type === "number" && !step ? "0.001" : step;
 
@@ -213,7 +246,10 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       if (hasContext && contextOnChange) {
         if (type === "number") {
           // Handle numeric input
-          let newValue = parseFloat(e.target.value) || 0;
+          const raw = useThousandsFormatting
+            ? e.target.value.replace(/,/g, "")
+            : e.target.value;
+          let newValue = parseFloat(raw) || 0;
 
           // Apply inverse transformation if provided (e.g., divide by 100 for percentages)
           if (inverseRenderValue) {
@@ -238,17 +274,16 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       // Enter navigation: move focus to next input in same sheet (DOM order)
       if (e.key === "Enter") {
         e.preventDefault();
-        const selector = sheet
-          ? `input[data-sheet="${sheet}"]`
-          : "input";
+        const selector = sheet ? `input[data-sheet="${sheet}"]` : "input";
         const allInputs = Array.from(
           document.querySelectorAll<HTMLInputElement>(selector)
         ).filter((el) => !el.disabled && el.tabIndex !== -1);
         const current = e.currentTarget;
         const idx = allInputs.indexOf(current);
-        const next = idx >= 0 && idx + 1 < allInputs.length
-          ? allInputs[idx + 1]
-          : allInputs[0];
+        const next =
+          idx >= 0 && idx + 1 < allInputs.length
+            ? allInputs[idx + 1]
+            : allInputs[0];
         // Move focus and select content for quick overwrite
         next?.focus();
         try {
@@ -259,7 +294,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
 
     const inputElement = (
       <input
-        type={type}
+        type={useThousandsFormatting ? "text" : type}
         step={defaultStep}
         onWheel={handleWheel}
         onFocus={handleFocus}

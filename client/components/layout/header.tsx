@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { LogOut, User } from 'lucide-react'
 import { authService } from '@/lib/services'
@@ -53,9 +54,8 @@ export function Header() {
     return (
       <header className="bg-white border-b border-gray-200" style={{ height: 100 }}>
       <div className="h-full mx-auto max-w-[1440px] px-6 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-24 h-10 bg-gray-100 border border-gray-200" />
-            <div className="h-8 w-32 bg-gray-200 animate-pulse"></div>
+          <div className="flex items-center">
+            <div className="w-24 h-12 sm:w-32 sm:h-16 bg-gray-100 border border-gray-200" />
           </div>
           <div className="h-8 w-24 bg-gray-200 animate-pulse"></div>
         </div>
@@ -66,14 +66,22 @@ export function Header() {
   return (
     <header className="bg-white border-b border-gray-200" style={{ height: 100 }}>
       <div className="h-full mx-auto max-w-[1440px] px-6 flex justify-between items-center">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center">
           <div
-            className="w-24 h-10 bg-gray-100 border border-gray-200 cursor-pointer"
+            className="cursor-pointer"
             onClick={() => router.push('/dashboard')}
             aria-label="ダッシュボードへ移動"
             role="button"
-          />
-         <h1 className="text-xl font-semibold text-primary">ビジネスシステム</h1>
+          >
+            <Image
+              src="/logo.png"
+              alt="ビジネスシステム ロゴ"
+              width={483}
+              height={65}
+              className="h-16 sm:h-16 object-contain"
+              priority
+            />
+          </div>
         </div>
         <div className="flex items-center space-x-4">
           {user?.role === 'ADMIN' && (

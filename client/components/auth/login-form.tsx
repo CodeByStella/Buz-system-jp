@@ -1,37 +1,65 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { authService } from '@/lib/services'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { authService } from "@/lib/services";
+import Image from "next/image";
 
 export function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const data = await authService.login({email, password})
-      router.push('/dashboard')
-      router.refresh()
+      const data = await authService.login({ email, password });
+      router.push("/dashboard");
+      router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'ログインに失敗しました')
+      setError(err instanceof Error ? err.message : "ログインに失敗しました");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      <Image
+        src="/logo.png"
+        alt="ビジネスシステム ロゴ"
+        width={966}
+        height={130}
+        className="h-32 sm:h-20 w-auto object-contain"
+        priority
+      />
+      <div
+        className="w-full max-w-md text-center mt-2 mb-12"
+        style={{
+          fontFamily: "'Noto Serif JP', serif",
+          fontWeight: 900,
+          fontSize: "1.2rem",
+          letterSpacing: "0.04em",
+          textShadow:
+            "1px 2px 0 #fff, 1px 3px 8px rgba(0,0,0,0.08), 0 1px 0 #aaa",
+        }}
+      >
+        会社の未来を社長の決断できめる計画システム
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>ログイン</CardTitle>
@@ -55,7 +83,10 @@ export function LoginForm() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1"
+              >
                 パスワード
               </label>
               <Input
@@ -67,15 +98,13 @@ export function LoginForm() {
                 placeholder="パスワードを入力"
               />
             </div>
-            {error && (
-              <div className="text-red-600 text-sm">{error}</div>
-            )}
+            {error && <div className="text-red-600 text-sm">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'ログイン中...' : 'ログイン'}
+              {loading ? "ログイン中..." : "ログイン"}
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

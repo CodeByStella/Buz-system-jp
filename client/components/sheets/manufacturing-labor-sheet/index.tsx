@@ -329,7 +329,7 @@ export default function ManufacturingLaborSheet() {
                   "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
                 )
               ) {
-                clearSheet("start");
+                clearSheet(sheetName);
               }
             }}
           >

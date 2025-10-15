@@ -65,7 +65,7 @@ export function Header() {
 
   return (
     <header className="bg-white border-b border-gray-200" style={{ height: 100 }}>
-      <div className="h-full mx-auto max-w-[1440px] px-6 flex justify-between items-center">
+      <div className="h-full mx-auto max-w-[1440px] px-4 flex justify-between items-center">
         <div className="flex items-center">
           <div
             className="cursor-pointer"

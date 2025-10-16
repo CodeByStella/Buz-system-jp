@@ -48,10 +48,11 @@ export const authService = {
       email,
       password: hashed,
     });
-    // Seed initial sheets for this user (non-blocking)
-    seedSheetsForUser(String(created._id)).catch((e) =>
+    // Seed initial sheets for this user synchronously to ensure data is ready
+    await seedSheetsForUser(String(created._id)).catch((e) => {
       console.error("Seeding sheets failed for user", created._id, e)
-    );
+      throw e
+    })
     const token = jwt.sign(
       { id: String(created._id), email: created.email, role: created.role },
       config.jwtSecret,

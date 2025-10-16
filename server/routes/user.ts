@@ -1,6 +1,7 @@
 import express from 'express'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 import { Data } from '@/models/data'
+import { seedSheetsForUser } from '@/scripts/sheets'
 
 const router = express.Router()
 
@@ -13,7 +14,7 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
     const startTime = Date.now()
   
     const userId = req.user!.id
-    const userInputs = await Data.find({ user: userId }).lean() // Use lean() for better performance
+    let userInputs = await Data.find({ user: userId }).lean() // Use lean() for better performance
     
     // Clean up any error values from the database
     const errorValues = ['#ERROR!', '#REF!', '#VALUE!', '#NAME?', '#DIV/0!', '#N/A', '#NUM!', '#NULL!']
@@ -21,6 +22,12 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
       typeof item.value === 'string' && errorValues.some(errorValue => item.value.includes(errorValue))
     )
     
+    // If user has no data yet (race condition), seed now and refetch
+    if (userInputs.length === 0) {
+      await seedSheetsForUser(userId)
+      userInputs = await Data.find({ user: userId }).lean()
+    }
+
     if (itemsWithErrors.length > 0) {
       console.log(`Found ${itemsWithErrors.length} items with error values, cleaning up...`)
       

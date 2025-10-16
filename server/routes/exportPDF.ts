@@ -1,9 +1,16 @@
 import { Request, Response } from "express";
 import path from "path";
-import { writeFileSync } from "fs";
+import {
+  writeFileSync,
+  unlinkSync,
+  readFileSync,
+  existsSync,
+  mkdirSync,
+} from "fs";
 import AdmZip from "adm-zip";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
 import { Data } from "@/models/data";
+import ConvertAPI from "convertapi";
 
 interface CellData {
   sheet: string;
@@ -149,21 +156,74 @@ export const exportPDF = async (req: Request, res: Response) => {
       }
 
       const modifiedWorkbookXml = builder.build(workbookObj);
-      zip.updateFile("xl/workbook.xml", Buffer.from(modifiedWorkbookXml, "utf8"));
+      zip.updateFile(
+        "xl/workbook.xml",
+        Buffer.from(modifiedWorkbookXml, "utf8")
+      );
     }
 
-    // Generate Excel buffer
-    const buffer = zip.toBuffer();
-
-    // Send response
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    // Generate Excel buffer and save to temporary file
+    const excelBuffer = zip.toBuffer();
+    const tempExcelPath = path.join(
+      process.cwd(),
+      "temp",
+      `export_${Date.now()}.xlsx`
     );
-    res.setHeader("Content-Disposition", 'attachment; filename="result.xlsx"');
-    res.send(buffer);
+
+    // Ensure temp directory exists
+    const tempDir = path.dirname(tempExcelPath);
+    if (!existsSync(tempDir)) {
+      mkdirSync(tempDir, { recursive: true });
+    }
+
+    // Write Excel buffer to temporary file
+    writeFileSync(tempExcelPath, excelBuffer);
+
+    // Convert Excel to PDF using ConvertAPI
+    const convertapi = new ConvertAPI(process.env.CONVERTAPI_SECRET || "");
+    // keep-alive headers to prevent proxy timeouts
+    res.setHeader("Connection", "keep-alive");
+    res.setHeader("Keep-Alive", "timeout=120");
+    // extend server-side timeout for long conversions
+    res.setTimeout(180000);
+
+    const result = await convertapi.convert(
+      "pdf",
+      {
+        File: tempExcelPath,
+      },
+      "xlsx"
+    );
+
+    // Save the PDF to a temporary file and read it back
+    const tempPdfPath = path.join(
+      process.cwd(),
+      "temp",
+      `export_${Date.now()}.pdf`
+    );
+    await result.file.save(tempPdfPath);
+    const pdfBuffer = readFileSync(tempPdfPath);
+
+    // Clean up PDF temporary file
+    try {
+      unlinkSync(tempPdfPath);
+    } catch (error) {
+      console.warn("Failed to delete PDF temporary file:", error);
+    }
+
+    // Clean up temporary file
+    try {
+      unlinkSync(tempExcelPath);
+    } catch (error) {
+      console.warn("Failed to delete temporary file:", error);
+    }
+
+    // Send PDF response
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="result.pdf"');
+    res.send(pdfBuffer);
   } catch (error) {
-    console.error("Excel export failed:", error);
-    res.status(500).send("Failed to export Excel");
+    console.error("PDF export failed:", error);
+    res.status(500).send("Failed to export PDF");
   }
 };

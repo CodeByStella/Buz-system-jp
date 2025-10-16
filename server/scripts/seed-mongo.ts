@@ -3,14 +3,14 @@ import { connectToDatabase } from "../lib/mongo";
 import { User } from "../models/user";
 import { GlobalParameter } from "../models/global-parameter";
 import { hashPassword } from "../lib/auth";
-import { seedAllSheets } from "./sheets";
+import { seedSheetsForUser } from "./sheets";
 
 async function main() {
   await connectToDatabase();
 
   // Upsert admin
   const adminPassword = await hashPassword("admin123");
-  await User.updateOne(
+  const adminUpsert = await User.updateOne(
     { email: "admin@example.com" },
     {
       $setOnInsert: { name: "管理者", password: adminPassword, role: "ADMIN" },
@@ -20,7 +20,7 @@ async function main() {
 
   // Upsert user
   const userPassword = await hashPassword("user123");
-  await User.updateOne(
+  const userUpsert = await User.updateOne(
     { email: "user@example.com" },
     {
       $setOnInsert: {
@@ -51,7 +51,11 @@ async function main() {
     );
   }
 
-  await seedAllSheets();
+  // Fetch ids and seed sheets for both users
+  const admin = await User.findOne({ email: "admin@example.com" }).lean();
+  const user = await User.findOne({ email: "user@example.com" }).lean();
+  if (admin?._id) await seedSheetsForUser(String(admin._id));
+  if (user?._id) await seedSheetsForUser(String(user._id));
 
   console.log("✅ Mongo seed complete");
 }

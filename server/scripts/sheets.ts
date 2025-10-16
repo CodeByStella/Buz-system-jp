@@ -17,11 +17,12 @@ import { Data, DataType } from "@/models/data";
 // Helper function to build sheet data
 const buildSheetData = (
   sheetName: string,
-  data: { [cell: string]: string | number }
+  data: { [cell: string]: string | number },
+  userId: string
 ): DataType[] => {
   return Object.entries(data).map(
     ([cell, val]): DataType => ({
-      user: "",
+      user: userId,
       sheet: sheetName,
       cell,
       value: val,
@@ -1273,16 +1274,14 @@ const sheetsData: Record<string, { [cell: string]: string | number }> = {
   },
 };
 
-export const seedAllSheets = async () => {
-  // Build all sheet data
+export const seedSheetsForUser = async (userId: string) => {
   const allData: DataType[] = Object.entries(sheetsData).flatMap(
-    ([sheetName, data]) => buildSheetData(sheetName, data)
+    ([sheetName, data]) => buildSheetData(sheetName, data, userId)
   );
 
-  // Use bulkWrite for efficient upsert operations
   const bulkOps = allData.map((item) => ({
     updateOne: {
-      filter: { user: item.user, sheet: item.sheet, cell: item.cell },
+      filter: { user: userId, sheet: item.sheet, cell: item.cell },
       update: { $set: item },
       upsert: true,
     },

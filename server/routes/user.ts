@@ -11,8 +11,9 @@ router.use(authenticateToken)
 router.get('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
     const startTime = Date.now()
-    
-    const userInputs = await Data.find({}).lean() // Use lean() for better performance
+  
+    const userId = req.user!.id
+    const userInputs = await Data.find({ user: userId }).lean() // Use lean() for better performance
     
     // Clean up any error values from the database
     const errorValues = ['#ERROR!', '#REF!', '#VALUE!', '#NAME?', '#DIV/0!', '#N/A', '#NUM!', '#NULL!']
@@ -35,7 +36,7 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
       console.log(`Cleaned up ${itemsWithErrors.length} error values`)
       
       // Refetch the cleaned data
-      const cleanedInputs = await Data.find({}).lean()
+      const cleanedInputs = await Data.find({ user: userId }).lean()
       const endTime = Date.now()
       console.log(`User inputs fetched and cleaned successfully in ${endTime - startTime}ms, ${cleanedInputs.length} items`)
       res.json(cleanedInputs)
@@ -69,11 +70,13 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
 router.post('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
     const { sheet, cell, value } = req.body
+    const userId = req.user!.id
     
     // Use findOneAndUpdate with upsert option to update if exists, create if not
     const userInput = await Data.findOneAndUpdate(
-      { sheet, cell },
+      { user: userId, sheet, cell },
       { 
+        user: userId,
         sheet,
         cell,
         value,
@@ -101,11 +104,13 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
       return res.status(400).json({ error: '入力データは配列である必要があります' })
     }
     // Use bulkWrite for efficient upsert operations
+    const userId = req.user!.id
     const bulkOps = inputs.map((input) => ({
       updateOne: {
-        filter: { sheet: input.sheet, cell: input.cell },
+        filter: { user: userId, sheet: input.sheet, cell: input.cell },
         update: {
           $set: {
+            user: userId,
             sheet: input.sheet,
             cell: input.cell,
             value: input.value,

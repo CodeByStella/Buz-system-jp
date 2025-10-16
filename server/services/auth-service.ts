@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { userRepository } from "../repositories/user-repo";
 import { verifyPassword, hashPassword } from "../lib/auth";
 import { config } from "../config/env";
+import { seedSheetsForUser } from "../scripts/sheets";
 
 export const authService = {
   async login(email: string, password: string) {
@@ -47,6 +48,10 @@ export const authService = {
       email,
       password: hashed,
     });
+    // Seed initial sheets for this user (non-blocking)
+    seedSheetsForUser(String(created._id)).catch((e) =>
+      console.error("Seeding sheets failed for user", created._id, e)
+    );
     const token = jwt.sign(
       { id: String(created._id), email: created.email, role: created.role },
       config.jwtSecret,

@@ -14,6 +14,7 @@ import { CustomInput } from "@/components/ui/customInput";
 import { CustomTextarea } from "@/components/ui/customTextarea";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
+import { ExcelExportButton } from "@/components/ui/excelExportButton";
 
 export default function MQCurrentSheet() {
   const {
@@ -181,16 +182,7 @@ export default function MQCurrentSheet() {
           >
             全入力クリア
           </Button>
-          <Button
-            variant="outline"
-            leftIcon={FileSpreadsheet}
-            className="border-green-500 text-green-700 hover:bg-green-50"
-            onClick={() => {
-              /* TODO: implement export to Excel logic */
-            }}
-          >
-            Excel出力
-          </Button>
+          <ExcelExportButton />
           <Button
             variant="outline"
             leftIcon={FileText}

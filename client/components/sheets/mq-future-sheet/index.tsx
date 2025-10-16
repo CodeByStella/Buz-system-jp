@@ -10,11 +10,11 @@ import {
 } from "./cells";
 import { CustomInput } from "@/components/ui/customInput";
 import { CustomTextarea } from "@/components/ui/customTextarea";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
+import { ExcelExportButton } from "@/components/ui/excelExportButton";
 
 export default function MQFutureSheet() {
   const {
@@ -224,17 +224,7 @@ export default function MQFutureSheet() {
           >
             全入力クリア
           </Button>
-          <Button
-            variant="outline"
-            leftIcon={FileSpreadsheet}
-            className="flex-1 sm:flex-none border-green-500 text-green-700 hover:bg-green-50 text-sm sm:text-base"
-            onClick={() => {
-              /* TODO: implement export to Excel logic */
-            }}
-          >
-            <span className="hidden sm:inline">Excel出力</span>
-            <span className="sm:hidden">Excel</span>
-          </Button>
+          <ExcelExportButton />
           <Button
             variant="outline"
             leftIcon={FileText}

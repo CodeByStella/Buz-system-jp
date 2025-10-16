@@ -15,8 +15,9 @@ import {
 import { CustomInput } from "@/components/ui/customInput";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
+import { ExcelExportButton } from "@/components/ui/excelExportButton";
 
 export default function StartSheet() {
   const { onSave, saving, hasChanges, loading, clearSheet } = useDataContext();
@@ -506,16 +507,7 @@ export default function StartSheet() {
           >
             全入力クリア
           </Button>
-          <Button
-            variant="outline"
-            leftIcon={FileSpreadsheet}
-            className="border-green-500 text-green-700 hover:bg-green-50"
-            onClick={() => {
-              /* TODO: implement export to Excel logic */
-            }}
-          >
-            Excel出力
-          </Button>
+          <ExcelExportButton />
           <Button
             variant="outline"
             leftIcon={FileText}

@@ -61,7 +61,7 @@ export const mqFutureResults_cells: MQFutureResultCell[] = [
     label: "目標値",
     amount: "I22",
     percentage: "",
-    type: 1,
+    type: 2,
   },
 ];
 

@@ -1,0 +1,1557 @@
+[
+  {
+    "sheet": "start",
+    "cell": "C6",
+    "value": 355
+  },
+  {
+    "sheet": "start",
+    "cell": "C12",
+    "value": 22
+  },
+  {
+    "sheet": "start",
+    "cell": "C14",
+    "value": 4
+  },
+  {
+    "sheet": "start",
+    "cell": "C20",
+    "value": 15
+  },
+  {
+    "sheet": "start",
+    "cell": "C27",
+    "value": 5
+  },
+  {
+    "sheet": "start",
+    "cell": "C28",
+    "value": 9
+  },
+  {
+    "sheet": "start",
+    "cell": "D45",
+    "value": 5
+  },
+  {
+    "sheet": "start",
+    "cell": "D60",
+    "value": 35
+  },
+  {
+    "sheet": "start",
+    "cell": "C74",
+    "value": 1
+  },
+  {
+    "sheet": "start",
+    "cell": "C69",
+    "value": 1.1
+  },
+  {
+    "sheet": "start",
+    "cell": "C70",
+    "value": 6
+  },
+  {
+    "sheet": "start",
+    "cell": "C71",
+    "value": 3.2
+  },
+  {
+    "sheet": "start",
+    "cell": "C75",
+    "value": 4.3
+  },
+  {
+    "sheet": "start",
+    "cell": "C76",
+    "value": 5.5
+  },
+  {
+    "sheet": "start",
+    "cell": "C79",
+    "value": 1.4
+  },
+  {
+    "sheet": "start",
+    "cell": "C81",
+    "value": 2.1
+  },
+  {
+    "sheet": "start",
+    "cell": "C82",
+    "value": 1.1
+  },
+  {
+    "sheet": "start",
+    "cell": "C83",
+    "value": 3.5
+  },
+  {
+    "sheet": "start",
+    "cell": "C84",
+    "value": 3
+  },
+  {
+    "sheet": "start",
+    "cell": "C89",
+    "value": 1.5
+  },
+  {
+    "sheet": "start",
+    "cell": "C90",
+    "value": 2.2
+  },
+  {
+    "sheet": "start",
+    "cell": "C91",
+    "value": 1.2
+  },
+  {
+    "sheet": "start",
+    "cell": "C94",
+    "value": 0.2
+  },
+  {
+    "sheet": "start",
+    "cell": "C95",
+    "value": 1
+  },
+  {
+    "sheet": "start",
+    "cell": "C97",
+    "value": 3
+  },
+  {
+    "sheet": "start",
+    "cell": "C100",
+    "value": 5
+  },
+  {
+    "sheet": "start",
+    "cell": "G64",
+    "value": 10
+  },
+  {
+    "sheet": "start",
+    "cell": "G75",
+    "value": 10
+  },
+  {
+    "sheet": "mq_current_status",
+    "cell": "L3",
+    "value": 1.1
+  },
+  {
+    "sheet": "mq_current_status",
+    "cell": "Q3",
+    "value": 320
+  },
+  {
+    "sheet": "profit",
+    "cell": "B3",
+    "value": 25
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C13",
+    "value": 4.3
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C16",
+    "value": 2
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C17",
+    "value": 5
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C18",
+    "value": 5.6
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C21",
+    "value": 1.4
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C23",
+    "value": 2.3
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C24",
+    "value": 1.5
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C25",
+    "value": 3.5
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C26",
+    "value": 3
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C31",
+    "value": 1.7
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C32",
+    "value": 3
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C33",
+    "value": 1.5
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C36",
+    "value": 0.4
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C37",
+    "value": 1
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C39",
+    "value": 3
+  },
+  {
+    "sheet": "expenses",
+    "cell": "F9",
+    "value": 6
+  },
+  {
+    "sheet": "expenses",
+    "cell": "I9",
+    "value": 4
+  },
+  {
+    "sheet": "expenses",
+    "cell": "I11",
+    "value": 15
+  },
+  {
+    "sheet": "expenses",
+    "cell": "I17",
+    "value": 6
+  },
+  {
+    "sheet": "expenses",
+    "cell": "I18",
+    "value": 12
+  },
+  {
+    "sheet": "expenses",
+    "cell": "L9",
+    "value": 4
+  },
+  {
+    "sheet": "salary",
+    "cell": "C6",
+    "value": 3.5
+  },
+  {
+    "sheet": "salary",
+    "cell": "D6",
+    "value": 3
+  },
+  {
+    "sheet": "salary",
+    "cell": "C7",
+    "value": 3.3
+  },
+  {
+    "sheet": "salary",
+    "cell": "D7",
+    "value": 4
+  },
+  {
+    "sheet": "salary",
+    "cell": "C8",
+    "value": 3
+  },
+  {
+    "sheet": "salary",
+    "cell": "D8",
+    "value": 3
+  },
+  {
+    "sheet": "salary",
+    "cell": "H6",
+    "value": 0.5
+  },
+  {
+    "sheet": "salary",
+    "cell": "I6",
+    "value": 2
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "C6",
+    "value": 4
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "C7",
+    "value": 3.5
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "C8",
+    "value": 3.1
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "D8",
+    "value": 6
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "D7",
+    "value": 4
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "D6",
+    "value": 3
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "C11",
+    "value": 6.9
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "I8",
+    "value": 4
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "I10",
+    "value": 13
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "L10",
+    "value": -5
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "L12",
+    "value": 58
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "L18",
+    "value": 140
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "C8",
+    "value": 370000
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "D8",
+    "value": 350
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "E8",
+    "value": 1000000
+  },
+  {
+    "sheet": "salary",
+    "cell": "D15",
+    "value": 8
+  },
+  {
+    "sheet": "salary",
+    "cell": "I15",
+    "value": 1
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "D15",
+    "value": 9
+  },
+  {
+    "sheet": "start",
+    "cell": "C1",
+    "value": "ひながた"
+  },
+  {
+    "sheet": "start",
+    "cell": "B2",
+    "value": "2024/11/01"
+  },
+  {
+    "sheet": "start",
+    "cell": "D14",
+    "value": 3
+  },
+  {
+    "sheet": "start",
+    "cell": "C16",
+    "value": 0.5
+  },
+  {
+    "sheet": "start",
+    "cell": "D27",
+    "value": 5
+  },
+  {
+    "sheet": "start",
+    "cell": "D28",
+    "value": 12
+  },
+  {
+    "sheet": "start",
+    "cell": "C41",
+    "value": 2
+  },
+  {
+    "sheet": "start",
+    "cell": "D43",
+    "value": 0.2
+  },
+  {
+    "sheet": "start",
+    "cell": "D44",
+    "value": 1.3
+  },
+  {
+    "sheet": "start",
+    "cell": "D48",
+    "value": -5
+  },
+  {
+    "sheet": "start",
+    "cell": "D50",
+    "value": 35
+  },
+  {
+    "sheet": "start",
+    "cell": "D56",
+    "value": 120
+  },
+  {
+    "sheet": "start",
+    "cell": "D69",
+    "value": 6
+  },
+  {
+    "sheet": "start",
+    "cell": "D70",
+    "value": 1.1
+  },
+  {
+    "sheet": "start",
+    "cell": "D83",
+    "value": 3.3
+  },
+  {
+    "sheet": "start",
+    "cell": "D84",
+    "value": 3
+  },
+  {
+    "sheet": "mq_current_status",
+    "cell": "L13",
+    "value": 11
+  },
+  {
+    "sheet": "mq_current_status",
+    "cell": "Q13",
+    "value": 11
+  },
+  {
+    "sheet": "profit",
+    "cell": "I3",
+    "value": 10
+  },
+  {
+    "sheet": "profit",
+    "cell": "B4",
+    "value": 10
+  },
+  {
+    "sheet": "salary",
+    "cell": "B6",
+    "value": "社員１"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B7",
+    "value": "社員２"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B8",
+    "value": "社員3"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B9",
+    "value": "社員4"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B10",
+    "value": "社員5"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B11",
+    "value": "社員6"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B12",
+    "value": "社員7"
+  },
+  {
+    "sheet": "salary",
+    "cell": "B13",
+    "value": "社員8"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G6",
+    "value": "パート１"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G7",
+    "value": "パート２"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G8",
+    "value": "パート３"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G9",
+    "value": "パート４"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G10",
+    "value": "パート５"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G11",
+    "value": "アルバイト１"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G12",
+    "value": "アルバイト２"
+  },
+  {
+    "sheet": "salary",
+    "cell": "G13",
+    "value": "アルバイト３"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L6",
+    "value": "派遣社員1"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L7",
+    "value": "派遣社員2"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L8",
+    "value": "派遣社員3"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L9",
+    "value": "派遣社員4"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L10",
+    "value": "派遣社員5"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L11",
+    "value": "派遣社員6"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L12",
+    "value": "契約社員１"
+  },
+  {
+    "sheet": "salary",
+    "cell": "L13",
+    "value": "契約社員２"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B5",
+    "value": "電力費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B6",
+    "value": "動力費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B7",
+    "value": "ガス光熱費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B8",
+    "value": "燃料費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B9",
+    "value": "上水道費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B10",
+    "value": "下水道費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B11",
+    "value": "車輌費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C11",
+    "value": 2.5
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B12",
+    "value": "家賃地代"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "C12",
+    "value": 8
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B13",
+    "value": "賃貸料"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B14",
+    "value": "研究開発費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B15",
+    "value": "調査研究費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B16",
+    "value": "租税公課"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B17",
+    "value": "接待交際費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B18",
+    "value": "支払手数料"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B19",
+    "value": "顧問料"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B20",
+    "value": "リース料"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B21",
+    "value": "通信交通費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B22",
+    "value": "出張費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B23",
+    "value": "消耗品費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B24",
+    "value": "事務用品費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B25",
+    "value": "その他経費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B26",
+    "value": "雑費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B27",
+    "value": "装飾費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B28",
+    "value": "衛生費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B29",
+    "value": "運賃"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B30",
+    "value": "荷造包装費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B31",
+    "value": "水道光熱費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B32",
+    "value": "旅費交通費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B33",
+    "value": "諸会費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B34",
+    "value": "管理諸費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B35",
+    "value": "保守管理費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B36",
+    "value": "図書費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B37",
+    "value": "修繕費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B38",
+    "value": "修繕維持費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B39",
+    "value": "保険料"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B40",
+    "value": "備品費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B41",
+    "value": "寄付金"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "B42",
+    "value": "減価償却費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E4",
+    "value": "テナント料"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E5",
+    "value": "試供品DM費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E6",
+    "value": "販売企画費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E7",
+    "value": "試供品DM費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E8",
+    "value": "販売促進費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E9",
+    "value": "広告宣伝費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E10",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E11",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "E12",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H8",
+    "value": "退職金"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H9",
+    "value": "賞与"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H10",
+    "value": "通勤手当"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H11",
+    "value": "役員報酬"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H12",
+    "value": "諸費用"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H13",
+    "value": "募集費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H14",
+    "value": "教育研修"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H15",
+    "value": "研修費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H16",
+    "value": "会議費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H17",
+    "value": "福利厚生費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H18",
+    "value": "法定福利費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H19",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H20",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H21",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H22",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "H23",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K5",
+    "value": "事業戦略費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K6",
+    "value": "社長戦略費Ａ"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K7",
+    "value": "社長戦略費Ｂ"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K8",
+    "value": "開拓手数料(外交員)"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K9",
+    "value": "消耗資材費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K10",
+    "value": "ロイヤリティー"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K11",
+    "value": "外注加工費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K12",
+    "value": "運賃荷造費"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K13",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K14",
+    "value": "予備"
+  },
+  {
+    "sheet": "expenses",
+    "cell": "K15",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B6",
+    "value": "社員１"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B7",
+    "value": "社員２"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B8",
+    "value": "社員３"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B9",
+    "value": "社員４"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B10",
+    "value": "社員５"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B11",
+    "value": "社員６"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B12",
+    "value": "社員７"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "B13",
+    "value": "社員８"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G6",
+    "value": "パート１"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G7",
+    "value": "パート２"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G8",
+    "value": "パート３"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G9",
+    "value": "パート４"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G10",
+    "value": "パート５"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G11",
+    "value": "アルバイト１"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G12",
+    "value": "アルバイト２"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "G13",
+    "value": "アルバイト３"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L6",
+    "value": "派遣社員1"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L7",
+    "value": "派遣社員2"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L8",
+    "value": "派遣社員3"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L9",
+    "value": "派遣社員4"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L10",
+    "value": "派遣社員5"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L11",
+    "value": "派遣社員6"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L12",
+    "value": "契約社員１"
+  },
+  {
+    "sheet": "manufacturing_labor",
+    "cell": "L13",
+    "value": "契約社員２"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B5",
+    "value": "電力費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B6",
+    "value": "動力費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B7",
+    "value": "ガス光熱費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B8",
+    "value": "燃料費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B9",
+    "value": "上水道費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B10",
+    "value": "下水道費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B11",
+    "value": "車輌費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B12",
+    "value": "家賃地代"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "C12",
+    "value": 2
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B13",
+    "value": "賃貸料"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B14",
+    "value": "研究開発費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B15",
+    "value": "調査研究費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B16",
+    "value": "租税公課"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B17",
+    "value": "接待交際費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B18",
+    "value": "支払手数料"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B19",
+    "value": "顧問料"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B20",
+    "value": "リース料"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B21",
+    "value": "通信交通費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B22",
+    "value": "出張費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B23",
+    "value": "消耗品費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B24",
+    "value": "事務用品費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B25",
+    "value": "その他経費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "C25",
+    "value": 3.5
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B26",
+    "value": "雑費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "C26",
+    "value": 4
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B27",
+    "value": "装飾費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B28",
+    "value": "衛生費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B29",
+    "value": "運賃"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B30",
+    "value": "荷造包装費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B31",
+    "value": "水道光熱費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B32",
+    "value": "旅費交通費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B33",
+    "value": "諸会費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B34",
+    "value": "管理諸費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B35",
+    "value": "保守管理費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B36",
+    "value": "図書費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B37",
+    "value": "修繕費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B38",
+    "value": "修繕維持費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B39",
+    "value": "保険料"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B40",
+    "value": "備品費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B41",
+    "value": "寄付金"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "B42",
+    "value": "減価償却費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E4",
+    "value": "販促企画費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "F4",
+    "value": 6
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E5",
+    "value": "消耗資材費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E6",
+    "value": "広告宣伝費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E7",
+    "value": "募集費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E8",
+    "value": "教育研修"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E9",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E10",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E11",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "E12",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H8",
+    "value": "賞与"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H9",
+    "value": "福利厚生費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "I9",
+    "value": 6
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H10",
+    "value": "法定福利費"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H11",
+    "value": "通勤手当"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H12",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H13",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H14",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "H15",
+    "value": "予備"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K5",
+    "value": "期首商品棚卸高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K6",
+    "value": "期首製品棚卸高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "L6",
+    "value": 0.2
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K7",
+    "value": "商品仕入高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K8",
+    "value": "製品仕入高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K9",
+    "value": "期末商品棚卸高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K10",
+    "value": "期末製品棚卸高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K11",
+    "value": "期首原材料棚卸高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K12",
+    "value": "原材料仕入高１"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K13",
+    "value": "原材料仕入高２"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K14",
+    "value": "原材料仕入高３"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K15",
+    "value": "仕掛品"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K16",
+    "value": "期末原材料棚卸高"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K17",
+    "value": "在庫"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K18",
+    "value": "外注"
+  },
+  {
+    "sheet": "manufacturing_expenses",
+    "cell": "K19",
+    "value": "外注加工費"
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "A8",
+    "value": "塗装工事"
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "A9",
+    "value": "リフォーム工事"
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "C9",
+    "value": 120000
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "D9",
+    "value": 145
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "E9",
+    "value": 340000
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "A10",
+    "value": "小工事"
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "C10",
+    "value": 21826
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "D10",
+    "value": 115
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "E10",
+    "value": 50000
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "A11",
+    "value": "板金工事"
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "C11",
+    "value": 174100
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "D11",
+    "value": 155
+  },
+  {
+    "sheet": "manufacturing_income",
+    "cell": "E11",
+    "value": 290000
+  }
+]

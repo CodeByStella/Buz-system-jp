@@ -578,3 +578,8 @@ export const useDataContext = (): DataContextType => {
   }
   return context;
 };
+
+// Optional variant that returns undefined instead of throwing when no provider
+export const useOptionalDataContext = (): DataContextType | undefined => {
+  return useContext(DataContext);
+};

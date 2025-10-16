@@ -4,5 +4,5 @@
  * Centralized export for all React contexts
  */
 
-export { DataProvider, useDataContext } from "./DataContext";
+export { DataProvider, useDataContext, useOptionalDataContext } from "./DataContext";
 

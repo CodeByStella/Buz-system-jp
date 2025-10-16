@@ -13,12 +13,16 @@ router.post("/signup", async (req, res) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "名前、メール、パスワードが必要です" });
+      return res
+        .status(400)
+        .json({ error: "名前、メール、パスワードが必要です" });
     }
 
     const result = await authService.signup(name, email, password);
     if (!result) {
-      return res.status(409).json({ error: "このメールは既に登録されています" });
+      return res
+        .status(409)
+        .json({ error: "このメールは既に登録されています" });
     }
 
     const { token, user } = result;

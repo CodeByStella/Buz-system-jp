@@ -8,7 +8,7 @@ class ExcelService {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "result.xlsx";
+    a.download = "短期計画PDCA.xlsx";
     a.style.display = "none";
     document.body.appendChild(a);
     a.click();

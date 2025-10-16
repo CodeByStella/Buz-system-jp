@@ -1,4 +1,4 @@
-import { FileSpreadsheet, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Button } from "./button";
 import { pdfService } from "@/lib/services/pdfService";
 

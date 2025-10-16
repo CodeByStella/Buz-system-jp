@@ -10,7 +10,7 @@ class PDFService {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "result.pdf";
+    a.download = "短期計画PDCA.pdf";
     a.style.display = "none";
     document.body.appendChild(a);
     a.click();

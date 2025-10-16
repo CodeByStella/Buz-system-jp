@@ -2,7 +2,6 @@
 export { default as authService } from "./authService";
 export { default as userService } from "./userService";
 export { default as adminService } from "./adminService";
-export { default as pdfService } from "./pdfService";
 
 // Export types
 export type { LoginRequest, LoginResponse, User } from "./authService";
@@ -11,4 +10,3 @@ export type {
   ParameterUpdateRequest,
   ParameterCreateRequest,
 } from "./adminService";
-export type { PdfGenerateRequest, PdfGenerateResponse } from "./pdfService";

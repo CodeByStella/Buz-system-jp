@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "db:seed": "tsx scripts/seed-mongo.ts"
   },
@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^2.5.1",
     "mongoose": "^8.4.1",
+    "tsconfig-paths": "^4.2.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/node": "^20",
     "nodemon": "^3.1.10",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.6.2",
     "typescript": "^5"
   }

@@ -139,7 +139,10 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       !Array.isArray(inputValue) &&
       (typeof inputValue === "string" || typeof inputValue === "number")
     ) {
-      inputValue = renderValue(inputValue as string | number);
+      // Only apply renderValue to complete numbers, not intermediate states like "12."
+      if (typeof inputValue === "number" || (typeof inputValue === "string" && /^-?\d+\.?\d*$/.test(inputValue) && !inputValue.endsWith("."))) {
+        inputValue = renderValue(inputValue as string | number);
+      }
     }
 
     // Check if the value is negative for styling
@@ -171,7 +174,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       const rawString = String(inputValue);
       // Only attempt to format if string contains only digits, optional minus, commas, and a single dot
       const numericLikePattern =
-        /^-?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?$|^-?[0-9]*(?:\.[0-9]+)?$/;
+        /^-?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]*)?$|^-?[0-9]*(?:\.[0-9]*)?$/;
       const canFormat =
         typeof inputValue === "number" || numericLikePattern.test(rawString);
       if (canFormat) {
@@ -180,13 +183,13 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
             ? inputValue
             : parseFloat(rawString.replace(/,/g, ""));
         if (!isNaN(num)) {
-          // Preserve decimals if present
+          // Preserve decimals if present, including intermediate states like "12."
           const [, decPart] = rawString.split(".");
           const formattedInt = new Intl.NumberFormat(undefined).format(
             Math.trunc(num)
           );
           inputValue =
-            decPart !== undefined && decPart !== ""
+            decPart !== undefined
               ? `${formattedInt}.${decPart}`
               : formattedInt;
         }
@@ -249,10 +252,25 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
           const raw = useThousandsFormatting
             ? e.target.value.replace(/,/g, "")
             : e.target.value;
-          let newValue = parseFloat(raw) || 0;
+          
+          // Allow intermediate decimal input (e.g., "12." should be preserved)
+          let newValue: number | string = raw;
+          
+          // Only parse as float if the input is a complete number or empty
+          if (raw === "" || raw === "-" || /^-?\d+\.?\d*$/.test(raw)) {
+            const parsed = parseFloat(raw);
+            if (!isNaN(parsed)) {
+              newValue = parsed;
+            } else if (raw === "" || raw === "-") {
+              newValue = 0;
+            } else {
+              // Keep the raw string for intermediate states like "12."
+              newValue = raw;
+            }
+          }
 
           // Apply inverse transformation if provided (e.g., divide by 100 for percentages)
-          if (inverseRenderValue) {
+          if (inverseRenderValue && typeof newValue === "number") {
             newValue = inverseRenderValue(newValue);
           }
 

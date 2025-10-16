@@ -152,10 +152,6 @@ export const exportExcel = async (req: Request, res: Response) => {
       zip.updateFile("xl/workbook.xml", Buffer.from(modifiedWorkbookXml, "utf8"));
     }
 
-    // Save JSON data for debugging
-    const jsonSavePath = path.join(process.cwd(), "templates/data_export.json");
-    writeFileSync(jsonSavePath, JSON.stringify(data4Exp, null, 2), "utf-8");
-
     // Generate Excel buffer
     const buffer = zip.toBuffer();
 

@@ -15,6 +15,7 @@ import { CustomTextarea } from "@/components/ui/customTextarea";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
+import { PDFExportButton } from "@/components/ui/pdfExportButton";
 
 export default function MQCurrentSheet() {
   const {
@@ -183,16 +184,7 @@ export default function MQCurrentSheet() {
             全入力クリア
           </Button>
           <ExcelExportButton />
-          <Button
-            variant="outline"
-            leftIcon={FileText}
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              /* TODO: implement export to PDF logic */
-            }}
-          >
-            PDF出力
-          </Button>
+          <PDFExportButton />
         </div>
       </div>
       <div className="grid grid-rows-4 gap-2 flex-1 min-h-0">

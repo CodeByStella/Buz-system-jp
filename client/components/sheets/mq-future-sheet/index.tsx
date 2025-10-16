@@ -15,6 +15,7 @@ import { FileText, Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
+import { PDFExportButton } from "@/components/ui/pdfExportButton";
 
 export default function MQFutureSheet() {
   const {
@@ -225,17 +226,7 @@ export default function MQFutureSheet() {
             全入力クリア
           </Button>
           <ExcelExportButton />
-          <Button
-            variant="outline"
-            leftIcon={FileText}
-            className="flex-1 sm:flex-none border-red-500 text-red-700 hover:bg-red-50 text-sm sm:text-base"
-            onClick={() => {
-              /* TODO: implement export to PDF logic */
-            }}
-          >
-            <span className="hidden sm:inline">PDF出力</span>
-            <span className="sm:hidden">PDF</span>
-          </Button>
+          <PDFExportButton />
         </div>
       </div>
 

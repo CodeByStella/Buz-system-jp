@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth";
 import adminRoutes from "./routes/admin";
 import userRoutes from "./routes/user";
 import { exportExcel } from "./routes/exportExcel";
+import { exportPDF } from "./routes/exportPDF";
 // import pdfRoutes from './routes/pdf'
 
 const app = express();
@@ -52,6 +53,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
 app.get("/api/export-excel", exportExcel);
+app.get("/api/export-pdf", exportPDF);
 
 // app.use('/api/pdf', pdfRoutes)
 

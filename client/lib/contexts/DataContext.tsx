@@ -85,6 +85,7 @@ export const DataProvider: React.FC<{
   }, []);
 
   const fetchUserInputs = async () => {
+    console.log("fetching user input.............")
     try {
       setLoading(true);
       setErrorMessage(null);

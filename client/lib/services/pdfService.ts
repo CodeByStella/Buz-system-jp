@@ -1,44 +1,23 @@
-import axiosService from '../axios-service';
-
-// PDF Types
-export interface PdfGenerateRequest {
-  sheetName: string;
-  options?: {
-    includeCharts?: boolean;
-    includeTables?: boolean;
-    format?: 'A4' | 'A3' | 'Letter';
-  };
-}
-
-export interface PdfGenerateResponse {
-  pdfUrl: string;
-  fileName: string;
-  generatedAt: string;
-  fileSize: number;
-}
+import axiosService from "../axios-service";
 
 // PDF Service
-class PdfService {
-  async generatePdf(params: PdfGenerateRequest): Promise<PdfGenerateResponse> {
-    return axiosService.post<PdfGenerateResponse>('/api/pdf/generate', params);
-  }
-
-  async downloadPdf(pdfUrl: string): Promise<Blob> {
-    const response = await axiosService.get(pdfUrl, {
-      responseType: 'blob'
+class PDFService {
+  async exportPDF(): Promise<void> {
+    // Use axiosService.get with { responseType: "blob" } to properly handle file downloads
+    const blob = await axiosService.get<Blob>("/api/export-pdf", {
+      responseType: "blob",
     });
-    return response;
-  }
-
-  async getPdfHistory(): Promise<PdfGenerateResponse[]> {
-    return axiosService.get<PdfGenerateResponse[]>('/api/pdf/history');
-  }
-
-  async deletePdf(pdfId: string): Promise<void> {
-    return axiosService.delete(`/api/pdf/${pdfId}`);
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "短期計画PDCA.pdf";
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   }
 }
 
 // Export singleton instance
-export const pdfService = new PdfService();
-export default pdfService;
+export const pdfService = new PDFService();

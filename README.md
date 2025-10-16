@@ -40,10 +40,11 @@
 
 - **フロントエンド**: Next.js 14 (App Router), TypeScript, Tailwind CSS
 - **バックエンド**: Node.js + Express (独立サーバー)
-- **データベース**: PostgreSQL
-- **ORM**: Prisma
+- **データベース**: MongoDB
+- **ODM**: Mongoose
 - **認証**: JWT
 - **PDF生成**: jsPDF
+- **Excel処理**: ExcelJS
 - **UIコンポーネント**: shadcn/ui
 - **開発**: フロントエンドとバックエンドの分離アーキテクチャ
 
@@ -51,7 +52,7 @@
 
 ### 前提条件
 - Node.js 18以上
-- PostgreSQL 12以上
+- MongoDB 4.4以上
 - npm または yarn
 
 ### インストール
@@ -101,11 +102,8 @@ cp client/env.example client/.env.local
 
 4. データベースをセットアップ
 ```bash
-# Prismaクライアントを生成
-npm run db:generate
-
-# データベースマイグレーションを実行
-npm run db:push
+# MongoDBを起動（ローカル環境の場合）
+mongod
 
 # サンプルデータを作成
 npm run db:seed
@@ -140,11 +138,13 @@ npm run dev:client
 │   │   ├── auth.ts       # 認証
 │   │   ├── admin.ts      # 管理者機能
 │   │   ├── user.ts       # ユーザー機能
-│   │   ├── calculate.ts  # 計算
-│   │   └── pdf.ts        # PDF生成
+│   │   ├── exportExcel.ts # Excel出力
+│   │   └── exportPDF.ts  # PDF生成
 │   ├── middleware/       # ミドルウェア
+│   ├── models/          # MongoDBモデル
+│   ├── services/        # ビジネスロジック
+│   ├── repositories/    # データアクセス層
 │   ├── lib/             # ユーティリティ
-│   ├── prisma/          # データベーススキーマ
 │   └── package.json     # サーバー依存関係
 ├── client/              # Next.js フロントエンド
 │   ├── app/             # Next.js App Router
@@ -162,24 +162,30 @@ npm run dev:client
 ## データベーススキーマ
 
 ### Users
-- id: ユーザーID
+- _id: ユーザーID (ObjectId)
 - email: メールアドレス
 - name: 名前
 - password: ハッシュ化されたパスワード
 - role: ロール（ADMIN/USER）
+- createdAt: 作成日時
+- updatedAt: 更新日時
 
 ### GlobalParameters
-- id: パラメータID
+- _id: パラメータID (ObjectId)
 - key: パラメータキー
 - value: パラメータ値
 - description: 説明
+- createdAt: 作成日時
+- updatedAt: 更新日時
 
-### UserInputs
-- id: 入力ID
-- userId: ユーザーID
+### Data (UserInputs)
+- _id: 入力ID (ObjectId)
+- user: ユーザーID
 - sheet: シート名
 - cellKey: セルキー
 - value: 入力値
+- createdAt: 作成日時
+- updatedAt: 更新日時
 
 ## API エンドポイント
 
@@ -198,7 +204,8 @@ npm run dev:client
 - `GET /api/user/inputs` - ユーザー入力データ取得
 - `POST /api/user/inputs` - ユーザー入力データ保存
 - `POST /api/calculate` - 計算実行
-- `POST /api/pdf/generate` - PDF生成
+- `POST /api/export/pdf` - PDF生成
+- `POST /api/export/excel` - Excel生成
 
 ### ヘルスチェック
 - `GET /api/health` - サーバー状態確認
@@ -224,15 +231,17 @@ TypeScriptで実装された純粋関数ベースの計算エンジンです。
 
 1. 環境変数の設定
 ```bash
-DATABASE_URL="postgresql://username:password@host:port/database"
+MONGODB_URI="mongodb+srv://username:password@cluster.mongodb.net/business_system"
 JWT_SECRET="your-production-jwt-secret"
-NEXTAUTH_URL="https://your-domain.com"
-NEXTAUTH_SECRET="your-nextauth-secret"
+FRONTEND_URL="https://your-domain.com"
+CONVERTAPI_SECRET="your-convertapi-secret"
 ```
 
-2. データベースマイグレーション
+2. データベースセットアップ
 ```bash
-npm run db:migrate
+# MongoDBクラスターに接続してデータベースを作成
+# サンプルデータを投入
+npm run db:seed
 ```
 
 3. アプリケーションのビルド

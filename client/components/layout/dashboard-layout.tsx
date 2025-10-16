@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { authService } from "@/lib/services";
-import { DataProvider, useDataContext } from "@/lib/contexts/DataContext";
+import { useDataContext } from "@/lib/contexts/DataContext";
 import { Toast } from "@/components/ui/toast";
 import { Menu } from "lucide-react";
 
@@ -160,15 +160,13 @@ export default function DashboardLayout() {
   }
 
   return (
-    <DataProvider>
-      <DashboardContent
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        renderContent={renderContent}
-      />
-    </DataProvider>
+    <DashboardContent
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      sidebarOpen={sidebarOpen}
+      setSidebarOpen={setSidebarOpen}
+      renderContent={renderContent}
+    />
   );
 }
 

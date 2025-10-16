@@ -1,13 +1,13 @@
-import mongoose, { Schema, InferSchemaType } from "mongoose";
+import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
 
 export interface DataType {
   sheet: string;
   cell: string;
-  value?: number|string;
+  value?: number | string;
   user: string;
 }
 
-const DataSchema = new Schema<DataType & Document>(
+const DataSchema = new Schema(
   {
     sheet: { type: String, required: true },
     cell: { type: String, required: true },
@@ -24,5 +24,5 @@ export type DataDocument = InferSchemaType<typeof DataSchema> & {
   _id: mongoose.Types.ObjectId;
 };
 
-export const Data =
+export const Data: Model<DataDocument> =
   mongoose.models.Data || mongoose.model("Data", DataSchema, "data");

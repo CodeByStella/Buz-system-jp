@@ -21,6 +21,21 @@ export interface User {
   name?: string;
 }
 
+export interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface SignupResponse {
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+  token?: string;
+}
+
 // Auth Service
 class AuthService {
   async login(credentials: LoginRequest): Promise<LoginResponse> {
@@ -31,6 +46,14 @@ class AuthService {
       axiosService.setAuthToken(response.token);
     }
     
+    return response;
+  }
+
+  async signup(payload: SignupRequest): Promise<SignupResponse> {
+    const response = await axiosService.post<SignupResponse>('/api/auth/signup', payload);
+    if (response.token && typeof window !== 'undefined') {
+      axiosService.setAuthToken(response.token);
+    }
     return response;
   }
 

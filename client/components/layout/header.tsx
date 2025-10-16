@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { authService } from "@/lib/services";
-import { useDataContext } from "@/lib/contexts";
+import { useDataContext, useOptionalDataContext } from "@/lib/contexts";
 
 interface User {
   id: string;
@@ -20,8 +20,8 @@ export function Header() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { getCell } = useDataContext();
-  const companyName = getCell("start", "C1");
+  const optionalCtx = useOptionalDataContext();
+  const companyName = optionalCtx?.getCell("start", "C1");
 
   useEffect(() => {
     fetchUser();
@@ -110,7 +110,7 @@ export function Header() {
           )}
           <div className="flex items-center space-x-2">
             <span className="p-2 text-xs bg-red-50 text-red-600 border border-red-200 font-medium">
-              {companyName ? String(companyName) : ""}
+              {companyName && companyName !== "C1" ? String(companyName) : ""}
             </span>
             <User className="h-4 w-4 text-gray-500" />
             <span className="text-sm text-gray-700">{user?.name}</span>

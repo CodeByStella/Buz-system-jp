@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -14,8 +13,10 @@ import {
 } from "@/components/ui/card";
 import { authService } from "@/lib/services";
 import Image from "next/image";
+import Link from "next/link";
 
-export function LoginForm() {
+export function SignupForm() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,11 +29,13 @@ export function LoginForm() {
     setError("");
 
     try {
-      const data = await authService.login({ email, password });
+      await authService.signup({ name, email, password });
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "ログインに失敗しました");
+      setError(
+        err instanceof Error ? err.message : "サインアップに失敗しました"
+      );
     } finally {
       setLoading(false);
     }
@@ -63,13 +66,26 @@ export function LoginForm() {
       </div>
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>ログイン</CardTitle>
+          <CardTitle>新規登録</CardTitle>
           <CardDescription>
-            ビジネスシステムにアクセスするためにログインしてください
+            初めての方はアカウントを作成してください
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium mb-1">
+                お名前
+              </label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="例: 山田 太郎"
+              />
+            </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-1">
                 メールアドレス
@@ -101,17 +117,21 @@ export function LoginForm() {
             </div>
             {error && <div className="text-red-600 text-sm">{error}</div>}
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "ログイン中..." : "ログイン"}
+              {loading ? "登録中..." : "登録"}
             </Button>
           </form>
+          <div className="mt-4 text-sm text-gray-600">
+            すでにアカウントをお持ちですか？
+            <Link href="/login" className="text-blue-600 underline ml-1">
+              ログイン
+            </Link>
+          </div>
         </CardContent>
       </Card>
-      <div className="mt-4 text-sm text-gray-600">
-        アカウントをお持ちでないですか？
-        <Link href="/signup" className="text-blue-600 underline ml-1">
-          新規登録
-        </Link>
-      </div>
     </div>
   );
 }
+
+export default SignupForm;
+
+

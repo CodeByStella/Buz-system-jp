@@ -75,10 +75,14 @@ class AxiosService {
       switch (status) {
         case 401:
           errorMessage = '認証が必要です。ログインしてください。';
-          // Clear auth token and redirect to login
+          // Clear auth token and redirect to login unless already on auth pages
           if (typeof window !== 'undefined') {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            const path = window.location.pathname;
+            const isAuthPage = path === '/login' || path === '/signup';
+            if (!isAuthPage) {
+              window.location.href = '/login';
+            }
           }
           break;
         case 403:

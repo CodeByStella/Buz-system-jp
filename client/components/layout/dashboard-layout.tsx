@@ -6,6 +6,7 @@ import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { authService } from "@/lib/services";
 import { useDataContext } from "@/lib/contexts/DataContext";
+import { DataProvider } from "@/lib/contexts";
 import { Toast } from "@/components/ui/toast";
 import { Menu } from "lucide-react";
 
@@ -160,13 +161,15 @@ export default function DashboardLayout() {
   }
 
   return (
-    <DashboardContent
-      activeTab={activeTab}
-      setActiveTab={setActiveTab}
-      sidebarOpen={sidebarOpen}
-      setSidebarOpen={setSidebarOpen}
-      renderContent={renderContent}
-    />
+    <DataProvider>
+      <DashboardContent
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        renderContent={renderContent}
+      />
+    </DataProvider>
   );
 }
 

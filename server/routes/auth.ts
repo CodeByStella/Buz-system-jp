@@ -7,6 +7,38 @@ const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret";
 
+// Signup
+router.post("/signup", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "名前、メール、パスワードが必要です" });
+    }
+
+    const result = await authService.signup(name, email, password);
+    if (!result) {
+      return res.status(409).json({ error: "このメールは既に登録されています" });
+    }
+
+    const { token, user } = result;
+
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("auth-token", token, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "lax" : "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
+    res.status(201).json({ user });
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ error: "サインアップに失敗しました" });
+  }
+});
+
 // Login
 router.post("/login", async (req, res) => {
   try {

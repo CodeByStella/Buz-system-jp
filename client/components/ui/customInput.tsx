@@ -46,6 +46,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       top: number;
       left: number;
     } | null>(null);
+    const [localValue, setLocalValue] = React.useState<string>("");
     const inputRef = React.useRef<HTMLInputElement>(null);
     const isInteractive = !props.disabled && !props.readOnly;
 
@@ -104,12 +105,24 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     };
 
     // Determine the actual value to display
-    // Priority: contextValue (from DataContext) > value prop
-    let inputValue =
-      hasContext && contextValue !== undefined ? contextValue : value;
-    // If value is undefined or null, show blank
-    inputValue =
-      inputValue === undefined || inputValue === null ? "" : inputValue;
+    // When focused, use local value; otherwise use context/prop value
+    let inputValue: string | number;
+    if (isFocused && localValue !== "") {
+      inputValue = localValue;
+    } else {
+      // Priority: contextValue (from DataContext) > value prop
+      const rawValue = hasContext && contextValue !== undefined ? contextValue : value;
+      // If value is undefined or null, show blank
+      if (rawValue === undefined || rawValue === null) {
+        inputValue = "";
+      } else if (Array.isArray(rawValue)) {
+        inputValue = rawValue.join(", ");
+      } else if (typeof rawValue === "string" || typeof rawValue === "number") {
+        inputValue = rawValue;
+      } else {
+        inputValue = String(rawValue);
+      }
+    }
 
     // Sanitize error values before setting on HTML input
     if (typeof inputValue === "string") {
@@ -140,7 +153,12 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       (typeof inputValue === "string" || typeof inputValue === "number")
     ) {
       // Only apply renderValue to complete numbers, not intermediate states like "12."
-      if (typeof inputValue === "number" || (typeof inputValue === "string" && /^-?\d+\.?\d*$/.test(inputValue) && !inputValue.endsWith("."))) {
+      if (
+        typeof inputValue === "number" ||
+        (typeof inputValue === "string" &&
+          /^-?\d+\.?\d*$/.test(inputValue) &&
+          !inputValue.endsWith("."))
+      ) {
         inputValue = renderValue(inputValue as string | number);
       }
     }
@@ -189,9 +207,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
             Math.trunc(num)
           );
           inputValue =
-            decPart !== undefined
-              ? `${formattedInt}.${decPart}`
-              : formattedInt;
+            decPart !== undefined ? `${formattedInt}.${decPart}` : formattedInt;
         }
       }
     }
@@ -227,31 +243,14 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
       setIsFocused(false);
       setTooltipPosition(null);
-      props.onBlur?.(e);
-    };
-
-    // Update position on scroll or resize
-    React.useEffect(() => {
-      if (isFocused && tip) {
-        updateTooltipPosition();
-        window.addEventListener("scroll", updateTooltipPosition, true);
-        window.addEventListener("resize", updateTooltipPosition);
-
-        return () => {
-          window.removeEventListener("scroll", updateTooltipPosition, true);
-          window.removeEventListener("resize", updateTooltipPosition);
-        };
-      }
-    }, [isFocused, tip, updateTooltipPosition]);
-
-    // Handle change event - use context if available, otherwise use prop
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (hasContext && contextOnChange) {
+      
+      // Process and save the final value when user leaves the input
+      if (hasContext && contextOnChange && localValue !== "") {
         if (type === "number") {
           // Handle numeric input
           const raw = useThousandsFormatting
-            ? e.target.value.replace(/,/g, "")
-            : e.target.value;
+            ? localValue.replace(/,/g, "")
+            : localValue;
           
           // Allow intermediate decimal input (e.g., "12." should be preserved)
           let newValue: number | string = raw;
@@ -277,9 +276,49 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
           contextOnChange(sheet!, cell!, newValue);
         } else {
           // Handle string/text input
-          contextOnChange(sheet!, cell!, e.target.value);
+          contextOnChange(sheet!, cell!, localValue);
         }
-      } else if (onChange) {
+      }
+      
+      // Clear local value after processing
+      setLocalValue("");
+      
+      props.onBlur?.(e);
+    };
+
+    // Update position on scroll or resize
+    React.useEffect(() => {
+      if (isFocused && tip) {
+        updateTooltipPosition();
+        window.addEventListener("scroll", updateTooltipPosition, true);
+        window.addEventListener("resize", updateTooltipPosition);
+
+        return () => {
+          window.removeEventListener("scroll", updateTooltipPosition, true);
+          window.removeEventListener("resize", updateTooltipPosition);
+        };
+      }
+    }, [isFocused, tip, updateTooltipPosition]);
+
+    // Initialize local value when context value changes (but not when focused)
+    React.useEffect(() => {
+      if (!isFocused) {
+        const currentValue = hasContext && contextValue !== undefined ? contextValue : value;
+        if (currentValue !== undefined && currentValue !== null) {
+          setLocalValue(String(currentValue));
+        } else {
+          setLocalValue("");
+        }
+      }
+    }, [contextValue, value, hasContext, isFocused]);
+
+    // Handle change event - only update local state, don't trigger context changes
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Store the raw input value in local state
+      setLocalValue(e.target.value);
+      
+      // Call onChange prop if provided (for non-context usage)
+      if (!hasContext && onChange) {
         onChange(e);
       }
     };

@@ -69,7 +69,10 @@ class AuthService {
   }
 
   async getCurrentUser(): Promise<User> {
-    return axiosService.get<User>('/api/auth/me');
+    const res = await axiosService.get<{ user: User } | User>('/api/auth/me');
+    // The server returns { user: {...} }
+    if ((res as any)?.user) return (res as any).user as User;
+    return res as User;
   }
 
   // Token management

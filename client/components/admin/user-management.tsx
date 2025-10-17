@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import * as ReactDOM from "react-dom";
 import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/ui/customInput";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { adminService } from "@/lib/services";
+import { Toast } from "@/components/ui/toast";
 import { Plus, Edit, Trash2, Pause, Play, Eye, EyeOff } from "lucide-react";
 
 interface User {
@@ -47,10 +49,14 @@ export function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [toast, setToast] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
 
   // Create user form state
   const [createForm, setCreateForm] = useState<CreateUserRequest>({
@@ -62,8 +68,9 @@ export function UserManagement() {
     subscriptionEndAt: "",
   });
 
-  // Edit user form state
-  const [editForm, setEditForm] = useState<Partial<User>>({});
+  // Edit user form state (allow editing email/password too)
+  type EditUserForm = Partial<User> & { email?: string; password?: string };
+  const [editForm, setEditForm] = useState<EditUserForm>({});
 
   // Confirmation dialogs
   const [confirmAction, setConfirmAction] = useState<{
@@ -101,7 +108,7 @@ export function UserManagement() {
   const handleCreateUser = async () => {
     try {
       if (!createForm.email || !createForm.password) {
-        alert("メールアドレスとパスワードは必須です");
+        setToast({ type: "error", message: "メールアドレスとパスワードは必須です" });
         return;
       }
 
@@ -109,9 +116,10 @@ export function UserManagement() {
       setUsers([newUser, ...users]);
       setShowCreateForm(false);
       setCreateForm({ email: "", password: "", name: "", description: "", subscriptionStartAt: "", subscriptionEndAt: "" });
+      setToast({ type: "success", message: "ユーザーを作成しました" });
     } catch (error) {
       console.error("Failed to create user:", error);
-      alert("ユーザーの作成に失敗しました");
+      setToast({ type: "error", message: "ユーザーの作成に失敗しました" });
     }
   };
 
@@ -123,7 +131,7 @@ export function UserManagement() {
       setEditForm({});
     } catch (error) {
       console.error("Failed to update user:", error);
-      alert("ユーザーの更新に失敗しました");
+      setToast({ type: "error", message: "ユーザーの更新に失敗しました" });
     }
   };
 
@@ -134,7 +142,7 @@ export function UserManagement() {
       setConfirmAction(null);
     } catch (error) {
       console.error("Failed to delete user:", error);
-      alert("ユーザーの削除に失敗しました");
+      setToast({ type: "error", message: "ユーザーの削除に失敗しました" });
     }
   };
 
@@ -152,18 +160,20 @@ export function UserManagement() {
       setConfirmAction(null);
     } catch (error) {
       console.error("Failed to update user status:", error);
-      alert("ユーザー状態の更新に失敗しました");
+      setToast({ type: "error", message: "ユーザー状態の更新に失敗しました" });
     }
   };
 
   const startEdit = (user: User) => {
     setEditing(user.id);
     setEditForm({
+      email: user.email,
       name: user.name || "",
       description: user.description || "",
       subscriptionStartAt: user.subscriptionStartAt || "",
       subscriptionEndAt: user.subscriptionEndAt || "",
     });
+    setShowEditForm(true);
   };
 
   const cancelEdit = () => {
@@ -218,6 +228,9 @@ export function UserManagement() {
 
   return (
     <div className="space-y-6">
+      {toast && (
+        <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />
+      )}
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -228,126 +241,15 @@ export function UserManagement() {
               </CardDescription>
             </div>
             <Button
+              leftIcon={Plus}
               onClick={() => setShowCreateForm(true)}
               className="flex items-center space-x-2"
             >
-              <Plus className="h-4 w-4" />
               <span>新規ユーザー</span>
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          {showCreateForm && (
-            <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-              <h3 className="text-lg font-semibold mb-4">新規ユーザー作成</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    メールアドレス *
-                  </label>
-                  <CustomInput
-                    type="email"
-                    value={createForm.email}
-                    onChange={(e) =>
-                      setCreateForm({ ...createForm, email: e.target.value })
-                    }
-                    placeholder="user@example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    パスワード *
-                  </label>
-                  <div className="flex space-x-2">
-                    <CustomInput
-                      type="password"
-                      value={createForm.password}
-                      onChange={(e) =>
-                        setCreateForm({
-                          ...createForm,
-                          password: e.target.value,
-                        })
-                      }
-                      placeholder="パスワード"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() =>
-                        setCreateForm({
-                          ...createForm,
-                          password: generatePassword(),
-                        })
-                      }
-                    >
-                      生成
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    名前（任意）
-                  </label>
-                  <CustomInput
-                    value={createForm.name}
-                    onChange={(e) =>
-                      setCreateForm({ ...createForm, name: e.target.value })
-                    }
-                    placeholder="山田 太郎"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    説明（任意）
-                  </label>
-                  <CustomInput
-                    value={createForm.description}
-                    onChange={(e) =>
-                      setCreateForm({
-                        ...createForm,
-                        description: e.target.value,
-                      })
-                    }
-                    placeholder="ユーザーの説明"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    開始日（任意）
-                  </label>
-                  <CustomInput
-                    type="date"
-                    value={createForm.subscriptionStartAt || ""}
-                    onChange={(e) =>
-                      setCreateForm({ ...createForm, subscriptionStartAt: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    終了日（任意）
-                  </label>
-                  <CustomInput
-                    type="date"
-                    value={createForm.subscriptionEndAt || ""}
-                    onChange={(e) =>
-                      setCreateForm({ ...createForm, subscriptionEndAt: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex space-x-2 mt-4">
-                <Button onClick={handleCreateUser}>作成</Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowCreateForm(false)}
-                >
-                  キャンセル
-                </Button>
-              </div>
-            </div>
-          )}
-
           <Table>
             <TableHeader>
               <TableRow>
@@ -367,33 +269,20 @@ export function UserManagement() {
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>
-                    {editing === user.id ? (
-                      <CustomInput
-                        value={editForm.name || ""}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, name: e.target.value })
-                        }
-                        placeholder="名前"
-                      />
-                    ) : (
-                      user.name || "-"
-                    )}
+                    {user.name || "-"}
                   </TableCell>
                   <TableCell>
-                    {editing === user.id ? (
-                      <CustomInput
-                        value={editForm.description || ""}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            description: e.target.value,
-                          })
-                        }
-                        placeholder="説明"
-                      />
-                    ) : (
-                      user.description || "-"
-                    )}
+                    {user.description || "-"}
+                  </TableCell>
+                  <TableCell>
+                    {user.subscriptionStartAt
+                      ? new Date(user.subscriptionStartAt).toLocaleDateString("ja-JP")
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {user.subscriptionEndAt
+                      ? new Date(user.subscriptionEndAt).toLocaleDateString("ja-JP")
+                      : "-"}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -433,63 +322,45 @@ export function UserManagement() {
                     {new Date(user.createdAt).toLocaleDateString("ja-JP")}
                   </TableCell>
                   <TableCell>
-                    {editing === user.id ? (
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          onClick={() => handleUpdateUser(user.id)}
-                        >
-                          保存
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={cancelEdit}
-                        >
-                          キャンセル
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex space-x-2">
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => startEdit(user)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      {user.status === "ACTIVE" ? (
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => startEdit(user)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        {user.status === "ACTIVE" ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              showConfirmation("pause", user.id, user.email)
-                            }
-                          >
-                            <Pause className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              showConfirmation("resume", user.id, user.email)
-                            }
-                          >
-                            <Play className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="destructive"
                           onClick={() =>
-                            showConfirmation("delete", user.id, user.email)
+                            showConfirmation("pause", user.id, user.email)
                           }
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Pause className="h-4 w-4" />
                         </Button>
-                      </div>
-                    )}
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            showConfirmation("resume", user.id, user.email)
+                          }
+                        >
+                          <Play className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() =>
+                          showConfirmation("delete", user.id, user.email)
+                        }
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -526,8 +397,8 @@ export function UserManagement() {
       </Card>
 
       {/* Confirmation Dialog */}
-      {confirmAction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      {confirmAction && typeof document !== "undefined" && ReactDOM.createPortal((
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">
               {confirmAction.type === "delete" && "ユーザーを削除しますか？"}
@@ -554,7 +425,186 @@ export function UserManagement() {
             </div>
           </div>
         </div>
-      )}
+      ), document.body)}
+
+      {/* Create User Modal */}
+      {showCreateForm && typeof document !== "undefined" && ReactDOM.createPortal((
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">新規ユーザー作成</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">メールアドレス *</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type="email"
+                    value={createForm.email}
+                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                    placeholder="user@example.com"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">パスワード *</label>
+                <div className="flex space-x-2">
+                  <div className="relative h-9 flex-1">
+                    <CustomInput
+                      type={showPassword ? "text" : "password"}
+                      className="pr-10"
+                      value={createForm.password}
+                      onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
+                      placeholder="パスワード"
+                    />
+                    <button
+                      type="button"
+                      aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <Button type="button" variant="outline" onClick={() => setCreateForm({ ...createForm, password: generatePassword() })}>
+                    生成
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">名前（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    value={createForm.name}
+                    onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                    placeholder="山田 太郎"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">説明（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    value={createForm.description}
+                    onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                    placeholder="ユーザーの説明"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">開始日（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type="date"
+                    value={createForm.subscriptionStartAt || ""}
+                    onChange={(e) => setCreateForm({ ...createForm, subscriptionStartAt: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">終了日（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type="date"
+                    value={createForm.subscriptionEndAt || ""}
+                    onChange={(e) => setCreateForm({ ...createForm, subscriptionEndAt: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button onClick={handleCreateUser}>作成</Button>
+              <Button variant="outline" onClick={() => setShowCreateForm(false)}>キャンセル</Button>
+            </div>
+          </div>
+        </div>
+      ), document.body)}
+
+      {/* Edit User Modal */}
+      {showEditForm && typeof document !== "undefined" && ReactDOM.createPortal((
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">ユーザー編集</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-1">メール</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type="email"
+                    value={(editForm as any).email || ""}
+                    onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                    placeholder="user@example.com"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">名前</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    value={editForm.name || ""}
+                    onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    placeholder="名前"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">説明</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    value={editForm.description || ""}
+                    onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                    placeholder="説明"
+                  />
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium mb-1">新しいパスワード（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type={showEditPassword ? "text" : "password"}
+                    className="pr-10"
+                    value={(editForm as any).password || ""}
+                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                    placeholder="新しいパスワードを入力"
+                  />
+                  <button
+                    type="button"
+                    aria-label={showEditPassword ? "パスワードを隠す" : "パスワードを表示"}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setShowEditPassword((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showEditPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">開始日（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type="date"
+                    value={(editForm.subscriptionStartAt as string) || ""}
+                    onChange={(e) => setEditForm({ ...editForm, subscriptionStartAt: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">終了日（任意）</label>
+                <div className="relative h-9">
+                  <CustomInput
+                    type="date"
+                    value={(editForm.subscriptionEndAt as string) || ""}
+                    onChange={(e) => setEditForm({ ...editForm, subscriptionEndAt: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 mt-6">
+              <Button onClick={() => { if (editing) handleUpdateUser(editing); setShowEditForm(false); }}>保存</Button>
+              <Button variant="outline" onClick={() => { setShowEditForm(false); cancelEdit(); }}>キャンセル</Button>
+            </div>
+          </div>
+        </div>
+      ), document.body)}
     </div>
   );
 }

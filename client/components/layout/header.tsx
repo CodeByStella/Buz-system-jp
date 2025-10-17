@@ -98,13 +98,11 @@ export function Header() {
             <Button
               variant="outline"
               size="sm"
-              onClick={goToAdminOrDashboard}
+              onClick={() => router.push(pathname?.startsWith("/admin") ? "/dashboard" : "/admin")}
               className="flex items-center space-x-1"
             >
               <span>
-                {pathname?.startsWith("/admin")
-                  ? "ダッシュボードへ"
-                  : "管理画面へ"}
+                {pathname?.startsWith("/admin") ? "ダッシュボードへ" : "管理画面へ"}
               </span>
             </Button>
           )}

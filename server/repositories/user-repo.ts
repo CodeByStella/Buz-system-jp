@@ -61,6 +61,8 @@ export const userRepository = {
     description?: string;
     subscriptionStartAt?: Date | null;
     subscriptionEndAt?: Date | null;
+    email?: string;
+    password?: string; // already hashed if provided
   }) {
     return User.findByIdAndUpdate(
       id,

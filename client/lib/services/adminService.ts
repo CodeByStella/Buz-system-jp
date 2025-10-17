@@ -28,6 +28,8 @@ export interface UpdateUserRequest {
   description?: string;
   subscriptionStartAt?: string | null;
   subscriptionEndAt?: string | null;
+  email?: string;
+  password?: string;
 }
 
 export interface UsersResponse {

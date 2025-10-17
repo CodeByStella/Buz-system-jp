@@ -13,6 +13,15 @@ export const authService = {
     if (user.status === 'PAUSED') {
       throw new Error("このアカウントは停止されています");
     }
+
+    // Check if subscription expired
+    if (user.subscriptionEndAt) {
+      const now = new Date();
+      const end = new Date(user.subscriptionEndAt as any);
+      if (!isNaN(end.getTime()) && end < now) {
+        throw new Error("サブスクリプションの有効期限が切れています");
+      }
+    }
     
     const ok = await verifyPassword(password, user.password);
     if (!ok) return null;

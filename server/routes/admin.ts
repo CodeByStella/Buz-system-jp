@@ -2,12 +2,29 @@ import express from 'express'
 import { authenticateToken, requireAdmin } from '../middleware/auth'
 import { userRepository } from '../repositories/user-repo'
 import { authService } from '../services/auth-service'
+import { hashPassword } from '../lib/auth'
 import { Data } from '../models/data'
 
 const router = express.Router()
 
 // Apply authentication to all admin routes
 router.use(authenticateToken, requireAdmin)
+
+function toUserDto(u: any) {
+  if (!u) return null
+  return {
+    id: String(u._id),
+    email: u.email,
+    name: u.name,
+    description: u.description,
+    role: u.role,
+    status: u.status,
+    subscriptionStartAt: u.subscriptionStartAt,
+    subscriptionEndAt: u.subscriptionEndAt,
+    createdAt: u.createdAt,
+    updatedAt: u.updatedAt,
+  }
+}
 
 // Get all users with pagination
 router.get('/users', async (req, res) => {
@@ -16,7 +33,12 @@ router.get('/users', async (req, res) => {
     const limit = parseInt(req.query.limit as string) || 10
     
     const result = await userRepository.findAll(page, limit)
-    res.json(result)
+    res.json({
+      users: (result.users || []).map(toUserDto),
+      totalPages: result.totalPages,
+      currentPage: result.currentPage,
+      totalUsers: result.totalUsers
+    })
   } catch (error) {
     console.error('Get users error:', error)
     res.status(500).json({ error: 'ユーザーの取得に失敗しました' })
@@ -50,24 +72,28 @@ router.post('/users', async (req, res) => {
   }
 })
 
-// Update user
+// Update user (name, description, email, subscription dates, optional password)
 router.put('/users/:id', async (req, res) => {
   try {
     const { id } = req.params
-    const { name, description, subscriptionStartAt, subscriptionEndAt } = req.body
+    const { name, description, subscriptionStartAt, subscriptionEndAt, email, password } = req.body
     
-    const user = await userRepository.updateById(id, { 
+    const updatePayload: any = {
       name, 
       description,
       subscriptionStartAt: subscriptionStartAt ? new Date(subscriptionStartAt) : undefined,
       subscriptionEndAt: subscriptionEndAt ? new Date(subscriptionEndAt) : undefined,
-    })
+    };
+    if (email) updatePayload.email = email;
+    if (password) updatePayload.password = await hashPassword(password);
     
-    if (!user) {
+    const updated = await (await userRepository as any).updateById(id, updatePayload)
+    
+    if (!updated) {
       return res.status(404).json({ error: 'ユーザーが見つかりません' })
     }
     
-    res.json(user)
+    res.json(toUserDto(updated))
   } catch (error) {
     console.error('Update user error:', error)
     res.status(500).json({ error: 'ユーザーの更新に失敗しました' })
@@ -84,13 +110,13 @@ router.patch('/users/:id/status', async (req, res) => {
       return res.status(400).json({ error: '有効な状態を指定してください' })
     }
     
-    const user = await userRepository.updateStatusById(id, status)
+    const updated = await userRepository.updateStatusById(id, status)
     
-    if (!user) {
+    if (!updated) {
       return res.status(404).json({ error: 'ユーザーが見つかりません' })
     }
     
-    res.json(user)
+    res.json(toUserDto(updated))
   } catch (error) {
     console.error('Update user status error:', error)
     res.status(500).json({ error: 'ユーザー状態の更新に失敗しました' })

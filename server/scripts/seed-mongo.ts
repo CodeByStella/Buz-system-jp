@@ -16,7 +16,9 @@ async function main() {
         name: "管理者", 
         password: adminPassword, 
         role: "ADMIN",
-        status: "ACTIVE"
+        status: "ACTIVE",
+        subscriptionStartAt: new Date(),
+        subscriptionEndAt: null as any
       },
     },
     { upsert: true }
@@ -31,7 +33,9 @@ async function main() {
         name: "一般ユーザー",
         password: userPassword,
         role: "USER",
-        status: "ACTIVE"
+        status: "ACTIVE",
+        subscriptionStartAt: new Date(),
+        subscriptionEndAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) // +1 year
       },
     },
     { upsert: true }

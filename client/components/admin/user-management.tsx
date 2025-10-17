@@ -271,7 +271,7 @@ export function UserManagement() {
       {toast && (
         <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />
       )}
-      <Card>
+      <Card className="h-full">
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
@@ -289,7 +289,7 @@ export function UserManagement() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="h-full">
           <div className="overflow-x-auto overflow-y-auto max-h-[60vh]">
             <Table className="w-[1300px] min-w-[1300px]">
             <TableHeader>

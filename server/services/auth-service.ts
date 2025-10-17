@@ -8,6 +8,12 @@ export const authService = {
   async login(email: string, password: string) {
     const user = await userRepository.findByEmail(email);
     if (!user) return null;
+    
+    // Check if user is paused
+    if (user.status === 'PAUSED') {
+      throw new Error("このアカウントは停止されています");
+    }
+    
     const ok = await verifyPassword(password, user.password);
     if (!ok) return null;
     const token = jwt.sign(
@@ -65,6 +71,47 @@ export const authService = {
         name: created.name,
         role: created.role,
       },
+    };
+  },
+
+  async createUserByAdmin(userData: {
+    email: string;
+    password: string;
+    name?: string;
+    description?: string;
+    subscriptionStartAt?: string | Date;
+    subscriptionEndAt?: string | Date;
+  }) {
+    const existing = await userRepository.findByEmail(userData.email);
+    if (existing) {
+      throw new Error("このメールアドレスは既に使用されています");
+    }
+    const hashed = await hashPassword(userData.password);
+    const created = await userRepository.create({
+      email: userData.email,
+      name: userData.name,
+      password: hashed,
+      description: userData.description,
+      role: "USER",
+      status: "ACTIVE",
+      subscriptionStartAt: userData.subscriptionStartAt ? new Date(userData.subscriptionStartAt) : undefined,
+      subscriptionEndAt: userData.subscriptionEndAt ? new Date(userData.subscriptionEndAt) : undefined,
+    });
+    
+    // Seed initial sheets for this user
+    await seedSheetsForUser(String(created._id));
+    
+    return {
+      id: String(created._id),
+      email: created.email,
+      name: created.name,
+      description: created.description,
+      role: created.role,
+      status: created.status,
+      subscriptionStartAt: created.subscriptionStartAt,
+      subscriptionEndAt: created.subscriptionEndAt,
+      createdAt: created.createdAt,
+      updatedAt: created.updatedAt,
     };
   },
 };

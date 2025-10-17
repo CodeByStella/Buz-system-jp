@@ -11,6 +11,7 @@ export interface LoginResponse {
     id: string;
     email: string;
     name?: string;
+    role?: "ADMIN" | "USER";
   };
   token?: string;
 }
@@ -19,6 +20,7 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  role?: "ADMIN" | "USER";
 }
 
 export interface SignupRequest {

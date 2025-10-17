@@ -1,57 +1,70 @@
-import axiosService from '../axios-service';
+import axiosService from "../axios-service";
 
-// Admin Types
-export interface Parameter {
+// User Management Types
+export interface User {
   id: string;
-  key: string;
-  value: number;
+  email: string;
+  name?: string;
   description?: string;
+  role: "ADMIN" | "USER";
+  status: "ACTIVE" | "PAUSED";
+  subscriptionStartAt?: string;
+  subscriptionEndAt?: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ParameterUpdateRequest {
-  key: string;
-  value: number;
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  name?: string;
   description?: string;
+  subscriptionStartAt?: string;
+  subscriptionEndAt?: string;
 }
 
-export interface ParameterCreateRequest {
-  key: string;
-  value: number;
+export interface UpdateUserRequest {
+  name?: string;
   description?: string;
+  subscriptionStartAt?: string | null;
+  subscriptionEndAt?: string | null;
+}
+
+export interface UsersResponse {
+  users: User[];
+  totalPages: number;
+  currentPage: number;
+  totalUsers: number;
 }
 
 // Admin Service
 class AdminService {
-  async getParameters(): Promise<Parameter[]> {
-    return axiosService.get<Parameter[]>('/api/admin/parameters');
+  // User Management
+  async getUsers(page: number = 1, limit: number = 10): Promise<UsersResponse> {
+    return axiosService.get<UsersResponse>(
+      `/api/admin/users?page=${page}&limit=${limit}`
+    );
   }
 
-  async getParameter(key: string): Promise<Parameter> {
-    return axiosService.get<Parameter>(`/api/admin/parameters/${key}`);
+  async createUser(userData: CreateUserRequest): Promise<User> {
+    return axiosService.post<User>("/api/admin/users", userData);
   }
 
-  async updateParameter(params: ParameterUpdateRequest): Promise<Parameter> {
-    return axiosService.post<Parameter>('/api/admin/parameters', params);
+  async updateUser(userId: string, userData: UpdateUserRequest): Promise<User> {
+    return axiosService.put<User>(`/api/admin/users/${userId}`, userData);
   }
 
-  async createParameter(params: ParameterCreateRequest): Promise<Parameter> {
-    return axiosService.post<Parameter>('/api/admin/parameters/create', params);
+  async updateUserStatus(
+    userId: string,
+    status: "ACTIVE" | "PAUSED"
+  ): Promise<User> {
+    return axiosService.patch<User>(`/api/admin/users/${userId}/status`, {
+      status,
+    });
   }
 
-  async deleteParameter(key: string): Promise<void> {
-    return axiosService.delete(`/api/admin/parameters/${key}`);
-  }
-
-  // Bulk operations
-  async updateMultipleParameters(parameters: ParameterUpdateRequest[]): Promise<Parameter[]> {
-    return axiosService.post<Parameter[]>('/api/admin/parameters/batch', { parameters });
-  }
-
-  // Get parameters by category or type
-  async getParametersByCategory(category: string): Promise<Parameter[]> {
-    return axiosService.get<Parameter[]>(`/api/admin/parameters/category/${category}`);
+  async deleteUser(userId: string): Promise<void> {
+    return axiosService.delete(`/api/admin/users/${userId}`);
   }
 }
 

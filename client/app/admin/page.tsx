@@ -1,6 +1,6 @@
-import { ParametersTable } from '@/components/admin/parameters-table'
-import { Header } from '@/components/layout/header'
-import { DataProvider } from '@/lib/contexts'
+import { UserManagement } from "@/components/admin/user-management";
+import { Header } from "@/components/layout/header";
+import { DataProvider } from "@/lib/contexts";
 
 export default function AdminPage() {
   return (
@@ -14,10 +14,14 @@ export default function AdminPage() {
                 <div className="flex-1 flex flex-col ">
                   <main className="flex-1 p-6 overflow-auto space-y-6">
                     <div>
-                      <h1 className="text-2xl font-bold text-gray-900">管理者ダッシュボード</h1>
-                      <p className="text-gray-600">システムの設定とパラメータを管理します</p>
+                      <h1 className="text-2xl font-bold text-gray-900">
+                        管理者ダッシュボード
+                      </h1>
+                      <p className="text-gray-600">
+                        ユーザー管理とシステム設定を行います
+                      </p>
                     </div>
-                    <ParametersTable />
+                    <UserManagement />
                   </main>
                 </div>
               </div>
@@ -26,5 +30,5 @@ export default function AdminPage() {
         </div>
       </div>
     </DataProvider>
-  )
+  );
 }

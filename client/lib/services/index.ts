@@ -6,7 +6,8 @@ export { default as adminService } from "./adminService";
 // Export types
 export type { LoginRequest, LoginResponse, User } from "./authService";
 export type {
-  Parameter,
-  ParameterUpdateRequest,
-  ParameterCreateRequest,
+  User as AdminUser,
+  CreateUserRequest,
+  UpdateUserRequest,
+  UsersResponse,
 } from "./adminService";

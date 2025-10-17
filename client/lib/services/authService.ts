@@ -11,6 +11,7 @@ export interface LoginResponse {
     id: string;
     email: string;
     name?: string;
+    role?: "ADMIN" | "USER";
   };
   token?: string;
 }
@@ -19,6 +20,7 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  role?: "ADMIN" | "USER";
 }
 
 export interface SignupRequest {
@@ -67,7 +69,10 @@ class AuthService {
   }
 
   async getCurrentUser(): Promise<User> {
-    return axiosService.get<User>('/api/auth/me');
+    const res = await axiosService.get<{ user: User } | User>('/api/auth/me');
+    // The server returns { user: {...} }
+    if ((res as any)?.user) return (res as any).user as User;
+    return res as User;
   }
 
   // Token management

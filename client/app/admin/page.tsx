@@ -1,8 +1,42 @@
-import { ParametersTable } from '@/components/admin/parameters-table'
-import { Header } from '@/components/layout/header'
-import { DataProvider } from '@/lib/contexts'
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { UserManagement } from "@/components/admin/user-management";
+import { Header } from "@/components/layout/header";
+import { DataProvider } from "@/lib/contexts";
+import { authService } from "@/lib/services";
 
 export default function AdminPage() {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const verify = async () => {
+      try {
+        const user = await authService.getCurrentUser();
+        if (user?.role !== "ADMIN") {
+          router.replace("/dashboard");
+          return;
+        }
+      } catch {
+        router.replace("/login");
+        return;
+      } finally {
+        setChecking(false);
+      }
+    };
+    verify();
+  }, [router]);
+
+  if (checking) {
+    return (
+      <div className="h-screen bg-gray-50 flex items-center justify-center">
+        <div className="h-12 w-12 rounded-full border-4 border-gray-200 border-t-red-500 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <DataProvider>
       <div className="h-screen bg-gray-50  flex flex-col">
@@ -11,13 +45,9 @@ export default function AdminPage() {
           <div className="w-full max-w-[1440px] h-full p-4">
             <div className="h-full border border-gray-200 bg-white ">
               <div className="flex h-full">
-                <div className="flex-1 flex flex-col ">
+                <div className="flex-1 flex flex-col  w-full">
                   <main className="flex-1 p-6 overflow-auto space-y-6">
-                    <div>
-                      <h1 className="text-2xl font-bold text-gray-900">管理者ダッシュボード</h1>
-                      <p className="text-gray-600">システムの設定とパラメータを管理します</p>
-                    </div>
-                    <ParametersTable />
+                    <UserManagement />
                   </main>
                 </div>
               </div>
@@ -26,5 +56,5 @@ export default function AdminPage() {
         </div>
       </div>
     </DataProvider>
-  )
+  );
 }

@@ -98,20 +98,22 @@ export function Header() {
             <Button
               variant="outline"
               size="sm"
-              onClick={goToAdminOrDashboard}
+              onClick={() => router.push(pathname?.startsWith("/admin") ? "/dashboard" : "/admin")}
               className="flex items-center space-x-1"
             >
               <span>
-                {pathname?.startsWith("/admin")
-                  ? "ダッシュボードへ"
-                  : "管理画面へ"}
+                {pathname?.startsWith("/admin") ? "ダッシュボードへ" : "管理画面へ"}
               </span>
             </Button>
           )}
           <div className="flex items-center space-x-2">
-            <span className="p-2 text-xs bg-red-50 text-red-600 border border-red-200 font-medium">
-              {companyName && companyName !== "C1" ? String(companyName) : ""}
-            </span>
+            {companyName && companyName !== "C1" ? (
+              <span className="p-2 text-xs bg-red-50 text-red-600 border border-red-200 font-medium">
+                {String(companyName)}
+              </span>
+            ) : (
+              ""
+            )}
             <User className="h-4 w-4 text-gray-500" />
             <span className="text-sm text-gray-700">{user?.name}</span>
             {user?.role === "ADMIN" && (

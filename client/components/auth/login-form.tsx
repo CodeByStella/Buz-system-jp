@@ -29,7 +29,12 @@ export function LoginForm() {
 
     try {
       const data = await authService.login({ email, password });
-      router.push("/dashboard");
+      // Redirect admin users to admin page first
+      if (data.user.role === "ADMIN") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "ログインに失敗しました");
@@ -106,12 +111,6 @@ export function LoginForm() {
           </form>
         </CardContent>
       </Card>
-      <div className="mt-4 text-sm text-gray-600">
-        アカウントをお持ちでないですか？
-        <Link href="/signup" className="text-blue-600 underline ml-1">
-          新規登録
-        </Link>
-      </div>
     </div>
   );
 }

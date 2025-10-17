@@ -266,6 +266,12 @@ export function UserManagement() {
     );
   }
 
+  // Ensure admins are listed first while preserving relative order within each group
+  const orderedUsers = [
+    ...users.filter((u) => u.role === "ADMIN"),
+    ...users.filter((u) => u.role !== "ADMIN"),
+  ];
+
   return (
     <div className="space-y-6">
       {toast && (
@@ -306,7 +312,7 @@ export function UserManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
+              {orderedUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>
@@ -364,6 +370,7 @@ export function UserManagement() {
                         <Button
                           size="sm"
                           variant="outline"
+                          disabled={user.role === "ADMIN"}
                           onClick={() =>
                             showConfirmation("pause", user.id, user.email)
                           }
@@ -374,6 +381,7 @@ export function UserManagement() {
                         <Button
                           size="sm"
                           variant="outline"
+                          disabled={user.role === "ADMIN"}
                           onClick={() =>
                             showConfirmation("resume", user.id, user.email)
                           }
@@ -384,6 +392,7 @@ export function UserManagement() {
                       <Button
                         size="sm"
                         variant="destructive"
+                        disabled={user.role === "ADMIN"}
                         onClick={() =>
                           showConfirmation("delete", user.id, user.email)
                         }

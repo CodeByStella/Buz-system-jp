@@ -55,7 +55,8 @@ export function UserManagement() {
   const [editing, setEditing] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(20);
+  const [creating, setCreating] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error" | "info"; message: string } | null>(null);
 
   // Create user form state
@@ -86,7 +87,7 @@ export function UserManagement() {
   const fetchUsers = async () => {
     try {
       const data = await adminService.getUsers(currentPage, itemsPerPage);
-      setUsers(data.users);
+      setUsers([...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users]);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -105,8 +106,41 @@ export function UserManagement() {
     return password;
   };
 
+  const generateEmail = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let local = "user-";
+    for (let i = 0; i < 8; i++) {
+      local += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `${local}@example.com`;
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handleCreateUser = async () => {
     try {
+      if (creating) return;
+      setCreating(true);
       if (!createForm.email || !createForm.password) {
         setToast({ type: "error", message: "メールアドレスとパスワードは必須です" });
         return;
@@ -115,11 +149,17 @@ export function UserManagement() {
       const newUser = await adminService.createUser(createForm);
       setUsers([newUser, ...users]);
       setShowCreateForm(false);
+      const createdEmail = createForm.email;
+      const createdPassword = createForm.password;
       setCreateForm({ email: "", password: "", name: "", description: "", subscriptionStartAt: "", subscriptionEndAt: "" });
-      setToast({ type: "success", message: "ユーザーを作成しました" });
+      // Copy credentials to clipboard
+      const copied = await copyToClipboard(`メール: ${createdEmail}\nパスワード: ${createdPassword}`);
+      setToast({ type: "success", message: copied ? "ユーザーを作成しました（認証情報をコピーしました）" : "ユーザーを作成しました（コピーに失敗しました）" });
     } catch (error) {
       console.error("Failed to create user:", error);
       setToast({ type: "error", message: "ユーザーの作成に失敗しました" });
+    } finally {
+      setCreating(false);
     }
   };
 
@@ -250,7 +290,8 @@ export function UserManagement() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto overflow-y-auto max-h-[60vh]">
+            <Table className="w-[1300px] min-w-[1300px]">
             <TableHeader>
               <TableRow>
                 <TableHead>メール</TableHead>
@@ -275,16 +316,6 @@ export function UserManagement() {
                     {user.description || "-"}
                   </TableCell>
                   <TableCell>
-                    {user.subscriptionStartAt
-                      ? new Date(user.subscriptionStartAt).toLocaleDateString("ja-JP")
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
-                    {user.subscriptionEndAt
-                      ? new Date(user.subscriptionEndAt).toLocaleDateString("ja-JP")
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
                     <Badge
                       variant={user.role === "ADMIN" ? "default" : "secondary"}
                     >
@@ -294,17 +325,16 @@ export function UserManagement() {
                   <TableCell>
                     {(() => {
                       const expired = user.subscriptionEndAt ? new Date(user.subscriptionEndAt) < new Date() : false;
+                      const statusClasses = user.status === "ACTIVE"
+                        ? "bg-green-100 text-green-800 border border-green-200"
+                        : "bg-red-100 text-red-800 border border-red-200";
                       return (
                         <div className="flex items-center space-x-2">
-                          <Badge
-                            variant={
-                              user.status === "ACTIVE" ? "default" : "destructive"
-                            }
-                          >
+                          <span className={`px-2 py-0.5 text-xs rounded ${statusClasses}`}>
                             {user.status === "ACTIVE" ? "アクティブ" : "停止中"}
-                          </Badge>
+                          </span>
                           {expired && (
-                            <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            <span className="px-2 py-0.5 text-xs bg-yellow-100 text-yellow-800 border border-yellow-200 rounded">
                               期限切れ
                             </span>
                           )}
@@ -365,7 +395,8 @@ export function UserManagement() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
@@ -435,13 +466,18 @@ export function UserManagement() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">メールアドレス *</label>
-                <div className="relative h-9">
-                  <CustomInput
-                    type="email"
-                    value={createForm.email}
-                    onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                    placeholder="user@example.com"
-                  />
+                <div className="flex space-x-2">
+                  <div className="relative h-9 flex-1">
+                    <CustomInput
+                      type="email"
+                      value={createForm.email}
+                      onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
+                      placeholder="user@example.com"
+                    />
+                  </div>
+                  <Button type="button" variant="outline" onClick={() => setCreateForm({ ...createForm, email: generateEmail() })}>
+                    生成
+                  </Button>
                 </div>
               </div>
               <div>
@@ -512,7 +548,9 @@ export function UserManagement() {
               </div>
             </div>
             <div className="flex justify-end space-x-2 mt-6">
-              <Button onClick={handleCreateUser}>作成</Button>
+              <Button onClick={handleCreateUser} disabled={creating} className={creating ? "opacity-70" : ""}>
+                {creating ? "作成中..." : "作成"}
+              </Button>
               <Button variant="outline" onClick={() => setShowCreateForm(false)}>キャンセル</Button>
             </div>
           </div>

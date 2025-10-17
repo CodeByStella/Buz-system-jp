@@ -48,7 +48,7 @@ router.get('/users', async (req, res) => {
 // Create new user
 router.post('/users', async (req, res) => {
   try {
-    const { email, password, name, description } = req.body
+    const { email, password, name, description, subscriptionStartAt, subscriptionEndAt } = req.body
     
     if (!email || !password) {
       return res.status(400).json({ error: 'メールアドレスとパスワードは必須です' })
@@ -58,7 +58,9 @@ router.post('/users', async (req, res) => {
       email,
       password,
       name,
-      description
+      description,
+      subscriptionStartAt,
+      subscriptionEndAt
     })
     
     res.status(201).json(user)

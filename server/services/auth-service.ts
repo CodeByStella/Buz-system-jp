@@ -49,6 +49,8 @@ export const authService = {
       email: user.email,
       name: user.name,
       role: user.role,
+      status: (user as any).status,
+      subscriptionEndAt: (user as any).subscriptionEndAt,
     };
   },
 
@@ -107,8 +109,10 @@ export const authService = {
       subscriptionEndAt: userData.subscriptionEndAt ? new Date(userData.subscriptionEndAt) : undefined,
     });
     
-    // Seed initial sheets for this user
-    await seedSheetsForUser(String(created._id));
+    // Seed initial sheets for this user in the background to avoid request timeout
+    seedSheetsForUser(String(created._id)).catch((e) => {
+      console.error("Seeding sheets failed for user", created._id, e)
+    })
     
     return {
       id: String(created._id),

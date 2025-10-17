@@ -45,7 +45,7 @@ export default function AdminPage() {
           <div className="w-full max-w-[1440px] h-full p-4">
             <div className="h-full border border-gray-200 bg-white ">
               <div className="flex h-full">
-                <div className="flex-1 flex flex-col ">
+                <div className="flex-1 flex flex-col  w-full">
                   <main className="flex-1 p-6 overflow-auto space-y-6">
                     <UserManagement />
                   </main>

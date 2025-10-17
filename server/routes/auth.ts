@@ -73,7 +73,9 @@ router.post("/login", async (req, res) => {
     res.json({ user });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ error: "ログインに失敗しました" });
+    const message = error instanceof Error ? error.message : "ログインに失敗しました";
+    // For business-rule rejections (paused/expired), return 403 with message
+    return res.status(403).json({ error: message });
   }
 });
 
@@ -104,6 +106,20 @@ router.get("/me", async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ error: "ユーザーが見つかりません" });
+    }
+
+    // Invalidate cookie if user is paused or subscription expired
+    const now = new Date();
+    const expired = (user as any).subscriptionEndAt ? new Date((user as any).subscriptionEndAt) < now : false;
+    if ((user as any).status === 'PAUSED' || expired) {
+      const isProduction = process.env.NODE_ENV === "production";
+      res.clearCookie("auth-token", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "lax" : "none",
+        path: "/",
+      });
+      return res.status(401).json({ error: (user as any).status === 'PAUSED' ? 'このアカウントは停止されています' : 'サブスクリプションの有効期限が切れています' });
     }
 
     res.json({ user });

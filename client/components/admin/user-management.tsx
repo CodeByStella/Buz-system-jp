@@ -87,7 +87,7 @@ export function UserManagement() {
   const fetchUsers = async () => {
     try {
       const data = await adminService.getUsers(currentPage, itemsPerPage);
-      setUsers([...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users, ...data.users]);
+      setUsers(data.users);
       setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Failed to fetch users:", error);
@@ -290,8 +290,8 @@ export function UserManagement() {
           </div>
         </CardHeader>
         <CardContent className="h-full">
-          <div className="overflow-x-auto overflow-y-auto max-h-[60vh]">
-            <Table className="w-[1300px] min-w-[1300px]">
+          <div className="overflow-x-auto overflow-y-auto max-h-[65vh]">
+            <Table className=" min-w-[1200px]">
             <TableHeader>
               <TableRow>
                 <TableHead>メール</TableHead>

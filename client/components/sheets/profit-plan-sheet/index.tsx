@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { CustomInput } from "@/components/ui/customInput";
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
@@ -9,8 +9,10 @@ import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { CustomTextarea } from "@/components/ui/customTextarea";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
 import { PDFExportButton } from "@/components/ui/pdfExportButton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function ProfitPlanSheet() {
+  const [showResetModal, setShowResetModal] = useState(false);
   const {
     onSave,
     saving,
@@ -57,6 +59,7 @@ export default function ProfitPlanSheet() {
   }
 
   return (
+    <>
     <div className="h-full flex flex-col space-y-4 relative">
       <div className="lg:flex items-center justify-between">
         <div>
@@ -79,15 +82,7 @@ export default function ProfitPlanSheet() {
           <Button
             variant="outline"
             className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-                )
-              ) {
-                clearSheet(sheetName);
-              }
-            }}
+            onClick={() => setShowResetModal(true)}
           >
             全入力クリア
           </Button>
@@ -1881,5 +1876,21 @@ export default function ProfitPlanSheet() {
         </div>
       </div>
     </div>
+    
+    {/* Reset Confirmation Modal */}
+    <ConfirmationModal
+      isOpen={showResetModal}
+      onClose={() => setShowResetModal(false)}
+      onConfirm={() => {
+        clearSheet(sheetName);
+        setShowResetModal(false);
+      }}
+      title="全入力クリアの確認"
+      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+      confirmText="クリア"
+      cancelText="キャンセル"
+      confirmVariant="destructive"
+    />
+    </>
   );
 }

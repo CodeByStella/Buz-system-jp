@@ -19,6 +19,7 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -26,9 +27,17 @@ export function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     try {
       const data = await authService.login({ email, password });
+      
+      // Set success state to prevent further interaction
+      setSuccess(true);
+      
+      // Small delay to show success state before redirect
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Redirect admin users to admin page first
       if (data.user.role === "ADMIN") {
         router.push("/admin");
@@ -38,13 +47,23 @@ export function LoginForm() {
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "ログインに失敗しました");
-    } finally {
-      setLoading(false);
+      setLoading(false); // Only reset loading on error
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      {/* Loading overlay - fixed positioning to prevent layout shifts */}
+      {(loading || success) && (
+        <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600">
+              {loading ? "ログイン中..." : "リダイレクト中..."}
+            </p>
+          </div>
+        </div>
+      )}
       <Image
         src="/logo.png"
         alt="ビジネスシステム ロゴ"
@@ -85,6 +104,7 @@ export function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading || success}
                 placeholder="例: user@company.com"
               />
             </div>
@@ -101,12 +121,25 @@ export function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading || success}
                 placeholder="パスワードを入力"
               />
             </div>
-            {error && <div className="text-red-600 text-sm">{error}</div>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "ログイン中..." : "ログイン"}
+            {/* Reserve space for messages to prevent layout shift */}
+            <div className="h-6 flex items-center justify-center">
+              {error && <div className="text-red-600 text-sm">{error}</div>}
+              {success && (
+                <div className="text-green-600 text-sm text-center">
+                  ✓ ログイン成功！リダイレクト中...
+                </div>
+              )}
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={loading || success}
+            >
+              {loading ? "ログイン中..." : success ? "リダイレクト中..." : "ログイン"}
             </Button>
           </form>
         </CardContent>

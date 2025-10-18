@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { salesPlanRows, monthNames, SalesPlanRowDataType } from "./cells";
 import { CustomInput } from "@/components/ui/customInput";
 import { cn } from "@/lib/utils";
@@ -10,8 +10,10 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
 import { PDFExportButton } from "@/components/ui/pdfExportButton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function SalesPlanSheet() {
+  const [showResetModal, setShowResetModal] = useState(false);
   const {
     onSave,
     saving,
@@ -234,6 +236,7 @@ export default function SalesPlanSheet() {
   }
 
   return (
+    <>
     <div className="h-full flex flex-col space-y-4 ">
       <div className="lg:flex items-center justify-between">
         <div>
@@ -256,15 +259,7 @@ export default function SalesPlanSheet() {
           <Button
             variant="outline"
             className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-                )
-              ) {
-                clearSheet(sheetName);
-              }
-            }}
+            onClick={() => setShowResetModal(true)}
           >
             全入力クリア
           </Button>
@@ -283,5 +278,21 @@ export default function SalesPlanSheet() {
         </div>
       </div>
     </div>
+    
+    {/* Reset Confirmation Modal */}
+    <ConfirmationModal
+      isOpen={showResetModal}
+      onClose={() => setShowResetModal(false)}
+      onConfirm={() => {
+        clearSheet(sheetName);
+        setShowResetModal(false);
+      }}
+      title="全入力クリアの確認"
+      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+      confirmText="クリア"
+      cancelText="キャンセル"
+      confirmVariant="destructive"
+    />
+    </>
   );
 }

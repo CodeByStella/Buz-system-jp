@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { authService } from "@/lib/services";
 import { useDataContext, useOptionalDataContext } from "@/lib/contexts";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 interface User {
   id: string;
@@ -18,6 +19,8 @@ interface User {
 export function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const optionalCtx = useOptionalDataContext();
@@ -38,13 +41,23 @@ export function Header() {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
     try {
       await authService.logout();
       router.push("/login");
     } catch (error) {
       console.error("Logout failed:", error);
+      setIsLoggingOut(false);
     }
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutModal(false);
   };
 
   const goToAdminOrDashboard = () => {
@@ -125,7 +138,7 @@ export function Header() {
           <Button
             variant="outline"
             size="sm"
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="flex items-center space-x-1"
             leftIcon={LogOut}
           >
@@ -133,6 +146,19 @@ export function Header() {
           </Button>
         </div>
       </div>
+      
+      {/* Logout Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+        title="ログアウトの確認"
+        message="本当にログアウトしますか？作業中のデータは保存されません。"
+        confirmText="ログアウト"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+        isLoading={isLoggingOut}
+      />
     </header>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   ProgressResultRowDataType,
@@ -21,8 +21,10 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
 import { PDFExportButton } from "@/components/ui/pdfExportButton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function ProgressResultInputSheet() {
+  const [showResetModal, setShowResetModal] = useState(false);
   const {
     onSave,
     saving,
@@ -277,6 +279,7 @@ export default function ProgressResultInputSheet() {
   }
 
   return (
+    <>
     <div className="h-full flex flex-col space-y-4 ">
       <div className="lg:flex items-center justify-between">
         <div>
@@ -299,15 +302,7 @@ export default function ProgressResultInputSheet() {
           <Button
             variant="outline"
             className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-                )
-              ) {
-                clearSheet(sheetName);
-              }
-            }}
+            onClick={() => setShowResetModal(true)}
           >
             全入力クリア
           </Button>
@@ -505,5 +500,21 @@ export default function ProgressResultInputSheet() {
         </div>
       </div>
     </div>
+    
+    {/* Reset Confirmation Modal */}
+    <ConfirmationModal
+      isOpen={showResetModal}
+      onClose={() => setShowResetModal(false)}
+      onConfirm={() => {
+        clearSheet(sheetName);
+        setShowResetModal(false);
+      }}
+      title="全入力クリアの確認"
+      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+      confirmText="クリア"
+      cancelText="キャンセル"
+      confirmVariant="destructive"
+    />
+    </>
   );
 }

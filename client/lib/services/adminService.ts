@@ -39,6 +39,20 @@ export interface UsersResponse {
   totalUsers: number;
 }
 
+// Parameter Management Types
+export interface GlobalParameter {
+  id: string;
+  key: string;
+  value: number;
+  description?: string;
+}
+
+export interface UpdateParameterRequest {
+  key: string;
+  value: number;
+  description?: string;
+}
+
 // Admin Service
 class AdminService {
   // User Management
@@ -67,6 +81,15 @@ class AdminService {
 
   async deleteUser(userId: string): Promise<void> {
     return axiosService.delete(`/api/admin/users/${userId}`);
+  }
+
+  // Parameter Management
+  async getParameters(): Promise<GlobalParameter[]> {
+    return axiosService.get<GlobalParameter[]>("/api/admin/parameters");
+  }
+
+  async updateParameter(parameterData: UpdateParameterRequest): Promise<GlobalParameter> {
+    return axiosService.put<GlobalParameter>("/api/admin/parameters", parameterData);
   }
 }
 

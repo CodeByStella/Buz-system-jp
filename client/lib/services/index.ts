@@ -10,4 +10,6 @@ export type {
   CreateUserRequest,
   UpdateUserRequest,
   UsersResponse,
+  GlobalParameter,
+  UpdateParameterRequest,
 } from "./adminService";

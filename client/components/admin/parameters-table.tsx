@@ -5,14 +5,7 @@ import { Button } from '@/components/ui/button'
 import { CustomInput } from '@/components/ui/customInput'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { adminService } from '@/lib/services'
-
-interface GlobalParameter {
-  id: string
-  key: string
-  value: number
-  description?: string
-}
+import { adminService, GlobalParameter } from '@/lib/services'
 
 export function ParametersTable() {
   const [parameters, setParameters] = useState<GlobalParameter[]>([])

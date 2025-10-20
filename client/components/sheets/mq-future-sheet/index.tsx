@@ -189,16 +189,14 @@ export default function MQFutureSheet() {
       {/* Header Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-            ② MQ会計(未来)
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900">② MQ会計(未来)</h1>
+          <p className="text-gray-600">
             目標値と客単価・数量を設定してMQ会計の未来計画を立てます。
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap gap-2 sm:gap-2">
+        <div className="flex gap-2 float-right">
           <Button
             variant="success"
             leftIcon={Save}
@@ -206,7 +204,6 @@ export default function MQFutureSheet() {
             loadingText="保存中..."
             onClick={onSave}
             disabled={saving || !hasChanges}
-            className="flex-1 sm:flex-none text-sm sm:text-base"
           >
             保存
           </Button>
@@ -231,10 +228,8 @@ export default function MQFutureSheet() {
       </div>
 
       {/* Unit Note */}
-      <div className="bg-yellow-100 p-2 sm:p-3 rounded-lg border border-yellow-300">
-        <p className="text-xs sm:text-sm text-gray-700">
-          <span className="font-semibold">(百万円)</span>
-        </p>
+      <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
+        <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
       </div>
 
       {/* Main Content Grid */}

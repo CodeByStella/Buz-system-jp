@@ -175,16 +175,13 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // Combine refs
     React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
-    // Format number to 3 decimal places if it's a float
+    // Format number to 1 decimal place for any numeric value (e.g., 5 -> 5.0, 12.0633 -> 12.1)
     if (
       type === "number" &&
       inputValue !== "" &&
       typeof inputValue === "number"
     ) {
-      // Check if it's a decimal number
-      if (!Number.isInteger(inputValue)) {
-        inputValue = Number(inputValue).toFixed(1);
-      }
+      inputValue = Number(inputValue).toFixed(1);
     }
 
     // Apply thousands separator formatting for display only

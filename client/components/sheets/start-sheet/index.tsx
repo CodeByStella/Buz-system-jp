@@ -477,88 +477,77 @@ export default function StartSheet() {
 
   return (
     <>
-    <div className="h-full flex flex-col space-y-4  ">
-      <div className="lg:flex items-center justify-between">
+      <div className="h-full flex flex-col space-y-4  ">
+        <div className="lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
+            <p className="text-gray-600">
+              このページで元データを入力します（画像の項目に対応）。
+            </p>
+          </div>
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
+        </div>
+        <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
+        </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">スタート</h1>
-          <p className="text-gray-600">
-            このページで元データを入力します（画像の項目に対応）。
-          </p>
-        </div>
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => setShowResetModal(true)}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
-        </div>
-      </div>
-      <div>
-        <AdvancedTable
-          columns={infoCols as any}
-          data={startSheet_info as any}
-          dense
-          bordered
-          maxHeight={"full"}
-          stickyHeader
-        />
-      </div>
-      <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
-        <div className="overflow-auto lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
           <AdvancedTable
-            columns={startSheetCols_main as any}
-            data={startSheet_main as any}
+            columns={infoCols as any}
+            data={startSheet_info as any}
             dense
             bordered
             maxHeight={"full"}
             stickyHeader
           />
         </div>
-        <div className="lg:w-full grid lg:col-span-1 col-span-3 h-full  grid-rows-6 gap-2">
-          <div className="row-span-1 border border-black bg-yellow-200 p-1 lg:h-full">
-            <p className="text-xs text-gray-600">
-              決算書を見ながら一つ一つ直近の数字を入力していく。
-            </p>
-            <p className="text-xs text-gray-600">
-              製造原価を別に計上していない決算書であれば製造原価には記入しない事。
-              ただし今後税理士と打ち合わせを行い、
-              製造原価を作っていく事を推奨します。
-              自社工事部などいない場合でも、材料を支給して発注している会社も製造原価を別に作るべき。
-            </p>
-          </div>
-
-          <div className="row-span-3  h-full">
+        <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
+          <div className="overflow-auto lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
             <AdvancedTable
-              columns={startSheetCols_others as any}
-              data={startSheet_others as any}
+              columns={startSheetCols_main as any}
+              data={startSheet_main as any}
               dense
               bordered
               maxHeight={"full"}
-              hideHeader
               stickyHeader
-              cellClassName="!p-0"
             />
           </div>
+          <div className="lg:w-full grid lg:col-span-1 col-span-3 h-full  grid-rows-6 gap-2">
+            <div className="row-span-1 border border-black bg-yellow-200 p-1 lg:h-full">
+              <p className="text-xs text-gray-600">
+                決算書を見ながら一つ一つ直近の数字を入力していく。
+              </p>
+              <p className="text-xs text-gray-600">
+                製造原価を別に計上していない決算書であれば製造原価には記入しない事。
+                ただし今後税理士と打ち合わせを行い、
+                製造原価を作っていく事を推奨します。
+                自社工事部などいない場合でも、材料を支給して発注している会社も製造原価を別に作るべき。
+              </p>
+            </div>
 
-          <div className="row-span-2 flex flex-col h-full">
-            <div className="mt-auto">
+            <div className="row-span-3  h-full">
               <AdvancedTable
-                columns={startSheetCols_summary as any}
-                data={startSheet_summary as any}
+                columns={startSheetCols_others as any}
+                data={startSheet_others as any}
                 dense
                 bordered
                 maxHeight={"full"}
@@ -567,25 +556,39 @@ export default function StartSheet() {
                 cellClassName="!p-0"
               />
             </div>
+
+            <div className="row-span-2 flex flex-col h-full">
+              <div className="mt-auto">
+                <AdvancedTable
+                  columns={startSheetCols_summary as any}
+                  data={startSheet_summary as any}
+                  dense
+                  bordered
+                  maxHeight={"full"}
+                  hideHeader
+                  stickyHeader
+                  cellClassName="!p-0"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    {/* Reset Confirmation Modal */}
-    <ConfirmationModal
-      isOpen={showResetModal}
-      onClose={() => setShowResetModal(false)}
-      onConfirm={() => {
-        clearSheet(sheetName);
-        setShowResetModal(false);
-      }}
-      title="全入力クリアの確認"
-      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-      confirmText="クリア"
-      cancelText="キャンセル"
-      confirmVariant="destructive"
-    />
+
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
     </>
   );
 }

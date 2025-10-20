@@ -344,10 +344,8 @@ export default function ManufacturingLaborSheet() {
 
       {/* Important notice */}
       <div className="flex items-center justify-between gap-2">
-        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
-          <span className="font-semibold">
-            ここの数字は百万円単位で記入する事！ 530万円(年収)の場合5.3と記入
-          </span>
+        <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
         </div>
         <div className="max-w-xs w-full">
           <AdvancedTable

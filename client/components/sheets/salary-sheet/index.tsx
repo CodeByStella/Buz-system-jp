@@ -448,190 +448,188 @@ export default function SalarySheet() {
 
   return (
     <>
-    <div className="h-full flex flex-col space-y-4 ">
-      <div className="lg:flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            ③ (F) 人件費を入力する
-          </h1>
-          <p className="text-gray-600">
-            人件費の詳細を入力して、給与体系を計画します。
-          </p>
-        </div>
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => setShowResetModal(true)}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
-        </div>
-      </div>
-
-      {/* Important notice */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
-          <span className="font-semibold">
-            ここの数字は百万円単位で記入する事！ 530万円(年収)の場合5.3と記入
-          </span>
-        </div>
-        <div className="max-w-xs w-full">
-          <AdvancedTable
-            columns={totalTableColumns}
-            data={[
-              {
-                label: "合計",
-                value: "O1",
-              },
-            ]}
-            bordered
-            dense
-            hideHeader
-            className="border-none"
-            cellClassName="!p-0"
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col space-y-4">
-        <div className="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
-          {/* Employee Salary Details Table */}
-          <div className="flex flex-col space-y-2">
-            <div className="flex-1">
-              <AdvancedTable
-                columns={employeeTableColumns}
-                data={salaryEmployeeRows}
-                bordered
-                dense
-                title={
-                  <h3 className="text-lg font-semibold text-center w-full p-1">
-                    人件費明細
-                  </h3>
-                }
-                maxHeight={"300px"}
-                cellClassName="!p-0"
-                footerContent={
-                  <AdvancedTable
-                    columns={summaryTableColumns}
-                    data={salaryEmployeeSummary}
-                    bordered
-                    dense
-                    hideHeader
-                    maxHeight={"100px"}
-                    cellClassName="!p-0"
-                  />
-                }
-              />
-            </div>
-          </div>
-
-          {/* Miscellaneous Salary Table */}
-          <div className="flex flex-col space-y-2">
-            <div className="flex-1">
-              <AdvancedTable
-                columns={miscTableColumns}
-                data={salaryMiscRows}
-                bordered
-                dense
-                title={
-                  <h3 className="text-lg font-semibold text-center w-full p-1">
-                    雑給料
-                  </h3>
-                }
-                maxHeight={"300px"}
-                cellClassName="!p-0"
-                footerContent={
-                  <AdvancedTable
-                    columns={summaryTableColumns}
-                    data={salaryMiscSummary}
-                    bordered
-                    dense
-                    hideHeader
-                    maxHeight={"100px"}
-                    cellClassName="!p-0"
-                  />
-                }
-              />
-            </div>
-          </div>
-
-          {/* Dispatched Employees Table */}
-          <div className="flex flex-col space-y-2">
-            <div className="flex-1">
-              <AdvancedTable
-                columns={dispatchedTableColumns}
-                data={salaryDispatchedRows}
-                bordered
-                dense
-                title={
-                  <h3 className="text-lg font-semibold text-center w-full p-1">
-                    派遣社員
-                  </h3>
-                }
-                maxHeight={"300px"}
-                cellClassName="!p-0"
-                footerContent={
-                  <AdvancedTable
-                    columns={summaryTableColumns}
-                    data={salaryDispatchedSummary}
-                    bordered
-                    dense
-                    hideHeader
-                    maxHeight={"100px"}
-                    cellClassName="!p-0"
-                  />
-                }
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Instructions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <AdvancedTable
-            columns={averageIncomeColumns}
-            data={averageIncomeRows}
-            bordered
-            dense
-            maxHeight={"150px"}
-            cellClassName="!p-0"
-          />
-          <div className="bg-yellow-50 border border-yellow-200 p-2">
-            <p className="text-xs text-yellow-800">
-              前期よりも2%~10%以上の昇給、増員の計画を入れる事。アバウトでも良い。この社長の採用と昇給の意思決定が有無で会社の未来は大きく変わります!上昇率が100%以上になる事が望ましい。
+      <div className="h-full flex flex-col space-y-4 ">
+        <div className="lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              ③ (F) 人件費を入力する
+            </h1>
+            <p className="text-gray-600">
+              人件費の詳細を入力して、給与体系を計画します。
             </p>
           </div>
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
+        </div>
+
+        {/* Important notice */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
+            <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
+          </div>
+          <div className="max-w-xs w-full">
+            <AdvancedTable
+              columns={totalTableColumns}
+              data={[
+                {
+                  label: "合計",
+                  value: "O1",
+                },
+              ]}
+              bordered
+              dense
+              hideHeader
+              className="border-none"
+              cellClassName="!p-0"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col space-y-4">
+          <div className="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
+            {/* Employee Salary Details Table */}
+            <div className="flex flex-col space-y-2">
+              <div className="flex-1">
+                <AdvancedTable
+                  columns={employeeTableColumns}
+                  data={salaryEmployeeRows}
+                  bordered
+                  dense
+                  title={
+                    <h3 className="text-lg font-semibold text-center w-full p-1">
+                      人件費明細
+                    </h3>
+                  }
+                  maxHeight={"300px"}
+                  cellClassName="!p-0"
+                  footerContent={
+                    <AdvancedTable
+                      columns={summaryTableColumns}
+                      data={salaryEmployeeSummary}
+                      bordered
+                      dense
+                      hideHeader
+                      maxHeight={"100px"}
+                      cellClassName="!p-0"
+                    />
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Miscellaneous Salary Table */}
+            <div className="flex flex-col space-y-2">
+              <div className="flex-1">
+                <AdvancedTable
+                  columns={miscTableColumns}
+                  data={salaryMiscRows}
+                  bordered
+                  dense
+                  title={
+                    <h3 className="text-lg font-semibold text-center w-full p-1">
+                      雑給料
+                    </h3>
+                  }
+                  maxHeight={"300px"}
+                  cellClassName="!p-0"
+                  footerContent={
+                    <AdvancedTable
+                      columns={summaryTableColumns}
+                      data={salaryMiscSummary}
+                      bordered
+                      dense
+                      hideHeader
+                      maxHeight={"100px"}
+                      cellClassName="!p-0"
+                    />
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Dispatched Employees Table */}
+            <div className="flex flex-col space-y-2">
+              <div className="flex-1">
+                <AdvancedTable
+                  columns={dispatchedTableColumns}
+                  data={salaryDispatchedRows}
+                  bordered
+                  dense
+                  title={
+                    <h3 className="text-lg font-semibold text-center w-full p-1">
+                      派遣社員
+                    </h3>
+                  }
+                  maxHeight={"300px"}
+                  cellClassName="!p-0"
+                  footerContent={
+                    <AdvancedTable
+                      columns={summaryTableColumns}
+                      data={salaryDispatchedSummary}
+                      bordered
+                      dense
+                      hideHeader
+                      maxHeight={"100px"}
+                      cellClassName="!p-0"
+                    />
+                  }
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <AdvancedTable
+              columns={averageIncomeColumns}
+              data={averageIncomeRows}
+              bordered
+              dense
+              maxHeight={"150px"}
+              cellClassName="!p-0"
+            />
+            <div className="bg-yellow-50 border border-yellow-200 p-2">
+              <p className="text-xs text-yellow-800">
+                前期よりも2%~10%以上の昇給、増員の計画を入れる事。アバウトでも良い。この社長の採用と昇給の意思決定が有無で会社の未来は大きく変わります!上昇率が100%以上になる事が望ましい。
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    
-    {/* Reset Confirmation Modal */}
-    <ConfirmationModal
-      isOpen={showResetModal}
-      onClose={() => setShowResetModal(false)}
-      onConfirm={() => {
-        clearSheet(sheetName);
-        setShowResetModal(false);
-      }}
-      title="全入力クリアの確認"
-      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-      confirmText="クリア"
-      cancelText="キャンセル"
-      confirmVariant="destructive"
-    />
+
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
     </>
   );
 }

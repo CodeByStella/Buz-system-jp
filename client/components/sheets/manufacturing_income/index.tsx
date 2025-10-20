@@ -471,7 +471,7 @@ export default function ManufacturingIncomeSheet() {
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
+        <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
           <span className="font-semibold">
             ここの数字は1円単位で記入する事! 120万円(工事費)の場合1200000と記入
           </span>

@@ -107,7 +107,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // Determine the actual value to display
     // When focused, use local value; otherwise use context/prop value
     let inputValue: string | number;
-    if (isFocused && localValue !== "") {
+    if (isFocused) {
       inputValue = localValue;
     } else {
       // Priority: contextValue (from DataContext) > value prop
@@ -242,7 +242,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       setTooltipPosition(null);
       
       // Process and save the final value when user leaves the input
-      if (hasContext && contextOnChange && localValue !== "") {
+      if (hasContext && contextOnChange) {
         if (type === "number") {
           // Handle numeric input
           const raw = useThousandsFormatting
@@ -253,12 +253,13 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
           let newValue: number | string = raw;
           
           // Only parse as float if the input is a complete number or empty
-          if (raw === "" || raw === "-" || /^-?\d+\.?\d*$/.test(raw)) {
+          if (raw === "" || raw === "-") {
+            // Treat cleared or single minus as empty
+            newValue = "";
+          } else if (/^-?\d+\.?\d*$/.test(raw)) {
             const parsed = parseFloat(raw);
             if (!isNaN(parsed)) {
               newValue = parsed;
-            } else if (raw === "" || raw === "-") {
-              newValue = 0;
             } else {
               // Keep the raw string for intermediate states like "12."
               newValue = raw;
@@ -270,10 +271,21 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
             newValue = inverseRenderValue(newValue);
           }
 
-          contextOnChange(sheet!, cell!, newValue);
+          // Avoid redundant save if value didn't change
+          const previous = contextValue as unknown as string | number | undefined;
+          const prevComparable = previous === undefined || previous === null ? "" : String(previous);
+          const nextComparable = newValue === undefined || newValue === null ? "" : String(newValue);
+          if (prevComparable !== nextComparable) {
+            contextOnChange(sheet!, cell!, newValue);
+          }
         } else {
           // Handle string/text input
-          contextOnChange(sheet!, cell!, localValue);
+          const previous = contextValue as unknown as string | number | undefined;
+          const prevComparable = previous === undefined || previous === null ? "" : String(previous);
+          const nextComparable = localValue === undefined || localValue === null ? "" : String(localValue);
+          if (prevComparable !== nextComparable) {
+            contextOnChange(sheet!, cell!, localValue);
+          }
         }
       }
       

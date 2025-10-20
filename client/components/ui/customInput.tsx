@@ -355,6 +355,189 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         try {
           next?.select?.();
         } catch {}
+        return;
+      }
+
+      // Arrow key navigation with table/row awareness
+      const isArrow =
+        e.key === "ArrowUp" ||
+        e.key === "ArrowDown" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowRight";
+      if (!isArrow) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      const current = e.currentTarget as HTMLInputElement;
+
+      const isFocusable = (el: HTMLInputElement) =>
+        !el.disabled && el.tabIndex !== -1 && el.offsetParent !== null;
+
+      const focusAndSelect = (el: HTMLInputElement | null | undefined) => {
+        if (!el) return;
+        el.focus();
+        try {
+          el.select?.();
+        } catch {}
+      };
+
+      const currentCell = current.closest("td,th");
+      const currentRow = current.closest("tr");
+      const currentTable = current.closest("table");
+
+      // Helper: inputs within a row in DOM order
+      const getRowInputs = (row: HTMLTableRowElement) =>
+        Array.from(row.querySelectorAll<HTMLInputElement>("input"))
+          .filter(isFocusable);
+
+      // Helper: rows within a table in DOM order (prefer tbody rows)
+      const getTableRows = (table: HTMLTableElement) => {
+        const bodyRows = Array.from(table.querySelectorAll<HTMLTableRowElement>("tbody tr"));
+        if (bodyRows.length) return bodyRows;
+        return Array.from(table.querySelectorAll<HTMLTableRowElement>("tr"));
+      };
+
+      // Helper: all focusable inputs inside a table
+      const getTableInputs = (table: HTMLTableElement) =>
+        Array.from(table.querySelectorAll<HTMLInputElement>("input"))
+          .filter(isFocusable);
+
+      // LEFT/RIGHT: stay strictly within the same row (no wrapping to other rows)
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        if (!currentRow) return; // enforce row-only navigation
+        const rowInputs = getRowInputs(currentRow);
+        if (rowInputs.length) {
+          const idx = rowInputs.indexOf(current);
+          if (idx !== -1) {
+            if (e.key === "ArrowRight") {
+              if (idx + 1 < rowInputs.length) {
+                focusAndSelect(rowInputs[idx + 1]);
+                return;
+              }
+            } else {
+              if (idx - 1 >= 0) {
+                focusAndSelect(rowInputs[idx - 1]);
+                return;
+              }
+              // At start of row: move to the last input of the previous table
+              if (currentTable) {
+                const tables = Array.from(document.querySelectorAll<HTMLTableElement>("table"));
+                const idxTable = tables.indexOf(currentTable as HTMLTableElement);
+                if (idxTable > 0) {
+                  for (let t = idxTable - 1; t >= 0; t--) {
+                    const prevTable = tables[t];
+                    const inputs = Array.from(prevTable.querySelectorAll<HTMLInputElement>("input")).filter(isFocusable);
+                    if (inputs.length) {
+                      focusAndSelect(inputs[inputs.length - 1]);
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        // If at row edge: allow ArrowRight to move to the first input of the next table
+        if (e.key === "ArrowRight" && currentTable) {
+          const tables = Array.from(document.querySelectorAll<HTMLTableElement>("table"));
+          const idxTable = tables.indexOf(currentTable as HTMLTableElement);
+          if (idxTable !== -1) {
+            for (let t = idxTable + 1; t < tables.length; t++) {
+              const nextTable = tables[t];
+              const inputs = Array.from(nextTable.querySelectorAll<HTMLInputElement>("input")).filter(isFocusable);
+              if (inputs.length) {
+                focusAndSelect(inputs[0]);
+                return;
+              }
+            }
+          }
+        }
+        // Otherwise, no move if at row edge
+        return;
+      }
+
+      // UP/DOWN: move to closest x-aligned input in previous/next row within the same table; then across tables if needed
+      if ((e.key === "ArrowUp" || e.key === "ArrowDown") && currentRow && currentTable && currentCell) {
+        const rows = getTableRows(currentTable);
+        const rowIndex = rows.indexOf(currentRow as HTMLTableRowElement);
+        const currentRect = currentCell.getBoundingClientRect();
+        const targetX = currentRect.left + currentRect.width / 2;
+
+        const pickClosestByX = (inputs: HTMLInputElement[]) => {
+          if (inputs.length === 0) return null;
+          let best: { el: HTMLInputElement; dx: number } | null = null;
+          for (const el of inputs) {
+            const cell = el.closest("td,th");
+            if (!cell) continue;
+            const r = cell.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const dx = Math.abs(cx - targetX);
+            if (!best || dx < best.dx) best = { el, dx };
+          }
+          return best?.el || null;
+        };
+
+        if (rowIndex !== -1) {
+          if (e.key === "ArrowDown") {
+            for (let r = rowIndex + 1; r < rows.length; r++) {
+              const inputs = getRowInputs(rows[r]);
+              const candidate = pickClosestByX(inputs);
+              if (candidate) {
+                focusAndSelect(candidate);
+                return;
+              }
+            }
+          } else {
+            for (let r = rowIndex - 1; r >= 0; r--) {
+              const inputs = getRowInputs(rows[r]);
+              const candidate = pickClosestByX(inputs);
+              if (candidate) {
+                focusAndSelect(candidate);
+                return;
+              }
+            }
+          }
+        }
+
+        // Across tables: find next table above/below and choose closest x
+        const allTables = Array.from(document.querySelectorAll<HTMLTableElement>("table"));
+        const tableRect = currentTable.getBoundingClientRect();
+        const currentTableY = tableRect.top + tableRect.height / 2;
+        type TableWithY = { t: HTMLTableElement; y: number };
+        const tableCenters: TableWithY[] = allTables
+          .filter((t) => t !== currentTable)
+          .map((t) => {
+            const r = t.getBoundingClientRect();
+            return { t, y: r.top + r.height / 2 };
+          });
+
+        const candidatesOrdered = tableCenters
+          .filter((it) => (e.key === "ArrowDown" ? it.y > currentTableY : it.y < currentTableY))
+          .sort((a, b) => (e.key === "ArrowDown" ? a.y - b.y : b.y - a.y));
+
+        for (const { t } of candidatesOrdered) {
+          const inputs = getTableInputs(t);
+          const candidate = pickClosestByX(inputs);
+          if (candidate) {
+            focusAndSelect(candidate);
+            return;
+          }
+        }
+
+        // Final fallback: move by global DOM order across all tables
+        const allInTables = Array.from(document.querySelectorAll<HTMLInputElement>("table input")).filter(isFocusable);
+        const globalIdx = allInTables.indexOf(current);
+        if (globalIdx !== -1) {
+          if (e.key === "ArrowDown") {
+            focusAndSelect(allInTables[(globalIdx + 1) % allInTables.length]);
+          } else {
+            focusAndSelect(allInTables[(globalIdx - 1 + allInTables.length) % allInTables.length]);
+          }
+          return;
+        }
+
+        return;
       }
     };
 
@@ -370,6 +553,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         className={cn(
           "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300",
           isInteractive && "focus:border-primary",
+          !isInteractive && "focus:border-red-500 focus:border-2",
           numberAlignClass,
           negativeClass,
           prefix && "pl-8",

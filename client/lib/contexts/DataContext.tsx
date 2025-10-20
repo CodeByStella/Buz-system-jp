@@ -336,18 +336,21 @@ export const DataProvider: React.FC<{
 
       const { row, col } = cellToIndices(cellRef);
 
+      // Guard: never send updates for cells that were formulas in the original data
+      const originalData = originalDataMap.get(cellKey);
+      if (originalData && typeof originalData.value === "string" && originalData.value.trim().startsWith("=")) {
+        return; // skip updates to originally-formula cells entirely
+      }
+
       // Get the cell contents (formula or value)
       const cellContents = hf.getCellSerialized({ sheet: sheetId, row, col });
 
       // Determine the value to save
       let valueToSave: number | string | null = null;
 
-      if (
-        typeof cellContents === "string" &&
-        cellContents.trim().startsWith("=")
-      ) {
-        // This is a formula - save the formula string
-        valueToSave = cellContents;
+      // Guard: never send formulas to the backend
+      if (typeof cellContents === "string" && cellContents.trim().startsWith("=")) {
+        return; // user entered a formula or kept a formula; do not send
       } else {
         // This is a regular value - get the actual value
         const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
@@ -359,8 +362,6 @@ export const DataProvider: React.FC<{
           valueToSave = cellValue as number | string;
         }
       }
-
-      const originalData = originalDataMap.get(cellKey);
 
       // Check if the value actually changed
       if (!originalData && valueToSave !== "") {

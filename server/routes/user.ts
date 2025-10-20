@@ -78,6 +78,10 @@ router.post('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
     const { sheet, cell, value } = req.body
     const userId = req.user!.id
+    // Reject attempts to save formulas
+    if (typeof value === 'string' && value.trim().startsWith('=')) {
+      return res.status(400).json({ error: '数式セルは更新できません' })
+    }
     
     // Use findOneAndUpdate with upsert option to update if exists, create if not
     const userInput = await Data.findOneAndUpdate(
@@ -110,9 +114,14 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
     if (!Array.isArray(inputs)) {
       return res.status(400).json({ error: '入力データは配列である必要があります' })
     }
+    // Filter out any attempts to update formulas
+    const sanitizedInputs = inputs.filter((i: any) => !(typeof i.value === 'string' && String(i.value).trim().startsWith('=')))
+    if (sanitizedInputs.length === 0) {
+      return res.json({ success: true, modified: 0, inserted: 0, total: 0 })
+    }
     // Use bulkWrite for efficient upsert operations
     const userId = req.user!.id
-    const bulkOps = inputs.map((input) => ({
+    const bulkOps = sanitizedInputs.map((input: any) => ({
       updateOne: {
         filter: { user: userId, sheet: input.sheet, cell: input.cell },
         update: {
@@ -133,7 +142,7 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
       success: true,
       modified: result.modifiedCount,
       inserted: result.upsertedCount,
-      total: inputs.length
+      total: sanitizedInputs.length
     })
   } catch (error) {
     console.error('Bulk save input error:', error)

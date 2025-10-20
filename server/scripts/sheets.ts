@@ -31,7 +31,7 @@ const buildSheetData = (
 };
 
 // Sheet data definitions
-const sheetsData: Record<string, { [cell: string]: string | number }> = {
+export const sheetsData: Record<string, { [cell: string]: string | number }> = {
   start: {
     C7: "=C6-G102",
     C8: '=IFERROR(C7/C6,"")',

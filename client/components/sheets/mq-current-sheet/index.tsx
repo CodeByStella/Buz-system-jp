@@ -154,86 +154,86 @@ export default function MQCurrentSheet() {
 
   return (
     <>
-    <div className="h-full flex flex-col space-y-4  ">
-      <div className="lg:flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">MQ会計(現状)</h1>
-          <p className="text-gray-600">このページで元データを入力します。</p>
-        </div>
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => setShowResetModal(true)}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
-        </div>
-      </div>
-      <div className="grid grid-rows-4 gap-2 flex-1 min-h-0">
-        {/* Row 1 - Horizontal Grid */}
-        <div className="grid lg:grid-cols-2 gap-2 row-span-3 h-full ">
-          <AdvancedTable
-            columns={resultTableColumns}
-            data={resultTable_cells}
-            bordered
-            dense
-            hideHeader
-            cellClassName="!bg-yellow-300"
-          />
-          <AdvancedTable
-            columns={inputTableColumns}
-            data={inputTable_cells}
-            bordered
-            dense
-            hideHeader
-          />
-        </div>
-
-        {/* Row 2 - Memo Section */}
-        <div className="border border-gray-300rounded-lg shadow-sm flex flex-c2l bg-white">
-          <div className="flex-shrink-0 p-3 border-b border-gray-200">
-            <label className="font-semibold text-gray-900">メモ:</label>
+      <div className="h-full flex flex-col space-y-4  ">
+        <div className="lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">MQ会計(現状)</h1>
+            <p className="text-gray-600">このページで元データを入力します。</p>
           </div>
-          <div className="flex-1 p-3 min-h-0">
-            <CustomTextarea
-              sheet={sheetName}
-              cell="C24"
-              placeholder="メモを入力してください..."
-              className="w-full h-full border-0 resize-none focus:ring-0 focus:outline-none text-gray-700"
-              rows={6}
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
+        </div>
+        <div className="grid grid-rows-4 gap-2 flex-1 min-h-0">
+          {/* Row 1 - Horizontal Grid */}
+          <div className="grid lg:grid-cols-2 gap-2 row-span-3 h-full ">
+            <AdvancedTable
+              columns={resultTableColumns}
+              data={resultTable_cells}
+              bordered
+              dense
+              hideHeader
+              cellClassName="!bg-yellow-300"
+            />
+            <AdvancedTable
+              columns={inputTableColumns}
+              data={inputTable_cells}
+              bordered
+              dense
+              hideHeader
             />
           </div>
+
+          {/* Row 2 - Memo Section */}
+          <div className="border border-gray-300rounded-lg shadow-sm flex flex-c2l bg-white">
+            <div className="flex-shrink-0 p-3 border-b border-gray-200">
+              <label className="font-semibold text-gray-900">メモ:</label>
+            </div>
+            <div className="flex-1 p-3 min-h-0">
+              <CustomTextarea
+                sheet={sheetName}
+                cell="C24"
+                placeholder="メモを入力してください..."
+                className="w-full h-full border-0 resize-none focus:ring-0 focus:outline-none text-gray-700"
+                rows={6}
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    
-    {/* Reset Confirmation Modal */}
-    <ConfirmationModal
-      isOpen={showResetModal}
-      onClose={() => setShowResetModal(false)}
-      onConfirm={() => {
-        clearSheet(sheetName);
-        setShowResetModal(false);
-      }}
-      title="全入力クリアの確認"
-      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-      confirmText="クリア"
-      cancelText="キャンセル"
-      confirmVariant="destructive"
-    />
+
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
     </>
   );
 }

@@ -169,6 +169,7 @@ export function UserManagement() {
       setUsers(users.map((u) => (u.id === userId ? updatedUser : u)));
       setEditing(null);
       setEditForm({});
+      setToast({ type: "success", message: "ユーザー情報を更新しました" });
     } catch (error) {
       console.error("Failed to update user:", error);
       setToast({ type: "error", message: "ユーザーの更新に失敗しました" });
@@ -180,6 +181,7 @@ export function UserManagement() {
       await adminService.deleteUser(userId);
       setUsers(users.filter((u) => u.id !== userId));
       setConfirmAction(null);
+      setToast({ type: "success", message: "ユーザーを削除しました" });
     } catch (error) {
       console.error("Failed to delete user:", error);
       setToast({ type: "error", message: "ユーザーの削除に失敗しました" });
@@ -198,6 +200,7 @@ export function UserManagement() {
       );
       setUsers(users.map((u) => (u.id === userId ? updatedUser : u)));
       setConfirmAction(null);
+      setToast({ type: "success", message: `ユーザーを${newStatus === "ACTIVE" ? "再開" : "停止"}しました` });
     } catch (error) {
       console.error("Failed to update user status:", error);
       setToast({ type: "error", message: "ユーザー状態の更新に失敗しました" });

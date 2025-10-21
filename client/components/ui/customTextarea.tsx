@@ -57,6 +57,12 @@ const CustomTextarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     
     // Handle focus events for tip display
     const handleFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      // CRITICAL FIX: Prevent focus on readonly cells
+      if (props.readOnly) {
+        e.currentTarget.blur();
+        return;
+      }
+      
       setIsFocused(true)
       updateTooltipPosition()
       props.onFocus?.(e)
@@ -84,6 +90,12 @@ const CustomTextarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     
     // Handle change event - use context if available, otherwise use prop
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      // CRITICAL FIX: Prevent changes to readonly cells
+      if (props.readOnly) {
+        e.preventDefault();
+        return;
+      }
+      
       if (hasContext && contextOnChange) {
         const newValue = e.target.value;
         contextOnChange(sheet!, cell!, newValue);
@@ -98,7 +110,7 @@ const CustomTextarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         onBlur={handleBlur}
         onChange={handleChange}
         className={cn(
-          "w-full h-full box-border border-2 border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300 resize-none",
+          "w-full h-full box-border border-2 border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300 read-only:cursor-default resize-none",
           isInteractive && "focus:border-primary",
           className
         )}

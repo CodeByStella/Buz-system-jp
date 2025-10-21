@@ -232,6 +232,12 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
 
     // Handle focus events for tip display
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      // CRITICAL FIX: Prevent focus on readonly cells
+      if (props.readOnly) {
+        e.currentTarget.blur();
+        return;
+      }
+      
       setIsFocused(true);
       updateTooltipPosition();
       props.onFocus?.(e);
@@ -242,7 +248,8 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       setTooltipPosition(null);
       
       // Process and save the final value when user leaves the input
-      if (hasContext && contextOnChange) {
+      // CRITICAL FIX: Only process changes for non-readonly cells
+      if (hasContext && contextOnChange && !props.readOnly) {
         if (type === "number") {
           // Handle numeric input
           const raw = useThousandsFormatting
@@ -323,6 +330,12 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
 
     // Handle change event - only update local state, don't trigger context changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      // CRITICAL FIX: Prevent changes to readonly cells
+      if (props.readOnly) {
+        e.preventDefault();
+        return;
+      }
+      
       // Store the raw input value in local state
       setLocalValue(e.target.value);
       
@@ -337,13 +350,23 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       props.onKeyDown?.(e);
       if (e.defaultPrevented) return;
 
+      // CRITICAL FIX: Prevent keyboard input on readonly cells (except navigation keys)
+      if (props.readOnly) {
+        // Allow only navigation keys (Enter, Arrow keys, Tab, Escape)
+        const navigationKeys = ["Enter", "Tab", "Escape", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+        if (!navigationKeys.includes(e.key)) {
+          e.preventDefault();
+          return;
+        }
+      }
+
       // Enter navigation: move focus to next input in same sheet (DOM order)
       if (e.key === "Enter") {
         e.preventDefault();
         const selector = sheet ? `input[data-sheet="${sheet}"]` : "input";
         const allInputs = Array.from(
           document.querySelectorAll<HTMLInputElement>(selector)
-        ).filter((el) => !el.disabled && el.tabIndex !== -1);
+        ).filter((el) => !el.disabled && el.tabIndex !== -1 && !el.readOnly);
         const current = e.currentTarget;
         const idx = allInputs.indexOf(current);
         const next =
@@ -372,7 +395,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       const current = e.currentTarget as HTMLInputElement;
 
       const isFocusable = (el: HTMLInputElement) =>
-        !el.disabled && el.tabIndex !== -1 && el.offsetParent !== null;
+        !el.disabled && el.tabIndex !== -1 && el.offsetParent !== null && !el.readOnly;
 
       const focusAndSelect = (el: HTMLInputElement | null | undefined) => {
         if (!el) return;
@@ -551,7 +574,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         onKeyDown={handleKeyDown}
         onChange={handleChange}
         className={cn(
-          "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300",
+          "absolute inset-0 w-full h-full box-border border-2 border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-700 read-only:bg-yellow-300 read-only:cursor-default",
           isInteractive && "focus:border-primary",
           !isInteractive && "focus:border-red-500 focus:border-2",
           numberAlignClass,

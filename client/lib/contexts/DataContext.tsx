@@ -258,6 +258,14 @@ export const DataProvider: React.FC<{
     const cellKey = `${sheet}:${cell}`;
 
     try {
+      // CRITICAL FIX: Prevent overwriting formula cells with non-formula values
+      if (formulaCellsRef.current.has(cellKey) && !isFormula(value)) {
+        console.warn(
+          `Attempted to overwrite formula cell ${cellKey} with non-formula value: ${value}. Ignoring change to preserve formula.`
+        );
+        return; // Exit early to prevent formula overwrite
+      }
+
       // Sanitize the value before setting it
       let sanitizedValue = value;
       if (typeof value === "string") {

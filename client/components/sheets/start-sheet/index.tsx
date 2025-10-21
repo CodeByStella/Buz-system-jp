@@ -277,6 +277,27 @@ export default function StartSheet() {
           );
         },
       },
+      {
+        key: "number",
+        title: "期名",
+        width: 100,
+        align: "center",
+        cellClassName: "!p-0 !h-full relative",
+        render: (value: string, record: InfoRowDataType, index: number) => {
+          return (
+            <CustomInput
+              type="number"
+              sheet={sheetName}
+              cell={value}
+              prefix="第"
+              suffix="期"
+              height="full"
+              formatAsInteger={true}
+              className={`border-transparent h-full text-lg text-center p-2 font-semibold`}
+            />
+          );
+        },
+      },
     ],
     [sheetName]
   );

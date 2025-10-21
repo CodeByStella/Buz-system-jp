@@ -33,6 +33,7 @@ export default function ProgressResultInputSheet() {
     errorMessage,
     retry,
     clearSheet,
+    getCell,
   } = useDataContext();
 
   const sheetName: SheetNameType = "progress_result_input";
@@ -280,241 +281,246 @@ export default function ProgressResultInputSheet() {
 
   return (
     <>
-    <div className="h-full flex flex-col space-y-4 ">
-      <div className="lg:flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            進捗実績入力シート
-          </h1>
-          <p className="text-gray-600">短期計画 - 目標売上成長率</p>
-        </div>
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => setShowResetModal(true)}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
-        </div>
-      </div>
-
-      {/* Important notice */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
-          <span className="font-semibold">
-            毎月の試算表が届き次第、実績を加算していく。その際に目標より高くなればその項目は目標よりオーバーしている事になり、注意が必要。経費が掛かりすぎてないか、
-          </span>
-        </div>
-        <div className="max-w-xs w-full">
-          <AdvancedTable
-            columns={totalTableColumns}
-            data={[
-              {
-                total: "C3",
-                growth_rate: "L2",
-              },
-            ]}
-            bordered
-            dense
-            className="border-none"
-            cellClassName="!p-0"
-          />
-        </div>
-      </div>
-
-      <div className="flex-1 min-h-0 ">
-        <div className="h-full overflow-auto">
-          <div className="grid lg:grid-cols-2 gap-4 h-full">
-            {/* Left Column */}
-            <div className="flex flex-col space-y-4 h-full">
-              {/* Top Section */}
-              <div className="flex-1 flex flex-col space-y-2">
-                {/* 決算目標 */}
-                <div>
-                  <AdvancedTable
-                    columns={leftTableColumns}
-                    data={settlementTarget_cells}
-                    bordered
-                    className="h-full"
-                    dense
-                    cellClassName="!p-0"
-                  />
-                </div>
-
-                {/* 経費(固定) */}
-                <div>
-                  <AdvancedTable
-                    columns={leftTableColumns}
-                    data={fixedExpenses_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                    title={
-                      <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
-                        経費(固定)
-                      </div>
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* Bottom Section */}
-              <div className="flex-1 flex flex-col space-y-2">
-                {/* 事業費 */}
-                <div>
-                  <AdvancedTable
-                    title={
-                      <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
-                        経費内訳 - 事業費
-                      </div>
-                    }
-                    columns={leftTableColumns}
-                    data={businessExpenses_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                  />
-                </div>
-
-                {/* 人件費内訳 */}
-                <div>
-                  <AdvancedTable
-                    title={
-                      <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
-                        人件費内訳
-                      </div>
-                    }
-                    columns={leftTableColumns}
-                    data={personnelCost_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                  />
-                </div>
-
-                {/* 販売促進費 */}
-                <div>
-                  <AdvancedTable
-                    title={
-                      <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
-                        販売促進費
-                      </div>
-                    }
-                    columns={leftTableColumns}
-                    data={salesPromotion_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                  />
-                </div>
-              </div>
+      <div className="h-full flex flex-col space-y-4 ">
+        <div className="lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              進捗実績入力シート
+            </h1>
+            <p className="text-gray-600">短期計画 - 目標売上成長率</p>
+          </div>
+          {getCell("start", "G1") && (
+            <div className="text-gray-600 mr-24">
+              (第 {getCell("start", "G1") as string} 期)
             </div>
+          )}
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
+        </div>
 
-            {/* Right Column */}
-            <div className="flex flex-col space-y-4 h-full">
-              {/* Top Section */}
-              <div className="flex-1 flex flex-col space-y-2">
-                {/* 製造原価内訳 - 事業費 */}
-                <div>
-                  <AdvancedTable
-                    columns={rightTableColumns}
-                    data={manufacturingBusinessExpenses_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                    className="h-full"
-                    title={
-                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
-                        製造原価内訳 - 事業費
-                      </div>
-                    }
-                  />
+        {/* Important notice */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="bg-yellow-100 p-1 h-full px-3 border w-full border-yellow-300 text-sm text-gray-700">
+            <span className="font-semibold">
+              毎月の試算表が届き次第、実績を加算していく。その際に目標より高くなればその項目は目標よりオーバーしている事になり、注意が必要。経費が掛かりすぎてないか、
+            </span>
+          </div>
+          <div className="max-w-xs w-full">
+            <AdvancedTable
+              columns={totalTableColumns}
+              data={[
+                {
+                  total: "C3",
+                  growth_rate: "L2",
+                },
+              ]}
+              bordered
+              dense
+              className="border-none"
+              cellClassName="!p-0"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 ">
+          <div className="h-full overflow-auto">
+            <div className="grid lg:grid-cols-2 gap-4 h-full">
+              {/* Left Column */}
+              <div className="flex flex-col space-y-4 h-full">
+                {/* Top Section */}
+                <div className="flex-1 flex flex-col space-y-2">
+                  {/* 決算目標 */}
+                  <div>
+                    <AdvancedTable
+                      columns={leftTableColumns}
+                      data={settlementTarget_cells}
+                      bordered
+                      className="h-full"
+                      dense
+                      cellClassName="!p-0"
+                    />
+                  </div>
+
+                  {/* 経費(固定) */}
+                  <div>
+                    <AdvancedTable
+                      columns={leftTableColumns}
+                      data={fixedExpenses_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                      title={
+                        <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                          経費(固定)
+                        </div>
+                      }
+                    />
+                  </div>
                 </div>
 
-                {/* 製造原価内訳 - 人件費 */}
-                <div>
-                  <AdvancedTable
-                    columns={rightTableColumns}
-                    data={manufacturingPersonnelCost_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                    title={
-                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
-                        製造原価内訳 - 人件費
-                      </div>
-                    }
-                  />
+                {/* Bottom Section */}
+                <div className="flex-1 flex flex-col space-y-2">
+                  {/* 事業費 */}
+                  <div>
+                    <AdvancedTable
+                      title={
+                        <div className="bg-orange-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                          経費内訳 - 事業費
+                        </div>
+                      }
+                      columns={leftTableColumns}
+                      data={businessExpenses_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                    />
+                  </div>
+
+                  {/* 人件費内訳 */}
+                  <div>
+                    <AdvancedTable
+                      title={
+                        <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                          人件費内訳
+                        </div>
+                      }
+                      columns={leftTableColumns}
+                      data={personnelCost_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                    />
+                  </div>
+
+                  {/* 販売促進費 */}
+                  <div>
+                    <AdvancedTable
+                      title={
+                        <div className="bg-yellow-300 w-full text-black px-3 py-2 text-sm font-semibold">
+                          販売促進費
+                        </div>
+                      }
+                      columns={leftTableColumns}
+                      data={salesPromotion_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Bottom Section */}
-              <div className="flex-1 flex flex-col space-y-2">
-                {/* 製造原価内訳 - 販売促進費 */}
-                <div>
-                  <AdvancedTable
-                    title={
-                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
-                        製造原価内訳 - 販売促進費
-                      </div>
-                    }
-                    columns={rightTableColumns}
-                    data={manufacturingSalesPromotion_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                  />
+              {/* Right Column */}
+              <div className="flex flex-col space-y-4 h-full">
+                {/* Top Section */}
+                <div className="flex-1 flex flex-col space-y-2">
+                  {/* 製造原価内訳 - 事業費 */}
+                  <div>
+                    <AdvancedTable
+                      columns={rightTableColumns}
+                      data={manufacturingBusinessExpenses_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                      className="h-full"
+                      title={
+                        <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                          製造原価内訳 - 事業費
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  {/* 製造原価内訳 - 人件費 */}
+                  <div>
+                    <AdvancedTable
+                      columns={rightTableColumns}
+                      data={manufacturingPersonnelCost_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                      title={
+                        <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                          製造原価内訳 - 人件費
+                        </div>
+                      }
+                    />
+                  </div>
                 </div>
 
-                {/* 製造原価内訳 - 経費（固定）*/}
-                <div>
-                  <AdvancedTable
-                    title={
-                      <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
-                        製造原価内訳 - 経費（固定）
-                      </div>
-                    }
-                    columns={rightTableColumns}
-                    data={manufacturingFixedExpenses_cells}
-                    bordered
-                    dense
-                    cellClassName="!p-0"
-                  />
+                {/* Bottom Section */}
+                <div className="flex-1 flex flex-col space-y-2">
+                  {/* 製造原価内訳 - 販売促進費 */}
+                  <div>
+                    <AdvancedTable
+                      title={
+                        <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                          製造原価内訳 - 販売促進費
+                        </div>
+                      }
+                      columns={rightTableColumns}
+                      data={manufacturingSalesPromotion_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                    />
+                  </div>
+
+                  {/* 製造原価内訳 - 経費（固定）*/}
+                  <div>
+                    <AdvancedTable
+                      title={
+                        <div className="bg-blue-400 w-full text-white px-3 py-2 text-sm font-semibold">
+                          製造原価内訳 - 経費（固定）
+                        </div>
+                      }
+                      columns={rightTableColumns}
+                      data={manufacturingFixedExpenses_cells}
+                      bordered
+                      dense
+                      cellClassName="!p-0"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    {/* Reset Confirmation Modal */}
-    <ConfirmationModal
-      isOpen={showResetModal}
-      onClose={() => setShowResetModal(false)}
-      onConfirm={() => {
-        clearSheet(sheetName);
-        setShowResetModal(false);
-      }}
-      title="全入力クリアの確認"
-      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-      confirmText="クリア"
-      cancelText="キャンセル"
-      confirmVariant="destructive"
-    />
+
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
     </>
   );
 }

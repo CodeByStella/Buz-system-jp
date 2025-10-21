@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   ProfitRowDataType,
@@ -17,8 +17,10 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
 import { PDFExportButton } from "@/components/ui/pdfExportButton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function ProfitSheet() {
+  const [showResetModal, setShowResetModal] = useState(false);
   const {
     onSave,
     saving,
@@ -161,90 +163,99 @@ export default function ProfitSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 ">
-      <div className="lg:flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">① 利益を決めよう</h1>
-          <p className="text-gray-600">
-            営業利益、営業外収益・費用、特別利益・損失を入力して利益を計算します。
-          </p>
-        </div>
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-                )
-              ) {
-                clearSheet(sheetName);
-              }
-            }}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
-        </div>
-      </div>
-
-      {/* Header with example note */}
-      <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
-        <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
-      </div>
-
-      <div className="lg:grid lg:grid-cols-2 gap-4 flex-1 min-h-0">
-        {/* Left side - Ordinary Profit Calculation */}
-        <div className="flex flex-col space-y-4">
-          {/* <div className="bg-white border border-gray-300 rounded-lg shadow-sm "> */}
-          <AdvancedTable
-            columns={profitTableColumns}
-            data={ordinaryProfit_cells}
-            bordered
-            dense
-            hideHeader
-            maxHeight={"300px"}
-            cellClassName="!p-0"
-          />
-          {/* </div> */}
+    <>
+      <div className="h-full flex flex-col space-y-4 ">
+        <div className="lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">① 利益を決めよう</h1>
+            <p className="text-gray-600">
+              営業利益、営業外収益・費用、特別利益・損失を入力して利益を計算します。
+            </p>
+          </div>
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
         </div>
 
-        {/* Right side - Profit Before Tax Calculation */}
-        <div className="flex flex-col space-y-4 lg:m-0 mt-8">
-          <AdvancedTable
-            columns={profitTableColumns}
-            data={profitBeforeTax_cells}
-            bordered
-            dense
-            hideHeader
-            maxHeight={"300px"}
-            cellClassName="!p-0"
-          />
+        {/* Header with example note */}
+        <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
+        </div>
 
-          {/* Year-on-year comparison */}
-          <AdvancedTable
-            columns={comparisonTableColumns}
-            data={comparison_cells}
-            bordered
-            dense
-            hideHeader
-            maxHeight={"100px"}
-            cellClassName="!p-0"
-          />
+        <div className="lg:grid lg:grid-cols-2 gap-4 flex-1 min-h-0">
+          {/* Left side - Ordinary Profit Calculation */}
+          <div className="flex flex-col space-y-4">
+            {/* <div className="bg-white border border-gray-300 rounded-lg shadow-sm "> */}
+            <AdvancedTable
+              columns={profitTableColumns}
+              data={ordinaryProfit_cells}
+              bordered
+              dense
+              hideHeader
+              maxHeight={"300px"}
+              cellClassName="!p-0"
+            />
+            {/* </div> */}
+          </div>
+
+          {/* Right side - Profit Before Tax Calculation */}
+          <div className="flex flex-col space-y-4 lg:m-0 mt-8">
+            <AdvancedTable
+              columns={profitTableColumns}
+              data={profitBeforeTax_cells}
+              bordered
+              dense
+              hideHeader
+              maxHeight={"300px"}
+              cellClassName="!p-0"
+            />
+
+            {/* Year-on-year comparison */}
+            <AdvancedTable
+              columns={comparisonTableColumns}
+              data={comparison_cells}
+              bordered
+              dense
+              hideHeader
+              maxHeight={"100px"}
+              cellClassName="!p-0"
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
+    </>
   );
 }

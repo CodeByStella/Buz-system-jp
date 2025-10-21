@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   MQFutureResultCell,
@@ -16,8 +16,10 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
 import { PDFExportButton } from "@/components/ui/pdfExportButton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function MQFutureSheet() {
+  const [showResetModal, setShowResetModal] = useState(false);
   const {
     onSave,
     saving,
@@ -185,123 +187,132 @@ export default function MQFutureSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-3 sm:space-y-4  p-2 sm:p-4 lg:p-0">
-      {/* Header Section */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">② MQ会計(未来)</h1>
-          <p className="text-gray-600">
-            目標値と客単価・数量を設定してMQ会計の未来計画を立てます。
-          </p>
+    <>
+      <div className="h-full flex flex-col space-y-3 sm:space-y-4  p-2 sm:p-4 lg:p-0">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-gray-900">② MQ会計(未来)</h1>
+            <p className="text-gray-600">
+              目標値と客単価・数量を設定してMQ会計の未来計画を立てます。
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-                )
-              ) {
-                clearSheet(sheetName);
+        {/* Unit Note */}
+        <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
+          <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto lg:">
+          {/* Left side - MQ Results */}
+          <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
+            <AdvancedTable
+              columns={resultTableColumns}
+              data={mqFutureResults_cells}
+              bordered
+              dense
+              hideHeader
+              cellClassName="!p-0 "
+              className="overflow-auto"
+              // className="!h-full"
+              footerContent={
+                <div className="text-xs sm:text-sm bg-yellow-300 p-3 sm:p-4 space-y-2">
+                  <p className="leading-relaxed">
+                    ①まず初めにGの目標値を決めましょう。これは社長自身がいくらの利益を残したいのかを決定させる重要な課題です。
+                  </p>
+                  <p className="leading-relaxed">
+                    すべての決断は社長自身にあります。思い切った利益を追求しましょう！
+                  </p>
+                  <p className="leading-relaxed">
+                    ②～⑤まで順番に現状から推移して115％～200％UPまで好きな数字を目標値に入れてください。
+                  </p>
+                  <p className="leading-relaxed">
+                    数字が合うように計算しましょう
+                  </p>
+                  <div className="space-y-1 mt-2">
+                    <p>１，GはM-Fです。</p>
+                    <p>２，FはM-Gです。</p>
+                    <p>３．MはP-Vです。</p>
+                    <p>４．VはP-Mです。</p>
+                    <p>５．PはM＋Vです。</p>
+                  </div>
+                </div>
               }
-            }}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
+            />
+          </div>
+
+          {/* Right side - Unit Price per Customer */}
+          <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
+            <AdvancedTable
+              columns={unitPriceTableColumns}
+              data={mqFutureUnitPrice_cells}
+              bordered
+              dense
+              hideHeader
+              className="flex flex-col"
+              // maxHeight={"400px"}
+              footerContent={
+                <div className="h-[200px] sm:h-[250px] lg:h-full  border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
+                  <div className="flex-shrink-0 p-2 sm:p-3 border-b border-gray-200">
+                    <label className="font-semibold text-sm sm:text-base text-gray-900">
+                      メモ:
+                    </label>
+                  </div>
+                  <div className="flex-1 p-2 sm:p-3 min-h-0 overflow-auto">
+                    <CustomTextarea
+                      sheet={sheetName}
+                      cell="L25"
+                      placeholder="メモを入力してください..."
+                      className="w-full h-full min-h-[120px] border-0 resize-none focus:ring-0 focus:outline-none text-sm sm:text-base text-gray-700"
+                      rows={6}
+                    />
+                  </div>
+                </div>
+              }
+            />
+          </div>
         </div>
       </div>
 
-      {/* Unit Note */}
-      <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
-        <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 flex-1 min-h-0 overflow-auto lg:">
-        {/* Left side - MQ Results */}
-        <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
-          <AdvancedTable
-            columns={resultTableColumns}
-            data={mqFutureResults_cells}
-            bordered
-            dense
-            hideHeader
-            cellClassName="!p-0 "
-            className="overflow-auto"
-            // className="!h-full"
-            footerContent={
-              <div className="text-xs sm:text-sm bg-yellow-300 p-3 sm:p-4 space-y-2">
-                <p className="leading-relaxed">
-                  ①まず初めにGの目標値を決めましょう。これは社長自身がいくらの利益を残したいのかを決定させる重要な課題です。
-                </p>
-                <p className="leading-relaxed">
-                  すべての決断は社長自身にあります。思い切った利益を追求しましょう！
-                </p>
-                <p className="leading-relaxed">
-                  ②～⑤まで順番に現状から推移して115％～200％UPまで好きな数字を目標値に入れてください。
-                </p>
-                <p className="leading-relaxed">
-                  数字が合うように計算しましょう
-                </p>
-                <div className="space-y-1 mt-2">
-                  <p>１，GはM-Fです。</p>
-                  <p>２，FはM-Gです。</p>
-                  <p>３．MはP-Vです。</p>
-                  <p>４．VはP-Mです。</p>
-                  <p>５．PはM＋Vです。</p>
-                </div>
-              </div>
-            }
-          />
-        </div>
-
-        {/* Right side - Unit Price per Customer */}
-        <div className="flex flex-col space-y-3 sm:space-y-4 min-h-[400px] lg:min-h-0">
-          <AdvancedTable
-            columns={unitPriceTableColumns}
-            data={mqFutureUnitPrice_cells}
-            bordered
-            dense
-            hideHeader
-            className="flex flex-col"
-            // maxHeight={"400px"}
-            footerContent={
-              <div className="h-[200px] sm:h-[250px] lg:h-full  border border-gray-300 rounded-lg shadow-sm flex flex-col bg-white">
-                <div className="flex-shrink-0 p-2 sm:p-3 border-b border-gray-200">
-                  <label className="font-semibold text-sm sm:text-base text-gray-900">
-                    メモ:
-                  </label>
-                </div>
-                <div className="flex-1 p-2 sm:p-3 min-h-0 overflow-auto">
-                  <CustomTextarea
-                    sheet={sheetName}
-                    cell="L25"
-                    placeholder="メモを入力してください..."
-                    className="w-full h-full min-h-[120px] border-0 resize-none focus:ring-0 focus:outline-none text-sm sm:text-base text-gray-700"
-                    rows={6}
-                  />
-                </div>
-              </div>
-            }
-          />
-        </div>
-      </div>
-    </div>
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
+    </>
   );
 }

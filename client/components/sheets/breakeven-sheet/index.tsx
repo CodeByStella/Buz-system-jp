@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { AdvancedTable, Column } from "@/components/ui/advanced-table";
 import {
   BreakevenRowDataType,
@@ -15,8 +15,10 @@ import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
 import { PDFExportButton } from "@/components/ui/pdfExportButton";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function BreakevenSheet() {
+  const [showResetModal, setShowResetModal] = useState(false);
   const {
     onSave,
     saving,
@@ -477,104 +479,113 @@ export default function BreakevenSheet() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-4 ">
-      <div className="lg:flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">損益分岐点分析</h1>
-          <p className="text-gray-600">
-            現状と来期の損益分岐点を比較分析します。
-          </p>
-        </div>
-        <div className="flex gap-2 float-right">
-          <Button
-            variant="success"
-            leftIcon={Save}
-            loading={saving}
-            loadingText="保存中..."
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-          >
-            保存
-          </Button>
-          <Button
-            variant="outline"
-            className="border-red-500 text-red-700 hover:bg-red-50"
-            onClick={() => {
-              if (
-                window.confirm(
-                  "このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-                )
-              ) {
-                clearSheet(sheetName);
-              }
-            }}
-          >
-            全入力クリア
-          </Button>
-          <ExcelExportButton />
-          <PDFExportButton />
-        </div>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4 flex-1 min-h-0">
-        {/* Current Status (現状) */}
-        <div className="flex flex-col space-y-4">
-          <AdvancedTable
-            columns={breakevenTableColumns}
-            data={currentStatus_cells}
-            bordered
-            dense
-            hideHeader
-            maxHeight={"300px"}
-            cellClassName="!p-0"
-            title={<div className="text-center w-full p-1">来期</div>}
-          />
-
-          <BreakevenChart
-            title="来期"
-            sales={Number(data?.[sheetName]?.[1]?.[1]) || 0} // B2
-            variableCosts={Number(data?.[sheetName]?.[2]?.[1]) || 0} // B3
-            fixedCosts={Number(data?.[sheetName]?.[3]?.[1]) || 0} // B4
-            breakevenPoint={Number(data?.[sheetName]?.[5]?.[1]) || 0} // B6
-            maxValue={Math.max(
-              Number(data?.[sheetName]?.[1]?.[1]) || 0,
-              Number(data?.[sheetName]?.[2]?.[1]) || 0,
-              Number(data?.[sheetName]?.[3]?.[1]) || 0,
-              (Number(data?.[sheetName]?.[5]?.[1]) || 0) * 1.5,
-              1000000
-            )}
-          />
+    <>
+      <div className="h-full flex flex-col space-y-4 ">
+        <div className="lg:flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">損益分岐点分析</h1>
+            <p className="text-gray-600">
+              現状と来期の損益分岐点を比較分析します。
+            </p>
+          </div>
+          <div className="flex gap-2 float-right">
+            <Button
+              variant="success"
+              leftIcon={Save}
+              loading={saving}
+              loadingText="保存中..."
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+            >
+              保存
+            </Button>
+            <Button
+              variant="outline"
+              className="border-red-500 text-red-700 hover:bg-red-50"
+              onClick={() => setShowResetModal(true)}
+            >
+              全入力クリア
+            </Button>
+            <ExcelExportButton />
+            <PDFExportButton />
+          </div>
         </div>
 
-        {/* Next Period (来期) */}
-        <div className="flex flex-col space-y-4">
-          <AdvancedTable
-            columns={breakevenTableColumns}
-            data={nextPeriod_cells}
-            bordered
-            dense
-            hideHeader
-            maxHeight={"300px"}
-            cellClassName="!p-0"
-            title={<div className="text-center p-1 w-full">現状</div>}
-          />
+        <div className="grid md:grid-cols-2 gap-4 flex-1 min-h-0">
+          {/* Current Status (現状) */}
+          <div className="flex flex-col space-y-4">
+            <AdvancedTable
+              columns={breakevenTableColumns}
+              data={currentStatus_cells}
+              bordered
+              dense
+              hideHeader
+              maxHeight={"300px"}
+              cellClassName="!p-0"
+              title={<div className="text-center w-full p-1">来期</div>}
+            />
 
-          <BreakevenChart
-            title="現状"
-            sales={Number(data?.[sheetName]?.[1]?.[4]) || 0} // E2
-            variableCosts={Number(data?.[sheetName]?.[2]?.[4]) || 0} // E3
-            fixedCosts={Number(data?.[sheetName]?.[3]?.[4]) || 0} // E4
-            breakevenPoint={Number(data?.[sheetName]?.[5]?.[4]) || 0} // E6
-            maxValue={Math.max(
-              Number(data?.[sheetName]?.[1]?.[4]) || 0,
-              Number(data?.[sheetName]?.[2]?.[4]) || 0,
-              Number(data?.[sheetName]?.[3]?.[4]) || 0,
-              (Number(data?.[sheetName]?.[5]?.[4]) || 0) * 1.5,
-              1000000
-            )}
-          />
+            <BreakevenChart
+              title="来期"
+              sales={Number(data?.[sheetName]?.[1]?.[1]) || 0} // B2
+              variableCosts={Number(data?.[sheetName]?.[2]?.[1]) || 0} // B3
+              fixedCosts={Number(data?.[sheetName]?.[3]?.[1]) || 0} // B4
+              breakevenPoint={Number(data?.[sheetName]?.[5]?.[1]) || 0} // B6
+              maxValue={Math.max(
+                Number(data?.[sheetName]?.[1]?.[1]) || 0,
+                Number(data?.[sheetName]?.[2]?.[1]) || 0,
+                Number(data?.[sheetName]?.[3]?.[1]) || 0,
+                (Number(data?.[sheetName]?.[5]?.[1]) || 0) * 1.5,
+                1000000
+              )}
+            />
+          </div>
+
+          {/* Next Period (来期) */}
+          <div className="flex flex-col space-y-4">
+            <AdvancedTable
+              columns={breakevenTableColumns}
+              data={nextPeriod_cells}
+              bordered
+              dense
+              hideHeader
+              maxHeight={"300px"}
+              cellClassName="!p-0"
+              title={<div className="text-center p-1 w-full">現状</div>}
+            />
+
+            <BreakevenChart
+              title="現状"
+              sales={Number(data?.[sheetName]?.[1]?.[4]) || 0} // E2
+              variableCosts={Number(data?.[sheetName]?.[2]?.[4]) || 0} // E3
+              fixedCosts={Number(data?.[sheetName]?.[3]?.[4]) || 0} // E4
+              breakevenPoint={Number(data?.[sheetName]?.[5]?.[4]) || 0} // E6
+              maxValue={Math.max(
+                Number(data?.[sheetName]?.[1]?.[4]) || 0,
+                Number(data?.[sheetName]?.[2]?.[4]) || 0,
+                Number(data?.[sheetName]?.[3]?.[4]) || 0,
+                (Number(data?.[sheetName]?.[5]?.[4]) || 0) * 1.5,
+                1000000
+              )}
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Reset Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        onConfirm={() => {
+          clearSheet(sheetName);
+          setShowResetModal(false);
+        }}
+        title="全入力クリアの確認"
+        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
+        confirmText="クリア"
+        cancelText="キャンセル"
+        confirmVariant="destructive"
+      />
+    </>
   );
 }

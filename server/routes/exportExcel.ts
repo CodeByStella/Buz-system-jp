@@ -111,7 +111,7 @@ export const exportExcel = async (req: Request, res: Response) => {
 
     const templatePath = path.join(
       process.cwd(),
-      "templates/base_template.xlsx"
+      "templates/template.xlsx"
     );
     const zip = new AdmZip(templatePath);
 

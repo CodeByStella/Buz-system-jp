@@ -17,6 +17,8 @@ export interface InputProps
   inverseRenderValue?: (value: number) => number;
   // When true and type === "number", display with thousands separators (e.g., 10,202,000)
   formatThousands?: boolean;
+  // When true and type === "number", format as integer only (no decimal places)
+  formatAsInteger?: boolean;
 }
 
 const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
@@ -37,6 +39,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       renderValue,
       inverseRenderValue,
       formatThousands = true,
+      formatAsInteger = false,
       ...props
     },
     ref
@@ -176,12 +179,17 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
     // Format number to 1 decimal place for any numeric value (e.g., 5 -> 5.0, 12.0633 -> 12.1)
+    // Unless formatAsInteger is true, then format as integer
     if (
       type === "number" &&
       inputValue !== "" &&
       typeof inputValue === "number"
     ) {
-      inputValue = Number(inputValue).toFixed(1);
+      if (formatAsInteger) {
+        inputValue = Math.round(Number(inputValue));
+      } else {
+        inputValue = Number(inputValue).toFixed(1);
+      }
     }
 
     // Apply thousands separator formatting for display only

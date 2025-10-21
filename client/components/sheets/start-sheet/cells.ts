@@ -2,6 +2,7 @@ export interface InfoRowDataType {
   label: string;
   from: string;
   to: string;
+  number: string;
 }
 
 export interface MainRowDataType {
@@ -59,6 +60,7 @@ export const startSheet_info: InfoRowDataType[] = [
     label: "C1",
     from: "B2",
     to: "B3",
+    number:"G1",
   },
 ];  
 

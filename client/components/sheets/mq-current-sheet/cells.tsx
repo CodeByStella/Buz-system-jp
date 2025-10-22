@@ -11,6 +11,7 @@ export interface InputTableCell {
   editable: boolean;
   xDesc?: string;
   yDesc?: string;
+  tip?:string;
 }
 
 export const resultTable_cells: ResultTableCell[] = [
@@ -55,5 +56,6 @@ export const inputTable_cells: InputTableCell[] = [
     op: "×",
     y: "Q3",
     editable: true,
+    tip:"この欄は１円桁で入力する"
   },
 ];

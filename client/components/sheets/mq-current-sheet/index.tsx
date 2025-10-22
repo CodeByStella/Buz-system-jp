@@ -76,6 +76,7 @@ export default function MQCurrentSheet() {
             type="number"
             sheet={sheetName}
             cell={value}
+            tip={record.tip}
             tipClassName="text-red-500"
             className={`border-transparent h-full text-lg`}
           />

@@ -48,7 +48,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
   },
   mq_current_status: {
     B3: "=start!C6",
-    B13: "=L3*Q3/100",
+    B13: "=L3*Q3/1000000",
     F3: "=start!G102",
     F13: "=start!C7",
     H13: "=start!G103",

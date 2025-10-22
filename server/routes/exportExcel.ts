@@ -1,9 +1,10 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import path from "path";
 import { writeFileSync } from "fs";
 import AdmZip from "adm-zip";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
 import { Data } from "@/models/data";
+import { AuthenticatedRequest } from "@/middleware/auth";
 
 interface CellData {
   sheet: string;
@@ -81,12 +82,15 @@ function setCellValueInSheetXml(
   return builder.build(obj);
 }
 
-export const exportExcel = async (req: Request, res: Response) => {
+export const exportExcel = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // Query data
+    const userId = req.user!.id;
+    
+    // Query data filtered by user ID
     const data4Exp: CellData[] = (
       await Data.find(
         {
+          user: userId,
           $or: [
             { value: { $type: "number", $ne: 0 } }, // number and not 0
             {

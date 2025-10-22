@@ -529,7 +529,7 @@ export default function StartSheet() {
           </div>
         </div>
         <div className="bg-yellow-100 p-2 border w-full border-yellow-300 text-sm text-gray-700">
-          <span className="font-semibold">(百万円) 例: 2000万円→20.0</span>
+          <span className="font-semibold">(百万円) 例: 2550万円→25.5</span>
         </div>
         <div>
           <AdvancedTable

@@ -8,6 +8,7 @@ import { connectToDatabase } from "./lib/mongo";
 import authRoutes from "./routes/auth";
 import adminRoutes from "./routes/admin";
 import userRoutes from "./routes/user";
+import syncRoutes from "./routes/sync";
 import { exportExcel } from "./routes/exportExcel";
 import { exportPDF } from "./routes/exportPDF";
 import { authenticateToken } from "./middleware/auth";
@@ -53,6 +54,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/sync", syncRoutes);
 app.get("/api/export-excel", authenticateToken, exportExcel);
 app.get("/api/export-pdf", authenticateToken, exportPDF);
 

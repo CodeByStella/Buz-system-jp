@@ -16,7 +16,7 @@ import {
 } from "./cells";
 import { CustomInput } from "@/components/ui/customInput";
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, FileText, Save, Loader2 } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 import { useDataContext } from "@/lib/contexts";
 import { SheetNameType } from "@/lib/transformers/dataTransformer";
 import { ExcelExportButton } from "@/components/ui/excelExportButton";
@@ -46,15 +46,19 @@ export default function ProgressResultInputSheet() {
         width: 120,
         align: "left",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ProgressResultRowDataType) => {
+        render: (
+          value: string,
+          record: ProgressResultRowDataType,
+          index: number
+        ) => {
           return (
-            <div
-              className={
-                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium bg-gray-300"
-              }
-            >
-              {value}
-            </div>
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              readOnly
+              className={`border-transparent h-full text-sm text-left !bg-gray-300`}
+            />
           );
         },
       },
@@ -127,15 +131,19 @@ export default function ProgressResultInputSheet() {
         width: 120,
         align: "left",
         cellClassName: "!p-0 !h-full relative",
-        render: (value: string, record: ProgressResultRowDataType) => {
+        render: (
+          value: string,
+          record: ProgressResultRowDataType,
+          index: number
+        ) => {
           return (
-            <div
-              className={
-                "flex items-center h-full w-full absolute top-0 left-0 text-sm px-2 font-medium bg-gray-300"
-              }
-            >
-              {value}
-            </div>
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              readOnly
+              className={`border-transparent h-full text-sm text-left !bg-gray-300`}
+            />
           );
         },
       },

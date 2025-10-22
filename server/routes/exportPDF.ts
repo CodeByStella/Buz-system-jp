@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import path from "path";
 import {
   writeFileSync,
@@ -11,6 +11,7 @@ import AdmZip from "adm-zip";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
 import { Data } from "@/models/data";
 import ConvertAPI from "convertapi";
+import { AuthenticatedRequest } from "@/middleware/auth";
 
 interface CellData {
   sheet: string;
@@ -88,12 +89,15 @@ function setCellValueInSheetXml(
   return builder.build(obj);
 }
 
-export const exportPDF = async (req: Request, res: Response) => {
+export const exportPDF = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    // Query data
+    const userId = req.user!.id;
+    
+    // Query data filtered by user ID
     const data4Exp: CellData[] = (
       await Data.find(
         {
+          user: userId,
           $or: [
             { value: { $type: "number", $ne: 0 } }, // number and not 0
             {
@@ -118,7 +122,7 @@ export const exportPDF = async (req: Request, res: Response) => {
 
     const templatePath = path.join(
       process.cwd(),
-      "templates/base_template.xlsx"
+      "templates/template.xlsx"
     );
     const zip = new AdmZip(templatePath);
 

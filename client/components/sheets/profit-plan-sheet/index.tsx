@@ -1034,6 +1034,8 @@ export default function ProfitPlanSheet() {
                         cell="B11"
                         readOnly
                         className="border-transparent h-full text-sm text-center w-full !bg-white"
+                        suffix="%"
+                        renderValue={v=>Number(v)*100}
                       />
                     </td>
                     <td className="border border-gray-300 p-2 text-center relative">

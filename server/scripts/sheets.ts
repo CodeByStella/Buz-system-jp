@@ -509,7 +509,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     C6: "=mq_future!B3",
     C7: "=mq_future!F13",
     C8: '=IFERROR(mq_future!G16,"")',
-    C9: "=L21+L35+L46+Q44",
+    C9: "=mq_future!F3",
     C10: "=C11+C12",
     C11: "=C61+G39+G17",
     C12: "=G50",
@@ -1550,6 +1550,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     K9: "=K8/K4",
     L9: "=L8/L4",
 
+    B11: "=B6/B4",
     C11: "=B3-0.01",
     D11: "=B3-0.02",
     E11: "=B3-0.03",
@@ -1561,7 +1562,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     K11: "=B3-0.09",
     L11: "=B3-0.10",
 
-    B12: "=$B$4",
+    B12: "=manufacturing_income!F31",
     C12: "=$B$4",
     D12: "=$B$4",
     E12: "=$B$4",
@@ -1573,6 +1574,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     K12: "=$B$4",
     L12: "=$B$4",
 
+    B13: "=mq_future!F3*1000000",
     C13: "=C12-C14",
     D13: "=D12-D14",
     E13: "=E12-E14",
@@ -1584,6 +1586,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     K13: "=K12-K14",
     L13: "=L12-L14",
 
+    B14: "=B4-B5",
     C14: "=$B$4*C11",
     D14: "=$B$4*D11",
     E14: "=$B$4*E11",
@@ -1607,6 +1610,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     K15: "=B15",
     L15: "=B15",
 
+    B16: "=B4-B5-B7",
     C16: "=C12-C13-C15",
     D16: "=D12-D13-D15",
     E16: "=E12-E13-E15",

@@ -23,7 +23,7 @@ import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 export default function StartSheet() {
   const [showResetModal, setShowResetModal] = useState(false);
-  const { onSave, saving, hasChanges, loading, clearSheet } = useDataContext();
+  const { onSave, saving, hasChanges, loading, clearSheet, resetAllData, resetting } = useDataContext();
 
   const sheetName = "start";
 
@@ -417,14 +417,18 @@ export default function StartSheet() {
         align: "center",
         cellClassName: "!p-0 !h-full relative",
         render: (value: string, record: OthersRowDataType, index: number) => {
-          // For label, value is just a text string, not a cell reference
-          // Could be enhanced later to support cell references if needed
-          const baseClass =
-            "flex items-center justify-center h-full w-full absolute top-0 left-0";
-          const labelClass = record.editable
-            ? baseClass
-            : `bg-violet-500 ${baseClass}`;
-          return <div className={labelClass}>{value}</div>;
+          return record.editable ? (
+            <CustomInput
+              type="text"
+              sheet={sheetName}
+              cell={value}
+              className={`border-transparent h-full text-center`}
+            />
+          ) : (
+            <div className="bg-violet-500 flex items-center justify-center h-full w-full absolute top-0 left-0">
+              {value}
+            </div>
+          );
         },
       },
       {
@@ -439,7 +443,6 @@ export default function StartSheet() {
               type="number"
               sheet={sheetName}
               cell={value}
-              disabled={!record.editable}
               className={`border-transparent h-full text-right`}
             />
           ) : (
@@ -522,7 +525,7 @@ export default function StartSheet() {
               className="border-red-500 text-red-700 hover:bg-red-50"
               onClick={() => setShowResetModal(true)}
             >
-              全入力クリア
+              全データリセット
             </Button>
             <ExcelExportButton />
             <PDFExportButton />
@@ -542,7 +545,7 @@ export default function StartSheet() {
           />
         </div>
         <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
-          <div className="overflow-auto lg:col-span-2 col-span-3 flex flex-col h-[72vh]">
+          <div className=" lg:col-span-2 col-span-3 flex flex-col h-full">
             <AdvancedTable
               columns={startSheetCols_main as any}
               data={startSheet_main as any}
@@ -553,7 +556,7 @@ export default function StartSheet() {
             />
           </div>
           <div className="lg:w-full grid lg:col-span-1 col-span-3 h-full  grid-rows-6 gap-2">
-            <div className="row-span-1 border border-black bg-yellow-200 p-1 lg:h-full">
+            <div className="row-span-1 border border-black bg-yellow-200 p-1 lg:h-fit">
               <p className="text-xs text-gray-600">
                 決算書を見ながら一つ一つ直近の数字を入力していく。
               </p>
@@ -565,7 +568,7 @@ export default function StartSheet() {
               </p>
             </div>
 
-            <div className="row-span-3  h-full">
+            <div className="row-span-3  h-fit">
               <AdvancedTable
                 columns={startSheetCols_others as any}
                 data={startSheet_others as any}
@@ -600,15 +603,16 @@ export default function StartSheet() {
       <ConfirmationModal
         isOpen={showResetModal}
         onClose={() => setShowResetModal(false)}
-        onConfirm={() => {
-          clearSheet(sheetName);
+        onConfirm={async () => {
+          await resetAllData();
           setShowResetModal(false);
         }}
-        title="全入力クリアの確認"
-        message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-        confirmText="クリア"
+        title="全データリセットの確認"
+        message="すべてのデータを初期状態にリセットします。よろしいですか？この操作は元に戻せません。"
+        confirmText="リセット"
         cancelText="キャンセル"
         confirmVariant="destructive"
+        isLoading={resetting}
       />
     </>
   );

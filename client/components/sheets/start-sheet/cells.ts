@@ -28,7 +28,6 @@ export interface OthersRowDataType {
   no: string;
   label: string;
   value: string;
-  parent_key: string;
   editable: boolean;
 }
 
@@ -60,9 +59,9 @@ export const startSheet_info: InfoRowDataType[] = [
     label: "C1",
     from: "B2",
     to: "B3",
-    number:"G1",
+    number: "G1",
   },
-];  
+];
 
 export const startSheet_main: MainRowDataType[] = [
   {
@@ -1447,75 +1446,125 @@ export const startSheet_main: MainRowDataType[] = [
 export const startSheet_others: OthersRowDataType[] = [
   {
     no: "",
-    parent_key: "",
     label: "営業外収益名称",
     value: "金額",
     editable: false,
   },
   {
     no: "営01",
-    parent_key: "non_operating_income_name",
-    label: "土地売却益",
+    label: "F64",
     value: "G64",
     editable: true,
   },
   {
     no: "営02",
-    parent_key: "non_operating_income_name",
-    label: "不動産賃貸",
+    label: "F65",
     value: "G65",
+    editable: true,
+  },
+  {
+    no: "営03",
+    label: "F66",
+    value: "G66",
+    editable: true,
+  },
+  {
+    no: "営04",
+    label: "F67",
+    value: "G67",
     editable: true,
   },
 
   {
     no: "",
-    parent_key: "",
     label: "営業外費用名称",
     value: "金額",
     editable: false,
   },
   {
     no: "営01",
-    parent_key: "non_operating_expenses_name",
-    label: "有価証券評価損",
+    label: "F69",
     value: "G69",
+    editable: true,
+  },
+  {
+    no: "営02",
+    label: "F70",
+    value: "G70",
+    editable: true,
+  },
+  {
+    no: "営03",
+    label: "F71",
+    value: "G71",
+    editable: true,
+  },
+  {
+    no: "営04",
+    label: "F72",
+    value: "G72",
     editable: true,
   },
 
   {
     no: "",
-    parent_key: "",
     label: "特別利益・除却益名称",
     value: "金額",
     editable: false,
   },
   {
     no: "営01",
-    parent_key: "extraordinary_gain_name",
-    label: "土地売却益",
+    label: "F74",
     value: "G74",
     editable: true,
   },
   {
     no: "営02",
-    parent_key: "extraordinary_gain_name",
-    label: "事業再構築補助",
+    label: "F75",
     value: "G75",
+    editable: true,
+  },
+  {
+    no: "営03",
+    label: "F76",
+    value: "G76",
+    editable: true,
+  },
+  {
+    no: "営02",
+    label: "F77",
+    value: "G77",
     editable: true,
   },
 
   {
     no: "",
-    parent_key: "",
     label: "特別損失・除却損名称",
     value: "金額",
     editable: false,
   },
   {
     no: "営01",
-    parent_key: "extraordinary_loss_name",
-    label: "土地売却損",
+    label: "F79",
     value: "G79",
+    editable: true,
+  },
+  {
+    no: "営02",
+    label: "F80",
+    value: "G80",
+    editable: true,
+  },
+  {
+    no: "営03",
+    label: "F81",
+    value: "G81",
+    editable: true,
+  },
+  {
+    no: "営04",
+    label: "F82",
+    value: "G82",
     editable: true,
   },
 ];

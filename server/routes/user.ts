@@ -150,4 +150,59 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
   }
 })
 
+// Reset all user data to initial seed values
+router.post('/reset', async (req: AuthenticatedRequest, res) => {
+  // Set a longer timeout for this operation (30 seconds)
+  req.setTimeout(30000)
+  
+  try {
+    const userId = req.user!.id
+    console.log(`Starting full data reset for user ${userId}`)
+    
+    // Use a more efficient approach: delete and re-seed in one transaction-like operation
+    const startTime = Date.now()
+    
+    // Delete all existing data for this user (this is fast)
+    const deleteResult = await Data.deleteMany({ user: userId })
+    console.log(`Deleted ${deleteResult.deletedCount} existing records for user ${userId}`)
+    
+    // Re-seed the user with initial data (this is the heavy part)
+    console.log(`Starting to re-seed data for user ${userId}...`)
+    await seedSheetsForUser(userId)
+    console.log(`Re-seeded initial data for user ${userId}`)
+    
+    // Instead of fetching all data again, we can return a success response
+    // The frontend will refetch the data after reset
+    const endTime = Date.now()
+    console.log(`Reset completed for user ${userId} in ${endTime - startTime}ms`)
+    
+    res.json({
+      success: true,
+      message: 'データが初期状態にリセットされました',
+      // Don't return all data to reduce response size and time
+      resetCompleted: true
+    })
+  } catch (error) {
+    console.error('Reset data error:', error)
+    
+    // Provide more specific error messages
+    let errorMessage = 'データのリセットに失敗しました'
+    
+    if (error instanceof Error) {
+      if (error.name === 'MongoNetworkError' || error.name === 'MongoTimeoutError') {
+        errorMessage = 'データベースへの接続に失敗しました'
+      } else if (error.name === 'MongoServerError') {
+        errorMessage = 'データベースエラーが発生しました'
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'リセット処理がタイムアウトしました。しばらく待ってから再試行してください。'
+      }
+    }
+    
+    res.status(500).json({ 
+      error: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : String(error)) : undefined
+    })
+  }
+})
+
 export default router

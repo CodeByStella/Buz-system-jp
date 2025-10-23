@@ -45,6 +45,16 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     G103: "=SUM(C12:C100)",
     G105: "=C7-G103",
     G106: "=C104+C105-C106",
+
+    F64: "土地売却益",
+    F65: "不動産賃貸",
+
+    F69: "有価証券評価損",
+
+    F74: "土地売却益",
+    F75: "事業再構築補助",
+
+    F79: "土地売却損",
   },
   mq_current_status: {
     B3: "=start!C6",

@@ -21,6 +21,8 @@ export default function ProfitPlanSheet() {
     errorMessage,
     retry,
     clearSheet,
+    resetAllData,
+    resetting,
   } = useDataContext();
 
   const sheetName: SheetNameType = "profit_planing_table";
@@ -84,7 +86,7 @@ export default function ProfitPlanSheet() {
             className="border-red-500 text-red-700 hover:bg-red-50"
             onClick={() => setShowResetModal(true)}
           >
-            全入力クリア
+            全データリセット
           </Button>
           <ExcelExportButton />
           <PDFExportButton />
@@ -1883,15 +1885,16 @@ export default function ProfitPlanSheet() {
     <ConfirmationModal
       isOpen={showResetModal}
       onClose={() => setShowResetModal(false)}
-      onConfirm={() => {
-        clearSheet(sheetName);
+      onConfirm={async () => {
+        await resetAllData();
         setShowResetModal(false);
       }}
-      title="全入力クリアの確認"
-      message="このシートの全入力をクリアします。よろしいですか？この操作は元に戻せません。"
-      confirmText="クリア"
+      title="全データリセットの確認"
+      message="すべてのデータを初期状態にリセットします。よろしいですか？この操作は元に戻せません。"
+      confirmText="リセット"
       cancelText="キャンセル"
       confirmVariant="destructive"
+      isLoading={resetting}
     />
     </>
   );

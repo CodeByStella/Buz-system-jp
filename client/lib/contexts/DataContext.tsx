@@ -29,6 +29,8 @@ interface DataContextType {
   clearMessages: () => void;
   retry: () => Promise<void>;
   clearSheet: (sheet?: string) => void;
+  resetAllData: () => Promise<void>;
+  resetting: boolean;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -38,6 +40,7 @@ export const DataProvider: React.FC<{
 }> = ({ children }) => {
   const [userInput, setUserInput] = useState<FrontendDataType>({});
   const [saving, setSaving] = useState(false);
+  const [resetting, setResetting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -531,6 +534,66 @@ export const DataProvider: React.FC<{
     await fetchUserInputs();
   };
 
+  // Reset all data to initial seed values
+  const resetAllData = async () => {
+    try {
+      setResetting(true);
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      console.log("Starting full data reset...");
+      
+      // Call backend reset endpoint
+      const response = await userService.resetUserData();
+      
+      if (response.success && response.resetCompleted) {
+        console.log("Reset successful, refetching data...");
+        
+        // Instead of using the response data, refetch all data from server
+        // This ensures we get the latest seeded data
+        await fetchUserInputs();
+        
+        setSuccessMessage(response.message);
+        
+        console.log("Data reset completed successfully");
+        
+        // Auto-clear success message after 5 seconds
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
+      } else {
+        throw new Error("Reset failed");
+      }
+    } catch (error) {
+      console.error("Failed to reset data:", error);
+      
+      let errorMessage = "データのリセットに失敗しました";
+      
+      if (error instanceof Error) {
+        if (error.message.includes("サーバーに接続できません")) {
+          errorMessage = "サーバーに接続できません。ネットワーク接続を確認してください。";
+        } else if (error.message.includes("認証が必要です")) {
+          errorMessage = "認証が必要です。ページを再読み込みしてください。";
+        } else if (error.message.includes("timeout") || error.message.includes("タイムアウト")) {
+          errorMessage = "リセット処理がタイムアウトしました。しばらく待ってから再試行してください。";
+        } else if (error.message.includes("データベース")) {
+          errorMessage = "データベースエラーが発生しました。しばらく待ってから再試行してください。";
+        } else {
+          errorMessage = `データのリセットに失敗しました: ${error.message}`;
+        }
+      }
+      
+      setErrorMessage(errorMessage);
+      
+      // Auto-clear error message after 8 seconds
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 8000);
+    } finally {
+      setResetting(false);
+    }
+  };
+
   const value: DataContextType = {
     data: userInput,
     onChange: handleChangeCell,
@@ -544,6 +607,8 @@ export const DataProvider: React.FC<{
     clearMessages,
     retry,
     clearSheet,
+    resetAllData,
+    resetting,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

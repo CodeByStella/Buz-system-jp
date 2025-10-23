@@ -54,6 +54,8 @@
 - Node.js 18以上
 - MongoDB 4.4以上
 - npm または yarn
+- **LibreOffice** (PDF出力機能に必要)
+- **日本語フォント** (Ubuntu/Linux環境で日本語表示に必要)
 
 ### インストール
 
@@ -63,7 +65,34 @@ git clone <repository-url>
 cd business-system
 ```
 
-2. 依存関係をインストール
+2. **LibreOfficeのインストール**
+
+**Windows:**
+- [LibreOffice公式サイト](https://www.libreoffice.org/download/download/)からダウンロードしてインストール
+- または Chocolatey を使用: `choco install libreoffice`
+
+**macOS:**
+- [LibreOffice公式サイト](https://www.libreoffice.org/download/download/)からダウンロードしてインストール
+- または Homebrew を使用: `brew install --cask libreoffice`
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install libreoffice
+```
+
+3. **日本語フォントのインストール（Ubuntu/Linux環境のみ）**
+```bash
+# 日本語フォントをインストール
+sudo apt-get install fonts-noto-cjk fonts-noto-cjk-extra
+
+# フォントキャッシュを更新
+sudo fc-cache -fv
+```
+
+**注意:** Ubuntu/Linux環境では、PDF出力時に日本語文字が正しく表示されるよう、上記のフォントインストールが必要です。
+
+4. 依存関係をインストール
 
 **自動セットアップ（推奨）**
 ```bash
@@ -86,7 +115,7 @@ cd server && npm install
 cd ../client && npm install
 ```
 
-3. 環境変数を設定
+5. 環境変数を設定
 
 **サーバー側**
 ```bash
@@ -100,7 +129,7 @@ cp client/env.example client/.env.local
 
 各`.env`ファイルを編集して、適切な設定を行ってください。
 
-4. データベースをセットアップ
+6. データベースをセットアップ
 ```bash
 # MongoDBを起動（ローカル環境の場合）
 mongod
@@ -109,7 +138,7 @@ mongod
 npm run db:seed
 ```
 
-5. 開発サーバーを起動
+7. 開発サーバーを起動
 
 **オプション1: フロントエンドとバックエンドを同時に起動**
 ```bash
@@ -224,6 +253,43 @@ TypeScriptで実装された純粋関数ベースの計算エンジンです。
 - 利益計算: `売上 - コスト`
 - 利益率: `(利益 / 売上) × 100`
 - 損益分岐点: `固定費 / 貢献利益`
+
+## トラブルシューティング
+
+### PDF出力に関する問題
+
+**問題: PDF出力時に日本語文字が四角形（□）で表示される**
+- **原因**: Ubuntu/Linux環境で日本語フォントが不足
+- **解決方法**: 
+  ```bash
+  sudo apt-get install fonts-noto-cjk fonts-noto-cjk-extra
+  sudo fc-cache -fv
+  ```
+
+**問題: LibreOfficeのGUIウィンドウが表示される**
+- **原因**: Windows環境でLibreOfficeがヘッドレスモードで実行されていない
+- **解決方法**: 最新のコードでは自動的にヘッドレスモードで実行されます
+
+**問題: PDF出力が失敗する**
+- **原因**: LibreOfficeがインストールされていない、またはパスが通っていない
+- **解決方法**: 
+  - LibreOfficeが正しくインストールされているか確認
+  - 環境変数でLibreOfficeのパスを指定（必要に応じて）
+
+### 環境別の注意点
+
+**Windows:**
+- LibreOfficeは自動的に検出されます
+- GUIウィンドウは表示されません（ヘッドレスモード）
+
+**macOS:**
+- LibreOfficeは自動的に検出されます
+- 日本語フォントは標準で利用可能
+
+**Ubuntu/Linux:**
+- 日本語フォントのインストールが必要
+- LibreOfficeのインストールが必要
+- フォントキャッシュの更新が必要
 
 ## デプロイ
 

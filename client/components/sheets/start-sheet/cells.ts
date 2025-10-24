@@ -1401,7 +1401,7 @@ export const startSheet_main: MainRowDataType[] = [
     bgcolor2: colors.purple,
   },
   {
-    no: "営03",
+    no: "",
     label: "経常利益",
     incomeStatement: {
       value: "C104",
@@ -1415,7 +1415,7 @@ export const startSheet_main: MainRowDataType[] = [
     bgcolor2: colors.purple,
   },
   {
-    no: "営04",
+    no: "営03",
     label: "特別利益・除却益",
     incomeStatement: {
       value: "C105",
@@ -1429,7 +1429,7 @@ export const startSheet_main: MainRowDataType[] = [
     bgcolor2: colors.purple,
   },
   {
-    no: "営05",
+    no: "営04",
     label: "特別損失・除却損",
     incomeStatement: {
       value: "C106",
@@ -1457,19 +1457,19 @@ export const startSheet_others: OthersRowDataType[] = [
     editable: true,
   },
   {
-    no: "営02",
+    no: "営01",
     label: "F65",
     value: "G65",
     editable: true,
   },
   {
-    no: "営03",
+    no: "営01",
     label: "F66",
     value: "G66",
     editable: true,
   },
   {
-    no: "営04",
+    no: "営01",
     label: "F67",
     value: "G67",
     editable: true,
@@ -1482,7 +1482,7 @@ export const startSheet_others: OthersRowDataType[] = [
     editable: false,
   },
   {
-    no: "営01",
+    no: "営02",
     label: "F69",
     value: "G69",
     editable: true,
@@ -1494,13 +1494,13 @@ export const startSheet_others: OthersRowDataType[] = [
     editable: true,
   },
   {
-    no: "営03",
+    no: "営02",
     label: "F71",
     value: "G71",
     editable: true,
   },
   {
-    no: "営04",
+    no: "営02",
     label: "F72",
     value: "G72",
     editable: true,
@@ -1513,13 +1513,13 @@ export const startSheet_others: OthersRowDataType[] = [
     editable: false,
   },
   {
-    no: "営01",
+    no: "営03",
     label: "F74",
     value: "G74",
     editable: true,
   },
   {
-    no: "営02",
+    no: "営03",
     label: "F75",
     value: "G75",
     editable: true,
@@ -1531,7 +1531,7 @@ export const startSheet_others: OthersRowDataType[] = [
     editable: true,
   },
   {
-    no: "営02",
+    no: "営03",
     label: "F77",
     value: "G77",
     editable: true,
@@ -1544,19 +1544,19 @@ export const startSheet_others: OthersRowDataType[] = [
     editable: false,
   },
   {
-    no: "営01",
+    no: "営04",
     label: "F79",
     value: "G79",
     editable: true,
   },
   {
-    no: "営02",
+    no: "営04",
     label: "F80",
     value: "G80",
     editable: true,
   },
   {
-    no: "営03",
+    no: "営04",
     label: "F81",
     value: "G81",
     editable: true,

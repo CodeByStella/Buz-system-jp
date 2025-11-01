@@ -498,7 +498,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
   },
   break_even_point: {
     B2: "=manufacturing_income!F31",
-    B3: "=manufacturing_expenses!I2*1000000",
+    B3: "=mq_future!F3*1000000",
     B4: "=expenses!I2*1000000",
     B5: "=B3/B2",
     B6: "=B4/(1-B3/B2)",

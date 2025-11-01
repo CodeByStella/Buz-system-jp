@@ -166,7 +166,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     I24: "=SUM(I5:I23)",
     I25: "=SUM(start!C12:C28)",
     L16: "=SUM(L5:L15)",
-    L17: "=SUM(start!C29:C34)",
+    L17: "=SUM(start!C29:C36)",
 
     I2: "=L16+I24+F13+C43",
 

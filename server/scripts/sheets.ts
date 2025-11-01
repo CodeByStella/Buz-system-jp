@@ -75,7 +75,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     F13: "=B3-F3",
     F17: "=manufacturing_income!B36/1000000-F13",
     G16: "=F13/B3",
-    H13: "=expenses!I2*1000000/1000000",
+    H13: "=(expenses!I2*1000000+salary!O1*1000000)/1000000",
     H18: "=F13-H13",
     I10: "=F3/B3",
     I16: "=H13/B3",
@@ -321,9 +321,9 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     F13: "=SUM(F4:F12)",
     F14: "=SUM(start!D35:D42)",
 
-    I5: "=start!D60",
-    I6: "=start!D61",
-    I7: "=start!D62",
+    I5: "=manufacturing_labor!E14",
+    I6: "=manufacturing_labor!J14",
+    I7: "=manufacturing_labor!O14",
     I16: "=SUM(I5:I15)",
     I17: "=SUM(start!D13:D28)+SUM(start!D60:D62)",
 

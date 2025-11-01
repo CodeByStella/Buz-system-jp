@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'ビジネスシステム',
   description: '業務効率化のためのビジネス管理システム',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({

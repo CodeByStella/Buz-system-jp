@@ -117,8 +117,85 @@
   }
 }
 
+/* Universal viewport height fix for all browsers (handles mobile address bars) */
+:root {
+  --vh: 1vh; /* Default fallback, updated by JavaScript for all browsers */
+}
+
 @media screen and (min-width: 1024px) {
   .custom_main_container{
+    /* Use CSS variable for dynamic viewport height (works on all browsers) */
+    height: calc((var(--vh, 1vh) * 100) - 100px) !important;
+    /* Fallback for browsers that don't support CSS variables */
     height: calc(100vh - 100px) !important;
   }
+}
+
+/* Universal fixes for all browsers */
+
+/* Fix for overflow scrolling - universal with browser-specific enhancements */
+.overflow-auto,
+.overflow-x-auto,
+.overflow-y-auto {
+  /* Smooth scrolling for all browsers */
+  scroll-behavior: smooth;
+  /* Hardware acceleration for better performance */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Touch scrolling enhancement for iOS/Safari and touch devices */
+@supports (-webkit-touch-callout: none) {
+  .overflow-auto,
+  .overflow-x-auto,
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Table layout fixes for all browsers */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  /* Better table rendering performance */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Fix for flex containers with overflow - universal */
+.flex {
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Position sticky improvements for all browsers */
+[style*="position: sticky"],
+.sticky {
+  /* Hardware acceleration for sticky positioning */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Additional fixes for table sticky headers and columns */
+thead[style*="position: sticky"],
+th[style*="position: sticky"],
+td[style*="position: sticky"] {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Ensure proper stacking context for sticky elements */
+th.sticky,
+td.sticky {
+  z-index: inherit;
+}
+
+/* Fix for absolute positioned tables in Safari and other browsers */
+table[style*="absolute"],
+.table-absolute {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }

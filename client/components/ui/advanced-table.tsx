@@ -427,7 +427,10 @@ export function AdvancedTable<T = any>({
             scrollable
               ? {
                   position: "relative",
-                  WebkitOverflowScrolling: "touch", // Smooth scrolling on iOS
+                  WebkitOverflowScrolling: "touch", // Smooth scrolling on iOS/Safari
+                  WebkitTransform: "translateZ(0)", // Hardware acceleration (all browsers)
+                  transform: "translateZ(0)", // Hardware acceleration (all browsers)
+                  willChange: "scroll-position", // Performance optimization (all browsers)
                 }
               : undefined
           }
@@ -452,6 +455,9 @@ export function AdvancedTable<T = any>({
                         top: 0,
                         zIndex: 10,
                         backgroundColor: "white",
+                        WebkitTransform: "translateZ(0)", // Hardware acceleration (all browsers)
+                        transform: "translateZ(0)", // Hardware acceleration (all browsers)
+                        willChange: "transform", // Performance optimization (all browsers)
                       }
                     : undefined
                 }
@@ -489,15 +495,21 @@ export function AdvancedTable<T = any>({
                           typeof column.width === "number"
                             ? `${column.width * 0.7}px`
                             : column.width,
-                        left:
-                          stickyColumns > 0 && columnIndex < stickyColumns
-                            ? `${
+                        ...(stickyColumns > 0 && columnIndex < stickyColumns
+                          ? {
+                              position: "sticky",
+                              left: `${
                                 columnIndex *
                                 (typeof column.width === "number"
                                   ? column.width
                                   : 150)
-                              }px`
-                            : undefined,
+                              }px`,
+                              backgroundColor: "white",
+                              WebkitTransform: "translateZ(0)", // Hardware acceleration (all browsers)
+                              transform: "translateZ(0)", // Hardware acceleration (all browsers)
+                              willChange: "transform", // Performance optimization (all browsers)
+                            }
+                          : {}),
                       }}
                       onClick={() => handleSort(column)}
                     >
@@ -596,15 +608,21 @@ export function AdvancedTable<T = any>({
                               typeof column.width === "number"
                                 ? `${column.width * 0.7}px`
                                 : column.width,
-                            left:
-                              stickyColumns > 0 && columnIndex < stickyColumns
-                                ? `${
+                            ...(stickyColumns > 0 && columnIndex < stickyColumns
+                              ? {
+                                  position: "sticky",
+                                  left: `${
                                     columnIndex *
                                     (typeof column.width === "number"
                                       ? column.width
                                       : 150)
-                                  }px`
-                                : undefined,
+                                  }px`,
+                                  backgroundColor: "white",
+                                  WebkitTransform: "translateZ(0)", // Hardware acceleration (all browsers)
+                                  transform: "translateZ(0)", // Hardware acceleration (all browsers)
+                                  willChange: "transform", // Performance optimization (all browsers)
+                                }
+                              : {}),
                           }}
                         >
                           {renderCell(column, record, index)}

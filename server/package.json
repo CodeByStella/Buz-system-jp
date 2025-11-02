@@ -7,7 +7,7 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "db:seed": "tsx scripts/seed-mongo.ts",
-    "db:restore:formulas": "tsx scripts/restore-formulas.ts",
+    "db:formula": "tsx scripts/sync-formulas.ts",
     "db:sync": "tsx scripts/sync-database.ts",
     "db:test": "tsx scripts/test-sync.ts"
   },

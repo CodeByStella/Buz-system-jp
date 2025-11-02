@@ -15,6 +15,9 @@ This system provides automated synchronization between the `sheets.ts` definitio
 
 ### Command Line Interface
 
+#### Full Database Sync (`db:sync`)
+Syncs all values from `sheets.ts` to the database:
+
 ```bash
 # Basic sync (keeps orphaned records)
 npm run db:sync
@@ -33,6 +36,29 @@ npm run db:sync -- --remove-orphaned --force-update --user user123
 
 # Show help
 npm run db:sync -- --help
+```
+
+#### Formula-Only Sync (`db:formula`)
+Syncs only formulas (values starting with "="), ignores non-formula values:
+
+```bash
+# Basic formula sync (keeps orphaned formulas)
+npm run db:formula
+
+# Sync formulas and remove orphaned formulas
+npm run db:formula -- --remove-orphaned
+
+# Force update all formulas (even unchanged ones)
+npm run db:formula -- --force-update
+
+# Sync formulas for specific user
+npm run db:formula -- --user user123
+
+# Combine options
+npm run db:formula -- --remove-orphaned --force-update --user user123
+
+# Show help
+npm run db:formula -- --help
 ```
 
 ### API Endpoints
@@ -77,11 +103,20 @@ Access the database sync interface at `/admin` (admin users only). The interface
 
 ## How It Works
 
-1. **Read sheets.ts**: Loads all sheet definitions and formulas
+### Full Sync (`db:sync`)
+1. **Read sheets.ts**: Loads all sheet definitions and values (formulas and non-formulas)
 2. **Compare with Database**: Checks existing records against expected data
 3. **Generate Operations**: Creates insert/update/delete operations as needed
 4. **Bulk Execute**: Performs all operations efficiently using MongoDB bulkWrite
-5. **Report Results**: Shows summary of changes made
+5. **Report Results**: Shows detailed list of changes made
+
+### Formula Sync (`db:formula`)
+1. **Read sheets.ts**: Loads only formulas (values starting with "=")
+2. **Compare with Database**: Checks existing formula records against expected formulas
+3. **Generate Operations**: Creates insert/update/delete operations only for formulas
+4. **Bulk Execute**: Performs all operations efficiently using MongoDB bulkWrite
+5. **Report Results**: Shows detailed list of formula changes made
+6. **Non-formula values are ignored**: Only formulas are synced
 
 ## Sync Options Explained
 
@@ -168,8 +203,8 @@ Run: `npm run db:sync -- --user user123`
 ```
 server/
 ├── scripts/
-│   ├── sync-database.ts      # Main sync logic
-│   ├── restore-formulas.ts   # Formula restoration only
+│   ├── sync-database.ts      # Main sync logic (all values)
+│   ├── sync-formulas.ts      # Formula sync only (formulas starting with "=")
 │   └── sheets.ts            # Sheet definitions
 ├── routes/
 │   └── sync.ts              # API endpoints

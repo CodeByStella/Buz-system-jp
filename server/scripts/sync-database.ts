@@ -87,10 +87,9 @@ async function syncDatabase(options: SyncOptions = {}) {
           })
           totalInserts++
         } else {
-          // Check if update is needed
-          const needsUpdate = forceUpdate || 
-            existingRecord.value !== expectedRecord.value ||
-            (isFormula(expectedRecord.value) && !isFormula(existingRecord.value))
+          // Always sync to match seed data from sheets.ts
+          // If values differ, update to match seed (seed is authoritative)
+          const needsUpdate = forceUpdate || existingRecord.value !== expectedRecord.value
           
           if (needsUpdate) {
             bulkOps.push({

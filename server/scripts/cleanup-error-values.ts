@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Data } from '../models/data';
+import { sheetsData } from './sheets';
 
 // MongoDB connection
 const connectDB = async () => {
@@ -31,13 +32,33 @@ const cleanupErrorValues = async () => {
     console.log(`Found ${itemsWithErrors.length} items with error values`);
     
     if (itemsWithErrors.length > 0) {
+      // Helper to check if a cell should be a formula
+      const isFormulaCell = (sheet: string, cell: string): boolean => {
+        const sheetData = sheetsData[sheet];
+        if (!sheetData) return false;
+        const value = sheetData[cell];
+        return typeof value === 'string' && value.trim().startsWith('=');
+      };
+
       // Clean up error values
-      const updatePromises = itemsWithErrors.map(item => 
-        Data.updateOne(
+      // For formula cells, restore from seed data; for non-formula cells, set to empty string
+      const updatePromises = itemsWithErrors.map(item => {
+        if (isFormulaCell(item.sheet, item.cell)) {
+          // This is a formula cell - restore it from seed data
+          const seedValue = sheetsData[item.sheet]?.[item.cell];
+          if (seedValue) {
+            return Data.updateOne(
+              { _id: item._id },
+              { $set: { value: seedValue } }
+            );
+          }
+        }
+        // Non-formula cell with error - set to empty string
+        return Data.updateOne(
           { _id: item._id },
           { $set: { value: '' } }
-        )
-      );
+        );
+      });
       
       await Promise.all(updatePromises);
       console.log(`Successfully cleaned up ${itemsWithErrors.length} error values`);

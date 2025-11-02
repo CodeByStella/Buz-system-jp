@@ -1651,6 +1651,7 @@ export const seedSheetsForUser = async (userId: string) => {
     ([sheetName, data]) => buildSheetData(sheetName, data, userId)
   );
 
+  // Always upsert all seed data - sheets.ts is the authoritative source
   const bulkOps = allData.map((item) => ({
     updateOne: {
       filter: { user: userId, sheet: item.sheet, cell: item.cell },

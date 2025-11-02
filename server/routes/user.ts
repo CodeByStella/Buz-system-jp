@@ -1,7 +1,18 @@
 import express from 'express'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 import { Data } from '@/models/data'
-import { seedSheetsForUser } from '@/scripts/sheets'
+import { seedSheetsForUser, sheetsData } from '@/scripts/sheets'
+
+// Helper function to check if a value is a formula
+const isFormula = (v: unknown): v is string => typeof v === 'string' && v.trim().startsWith('=')
+
+// Check if a cell is supposed to be a formula according to sheetsData
+const isFormulaCell = (sheet: string, cell: string): boolean => {
+  const sheetData = sheetsData[sheet]
+  if (!sheetData) return false
+  const value = sheetData[cell]
+  return isFormula(value)
+}
 
 const router = express.Router()
 
@@ -31,13 +42,24 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
     if (itemsWithErrors.length > 0) {
       console.log(`Found ${itemsWithErrors.length} items with error values, cleaning up...`)
       
-      // Update items with error values to empty strings
-      const updatePromises = itemsWithErrors.map(item => 
-        Data.updateOne(
+      // For formula cells, restore from seed data; for non-formula cells, set to empty string
+      const updatePromises = itemsWithErrors.map(async (item) => {
+        if (isFormulaCell(item.sheet, item.cell)) {
+          // This is a formula cell - restore it from seed data
+          const seedValue = sheetsData[item.sheet]?.[item.cell]
+          if (seedValue) {
+            return Data.updateOne(
+              { _id: item._id },
+              { $set: { value: seedValue } }
+            )
+          }
+        }
+        // Non-formula cell with error - set to empty string
+        return Data.updateOne(
           { _id: item._id },
           { $set: { value: '' } }
         )
-      )
+      })
       
       await Promise.all(updatePromises)
       console.log(`Cleaned up ${itemsWithErrors.length} error values`)
@@ -78,9 +100,21 @@ router.post('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
     const { sheet, cell, value } = req.body
     const userId = req.user!.id
+    
     // Reject attempts to save formulas
     if (typeof value === 'string' && value.trim().startsWith('=')) {
       return res.status(400).json({ error: '数式セルは更新できません' })
+    }
+    
+    // Check if this cell is supposed to be a formula cell
+    if (isFormulaCell(sheet, cell)) {
+      // Check if the existing record is a formula
+      const existing = await Data.findOne({ user: userId, sheet, cell }).lean()
+      if (existing && isFormula(existing.value)) {
+        return res.status(400).json({ 
+          error: 'このセルは数式セルのため、値を直接更新することはできません' 
+        })
+      }
     }
     
     // Use findOneAndUpdate with upsert option to update if exists, create if not
@@ -114,14 +148,58 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
     if (!Array.isArray(inputs)) {
       return res.status(400).json({ error: '入力データは配列である必要があります' })
     }
-    // Filter out any attempts to update formulas
-    const sanitizedInputs = inputs.filter((i: any) => !(typeof i.value === 'string' && String(i.value).trim().startsWith('=')))
+    
+    // Filter out formula values (users can't save formulas)
+    const sanitizedInputs = inputs.filter((i: any) => {
+      // Reject formula values
+      return !(typeof i.value === 'string' && String(i.value).trim().startsWith('='))
+    })
+    
     if (sanitizedInputs.length === 0) {
       return res.json({ success: true, modified: 0, inserted: 0, total: 0 })
     }
-    // Use bulkWrite for efficient upsert operations
+    
+    // Get existing formula cells to prevent overwriting them
     const userId = req.user!.id
-    const bulkOps = sanitizedInputs.map((input: any) => ({
+    const existingData = await Data.find({ 
+      user: userId, 
+      $or: sanitizedInputs.map((i: any) => ({ sheet: i.sheet, cell: i.cell }))
+    }).lean()
+    
+    const existingFormulaCells = new Set<string>()
+    existingData.forEach((doc) => {
+      if (isFormula(doc.value)) {
+        existingFormulaCells.add(`${doc.sheet}:${doc.cell}`)
+      }
+    })
+    
+    // Filter out cells that are currently formulas (protect formulas from being overwritten)
+    // Also filter out cells that are supposed to be formulas (according to sheetsData)
+    const finalInputs = sanitizedInputs.filter((input: any) => {
+      const key = `${input.sheet}:${input.cell}`
+      // Don't overwrite existing formulas
+      if (existingFormulaCells.has(key)) {
+        return false
+      }
+      // Don't overwrite cells that should be formulas (they might be temporarily overwritten but should be restored)
+      if (isFormulaCell(input.sheet, input.cell)) {
+        return false
+      }
+      return true
+    })
+    
+    if (finalInputs.length === 0) {
+      return res.json({ 
+        success: true, 
+        modified: 0, 
+        inserted: 0, 
+        total: 0,
+        message: 'すべてのセルが数式セルのため、更新されませんでした'
+      })
+    }
+    
+    // Use bulkWrite for efficient upsert operations
+    const bulkOps = finalInputs.map((input: any) => ({
       updateOne: {
         filter: { user: userId, sheet: input.sheet, cell: input.cell },
         update: {
@@ -142,7 +220,8 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
       success: true,
       modified: result.modifiedCount,
       inserted: result.upsertedCount,
-      total: sanitizedInputs.length
+      total: finalInputs.length,
+      skipped: sanitizedInputs.length - finalInputs.length
     })
   } catch (error) {
     console.error('Bulk save input error:', error)

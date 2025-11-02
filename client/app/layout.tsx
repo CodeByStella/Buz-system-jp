@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { useEffect } from "react";
+import { BodyReflowFix } from "@/components/layout/body-reflow-fix";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,16 +18,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    // ✅ Safari layout reflow fix
-    document.body.style.display = "none";
-    document.body.offsetHeight; // Force reflow
-    document.body.style.display = "";
-  }, []);
-
   return (
     <html lang="ja">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <BodyReflowFix />
+        {children}
+      </body>
     </html>
   );
 }

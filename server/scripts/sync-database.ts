@@ -68,6 +68,9 @@ async function syncDatabase(options: SyncOptions = {}) {
       
       const userData = existingByUser.get(currentUserId) || new Map()
       const bulkOps: any[] = []
+      const updatesToDisplay: Array<{ sheet: string; cell: string; oldValue: any; newValue: any }> = []
+      const insertsToDisplay: Array<{ sheet: string; cell: string; value: any }> = []
+      const removalsToDisplay: Array<{ sheet: string; cell: string; value: any }> = []
 
       // Process all expected data
       for (const [key, expectedRecord] of expectedData) {
@@ -85,6 +88,11 @@ async function syncDatabase(options: SyncOptions = {}) {
               }
             }
           })
+          insertsToDisplay.push({
+            sheet: expectedRecord.sheet,
+            cell: expectedRecord.cell,
+            value: expectedRecord.value
+          })
           totalInserts++
         } else {
           // Always sync to match seed data from sheets.ts
@@ -97,6 +105,12 @@ async function syncDatabase(options: SyncOptions = {}) {
                 filter: { _id: existingRecord._id },
                 update: { $set: { value: expectedRecord.value } }
               }
+            })
+            updatesToDisplay.push({
+              sheet: existingRecord.sheet,
+              cell: existingRecord.cell,
+              oldValue: existingRecord.value,
+              newValue: expectedRecord.value
             })
             totalUpdates++
           }
@@ -112,17 +126,46 @@ async function syncDatabase(options: SyncOptions = {}) {
                 filter: { _id: existingRecord._id }
               }
             })
+            removalsToDisplay.push({
+              sheet: existingRecord.sheet,
+              cell: existingRecord.cell,
+              value: existingRecord.value
+            })
             totalRemovals++
           }
         }
       }
 
+      // Display documents before executing
+      if (insertsToDisplay.length > 0) {
+        console.log(`\n  Documents to INSERT (${insertsToDisplay.length}):`)
+        insertsToDisplay.forEach(doc => {
+          console.log(`    - ${doc.sheet}:${doc.cell} = ${JSON.stringify(doc.value)}`)
+        })
+      }
+
+      if (updatesToDisplay.length > 0) {
+        console.log(`\n  Documents to UPDATE (${updatesToDisplay.length}):`)
+        updatesToDisplay.forEach(doc => {
+          console.log(`    - ${doc.sheet}:${doc.cell}`)
+          console.log(`      Old: ${JSON.stringify(doc.oldValue)}`)
+          console.log(`      New: ${JSON.stringify(doc.newValue)}`)
+        })
+      }
+
+      if (removalsToDisplay.length > 0) {
+        console.log(`\n  Documents to DELETE (${removalsToDisplay.length}):`)
+        removalsToDisplay.forEach(doc => {
+          console.log(`    - ${doc.sheet}:${doc.cell} = ${JSON.stringify(doc.value)}`)
+        })
+      }
+
       // Execute bulk operations for this user
       if (bulkOps.length > 0) {
         const result = await Data.bulkWrite(bulkOps)
-        console.log(`User ${currentUserId}: ${result.insertedCount} inserted, ${result.modifiedCount} updated, ${result.deletedCount} deleted`)
+        console.log(`\n  ✓ User ${currentUserId}: ${result.insertedCount} inserted, ${result.modifiedCount} updated, ${result.deletedCount} deleted`)
       } else {
-        console.log(`User ${currentUserId}: No changes needed`)
+        console.log(`  ✓ User ${currentUserId}: No changes needed`)
       }
     }
 

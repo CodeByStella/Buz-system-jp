@@ -189,25 +189,6 @@ function DashboardContent({
 }) {
   const { errorMessage, successMessage, clearMessages } = useDataContext();
 
-  // Universal viewport height fix for all browsers (handles mobile address bars and dynamic UI)
-  useEffect(() => {
-    // Set CSS custom property for viewport height to handle dynamic browser UI changes
-    // Works on Safari/iPad, Chrome mobile, Firefox mobile, and all modern browsers
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
-    };
-
-    setViewportHeight();
-    window.addEventListener("resize", setViewportHeight);
-    window.addEventListener("orientationchange", setViewportHeight);
-
-    return () => {
-      window.removeEventListener("resize", setViewportHeight);
-      window.removeEventListener("orientationchange", setViewportHeight);
-    };
-  }, []);
-
   return (
     <div className="h-screen bg-gray-50  flex flex-col">
       <Header />

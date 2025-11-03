@@ -71,11 +71,11 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
   },
   mq_future: {
     B3: "=manufacturing_income!F31/1000000",
-    F3: "=manufacturing_expenses!I2+manufacturing_labor!O1",
+    F3: "=manufacturing_expenses!I2",
     F13: "=B3-F3",
     F17: "=manufacturing_income!B36/1000000-F13",
     G16: "=F13/B3",
-    H13: "=(expenses!I2*1000000+salary!O1*1000000)/1000000",
+    H13: "=expenses!I2",
     H18: "=F13-H13",
     I10: "=F3/B3",
     I16: "=H13/B3",

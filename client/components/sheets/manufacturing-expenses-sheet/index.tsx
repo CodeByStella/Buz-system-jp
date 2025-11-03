@@ -297,7 +297,7 @@ export default function ManufacturingExpensesSheet() {
             dense
             title={
               <h3 className="text-lg font-semibold text-center w-full p-1">
-                事業費
+                原価
               </h3>
             }
             cellClassName="!p-0"

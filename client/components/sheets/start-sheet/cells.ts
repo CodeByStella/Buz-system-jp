@@ -466,7 +466,7 @@ export const startSheet_main: MainRowDataType[] = [
     },
     manufacturingCostReport: {
       value: "D37",
-      type: 0,
+      type: 1,
     },
     bgcolor1: colors.blue,
     bgcolor2: colors.blue,
@@ -480,7 +480,7 @@ export const startSheet_main: MainRowDataType[] = [
     },
     manufacturingCostReport: {
       value: "D38",
-      type: 0,
+      type: 1,
     },
     bgcolor1: colors.blue,
     bgcolor2: colors.blue,
@@ -494,7 +494,7 @@ export const startSheet_main: MainRowDataType[] = [
     },
     manufacturingCostReport: {
       value: "D39",
-      type: 0,
+      type: 1,
     },
     bgcolor1: colors.blue,
     bgcolor2: colors.blue,
@@ -508,7 +508,7 @@ export const startSheet_main: MainRowDataType[] = [
     },
     manufacturingCostReport: {
       value: "D40",
-      type: 0,
+      type: 1,
     },
     bgcolor1: colors.blue,
     bgcolor2: colors.blue,
@@ -522,7 +522,7 @@ export const startSheet_main: MainRowDataType[] = [
     },
     manufacturingCostReport: {
       value: "D41",
-      type: 0,
+      type: 1,
     },
     bgcolor1: colors.blue,
     bgcolor2: colors.blue,
@@ -536,7 +536,7 @@ export const startSheet_main: MainRowDataType[] = [
     },
     manufacturingCostReport: {
       value: "D42",
-      type: 0,
+      type: 1,
     },
     bgcolor1: colors.blue,
     bgcolor2: colors.blue,

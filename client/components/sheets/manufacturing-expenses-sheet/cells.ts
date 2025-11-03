@@ -394,13 +394,13 @@ export const businessExpensesRows: ManufacturingExpensesRowDataType[] = [
     label: "K9",
     value: "L9",
     bgcolor: colors.white,
-    tip: "（マイナスを入れてから入力）",
+    tip: "*期末の棚卸額は、(マイナス)を付けて入力してください。",
   },
   {
     label: "K10",
     value: "L10",
     bgcolor: colors.white,
-    tip: "（マイナスを入れてから入力）",
+    tip: "*期末の棚卸額は、(マイナス)を付けて入力してください。",
   },
   {
     label: "K11",
@@ -426,16 +426,19 @@ export const businessExpensesRows: ManufacturingExpensesRowDataType[] = [
     label: "K15",
     value: "L15",
     bgcolor: colors.white,
+    tip: "*期末の棚卸額は、(マイナス)を付けて入力してください。",
   },
   {
     label: "K16",
     value: "L16",
     bgcolor: colors.white,
+    tip: "*期末の棚卸額は、(マイナス)を付けて入力してください。",
   },
   {
     label: "K17",
     value: "L17",
     bgcolor: colors.white,
+    tip: "*期末の棚卸額は、(マイナス)を付けて入力してください。",
   },
   {
     label: "K18",

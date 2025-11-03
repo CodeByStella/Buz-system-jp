@@ -166,6 +166,7 @@ export default function ProgressResultInputSheet() {
               sheet={sheetName}
               cell={value}
               disabled={record.type === 0}
+              readOnly
               tip={record.tip}
               tipClassName="text-red-500"
               className={`border-transparent h-full text-sm text-right ${

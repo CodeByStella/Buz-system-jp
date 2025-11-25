@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -31,13 +30,13 @@ export function LoginForm() {
 
     try {
       const data = await authService.login({ email, password });
-      
+
       // Set success state to prevent further interaction
       setSuccess(true);
-      
+
       // Small delay to show success state before redirect
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Redirect admin users to admin page first
       if (data.user.role === "ADMIN") {
         router.push("/admin");
@@ -85,65 +84,119 @@ export function LoginForm() {
       >
         会社の未来を社長の決断できめる計画システム
       </div>
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>ログイン</CardTitle>
-          <CardDescription>
-            ビジネスシステムにアクセスするためにログインしてください
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">
-                メールアドレス
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading || success}
-                placeholder="例: user@company.com"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium mb-1"
-              >
-                パスワード
-              </label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading || success}
-                placeholder="パスワードを入力"
-              />
-            </div>
-            {/* Reserve space for messages to prevent layout shift */}
-            <div className="h-6 flex items-center justify-center">
-              {error && <div className="text-red-600 text-sm">{error}</div>}
-              {success && (
-                <div className="text-green-600 text-sm text-center">
-                  ✓ ログイン成功！リダイレクト中...
-                </div>
-              )}
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={loading || success}
+
+      {/* Parent container for login card and go to site section */}
+      <div className="w-full max-w-4xl px-4 flex flex-col lg:flex-row gap-4 items-stretch justify-center">
+        {/* Login Card */}
+        <Card className="w-full max-w-md flex flex-col">
+          <CardHeader>
+            <CardTitle>ログイン</CardTitle>
+            <CardDescription>
+              ビジネスシステムにアクセスするためにログインしてください
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 flex-1 flex flex-col"
             >
-              {loading ? "ログイン中..." : success ? "リダイレクト中..." : "ログイン"}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium mb-1"
+                >
+                  メールアドレス
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading || success}
+                  placeholder="例: user@company.com"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium mb-1"
+                >
+                  パスワード
+                </label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading || success}
+                  placeholder="パスワードを入力"
+                />
+              </div>
+              {/* Reserve space for messages to prevent layout shift */}
+              <div className="h-6 flex items-center justify-center">
+                {error && <div className="text-red-600 text-sm">{error}</div>}
+                {success && (
+                  <div className="text-green-600 text-sm text-center">
+                    ✓ ログイン成功！リダイレクト中...
+                  </div>
+                )}
+              </div>
+              <Button
+                type="submit"
+                className="w-full mt-auto"
+                disabled={loading || success}
+              >
+                {loading
+                  ? "ログイン中..."
+                  : success
+                  ? "リダイレクト中..."
+                  : "ログイン"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Go to Site Section */}
+        <div
+          className="w-full max-w-md flex flex-col"
+          style={{
+            backgroundImage: "url(/background.jfif)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="relative w-full flex-1 rounded-md overflow-hidden flex items-center justify-center min-h-0">
+            <Image
+              src="/login.png"
+              alt="サイトへアクセス"
+              width={400}
+              height={300}
+              className="h-full w-auto object-contain"
+              priority
+            />
+          </div>
+          {/* Reserve space matching the error message area */}
+          <div className="m-6">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full bg-white text-red-600 hover:bg-white hover:text-red-700 border-white"
+              style={{
+                fontFamily: "'Noto Sans JP', sans-serif",
+                fontWeight: 600,
+              }}
+              onClick={() => {
+                window.open("https://tanoukou-skill.com/", "_blank");
+              }}
+            >
+              サイトへアクセス
             </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

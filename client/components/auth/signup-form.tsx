@@ -81,7 +81,7 @@ export function SignupForm() {
             "1px 2px 0 #fff, 1px 3px 8px rgba(0,0,0,0.08), 0 1px 0 #aaa",
         }}
       >
-        会社の未来を社長の決断できめる計画システム
+        会社の未来を社長の決断できめる財務戦略システム
       </div>
       <Card className="w-full max-w-md">
         <CardHeader>

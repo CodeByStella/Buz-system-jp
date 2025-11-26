@@ -72,7 +72,7 @@ export function LoginForm() {
         priority
       />
       <div
-        className="w-full max-w-md text-center mt-2 mb-12"
+        className="w-full text-center mt-2 mb-12"
         style={{
           fontFamily: "'Noto Serif JP', serif",
           fontWeight: 900,

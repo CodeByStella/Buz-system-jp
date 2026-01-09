@@ -48,16 +48,18 @@ export default function MQCurrentSheet() {
       width: 100,
       align: "right",
       cellClassName: "h-20 text-lg relative",
-      render: (value: string, record: ResultTableCell) => {
+      render: (value: string, record: ResultTableCell, index: number) => {
         return (
           <CustomInput
             type="number"
             sheet={sheetName}
             cell={value}
             readOnly
+            renderValue={index === 1 ? (value => Number(value)/(10000)) : undefined}
             tip={record.tip}
             tipClassName="text-red-500"
             prefix="¥"
+            suffix={index === 1 ? "百万円" : "円"}
             className={`border-transparent h-full text-lg`}
           />
         );

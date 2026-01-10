@@ -59,7 +59,7 @@ export default function MQCurrentSheet() {
             tip={record.tip}
             tipClassName="text-red-500"
             prefix="¥"
-            suffix={index === 1 ? "百万円" : "円"}
+            suffix={"百万円"}
             className={`border-transparent h-full text-lg`}
           />
         );

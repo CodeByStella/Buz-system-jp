@@ -41,11 +41,17 @@ async function main() {
     { upsert: true }
   );
 
-  // Fetch ids and seed sheets for both users
+  // Fetch ids and seed both workbooks for both users
   const admin = await User.findOne({ email: "admin@example.com" }).lean();
   const user = await User.findOne({ email: "user@example.com" }).lean();
-  if (admin?._id) await seedSheetsForUser(String(admin._id));
-  if (user?._id) await seedSheetsForUser(String(user._id));
+  if (admin?._id) {
+    await seedSheetsForUser(String(admin._id), "pdca");
+    await seedSheetsForUser(String(admin._id), "company_rating");
+  }
+  if (user?._id) {
+    await seedSheetsForUser(String(user._id), "pdca");
+    await seedSheetsForUser(String(user._id), "company_rating");
+  }
 
   console.log("✅ Mongo seed complete");
 }

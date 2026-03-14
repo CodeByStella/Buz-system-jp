@@ -65,10 +65,13 @@ export const authService = {
       email,
       password: hashed,
     });
-    // Seed initial sheets for this user in the background (fetch endpoint seeds on-demand if needed)
-    seedSheetsForUser(String(created._id)).catch((e) => {
-      console.error("Seeding sheets failed for user", created._id, e)
-    })
+    // Seed both workbooks for this user in the background
+    Promise.all([
+      seedSheetsForUser(String(created._id), "pdca"),
+      seedSheetsForUser(String(created._id), "company_rating"),
+    ]).catch((e) => {
+      console.error("Seeding sheets failed for user", created._id, e);
+    });
     const token = jwt.sign(
       { id: String(created._id), email: created.email, role: created.role },
       config.jwtSecret,
@@ -109,10 +112,13 @@ export const authService = {
       subscriptionEndAt: userData.subscriptionEndAt ? new Date(userData.subscriptionEndAt) : undefined,
     });
     
-    // Seed initial sheets for this user in the background to avoid request timeout
-    seedSheetsForUser(String(created._id)).catch((e) => {
-      console.error("Seeding sheets failed for user", created._id, e)
-    })
+    // Seed both workbooks for this user in the background
+    Promise.all([
+      seedSheetsForUser(String(created._id), "pdca"),
+      seedSheetsForUser(String(created._id), "company_rating"),
+    ]).catch((e) => {
+      console.error("Seeding sheets failed for user", created._id, e);
+    });
     
     return {
       id: String(created._id),

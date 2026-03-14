@@ -1,6 +1,7 @@
 import mongoose, { Schema, InferSchemaType, Model } from "mongoose";
 
 export interface DataType {
+  workbook: string;
   sheet: string;
   cell: string;
   value?: number | string;
@@ -9,6 +10,7 @@ export interface DataType {
 
 const DataSchema = new Schema(
   {
+    workbook: { type: String, required: true, default: "pdca", index: true },
     sheet: { type: String, required: true },
     cell: { type: String, required: true },
     value: { type: Schema.Types.Mixed, default: 0 },
@@ -17,8 +19,8 @@ const DataSchema = new Schema(
   { timestamps: true }
 );
 
-// Ensure uniqueness per user per cell
-DataSchema.index({ user: 1, sheet: 1, cell: 1 }, { unique: true });
+// Ensure uniqueness per user per workbook per cell
+DataSchema.index({ user: 1, workbook: 1, sheet: 1, cell: 1 }, { unique: true });
 
 export type DataDocument = InferSchemaType<typeof DataSchema> & {
   _id: mongoose.Types.ObjectId;

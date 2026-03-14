@@ -9,7 +9,8 @@
     "db:seed": "tsx scripts/seed-mongo.ts",
     "db:formula": "tsx scripts/sync-formulas.ts",
     "db:sync": "tsx scripts/sync-database.ts",
-    "db:test": "tsx scripts/test-sync.ts"
+    "db:test": "tsx scripts/test-sync.ts",
+    "db:migrate-workbook": "tsx scripts/migrate-workbook.ts"
   },
   "dependencies": {
     "adm-zip": "^0.5.16",

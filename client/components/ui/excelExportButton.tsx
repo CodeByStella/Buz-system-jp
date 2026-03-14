@@ -4,8 +4,13 @@ import { FileSpreadsheet, Loader2 } from "lucide-react";
 import { Button } from "./button";
 import { excelService } from "@/lib/services/excelService";
 import { useState, useEffect } from "react";
+import type { WorkbookType } from "@/lib/transformers/dataTransformer";
 
-export const ExcelExportButton = () => {
+interface ExcelExportButtonProps {
+  workbook?: WorkbookType;
+}
+
+export const ExcelExportButton = ({ workbook }: ExcelExportButtonProps) => {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
@@ -13,18 +18,16 @@ export const ExcelExportButton = () => {
       setIsExporting(excelService.getIsExporting());
     };
 
-    // Check status every 100ms
     const interval = setInterval(checkExportStatus, 100);
-    
     return () => clearInterval(interval);
   }, []);
 
   const handleExport = async () => {
     if (isExporting) return;
-    
+
     setIsExporting(true);
     try {
-      await excelService.exportExcel();
+      await excelService.exportExcel(workbook);
     } catch (error) {
       console.error("Excel export failed:", error);
     } finally {

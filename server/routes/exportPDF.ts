@@ -22,7 +22,9 @@ interface CellData {
   value: string | number;
 }
 
-const sheetPaths: Record<string, string> = {
+type WorkbookExport = "pdca" | "company_rating";
+
+const PDCA_SHEET_PATHS: Record<string, string> = {
   start: "xl/worksheets/sheet1.xml",
   mq_current_status: "xl/worksheets/sheet2.xml",
   profit: "xl/worksheets/sheet3.xml",
@@ -37,6 +39,25 @@ const sheetPaths: Record<string, string> = {
   sales_plan_by_department: "xl/worksheets/sheet12.xml",
   profit_planing_table: "xl/worksheets/sheet13.xml",
 };
+
+const COMPANY_RATING_SHEET_PATHS: Record<string, string> = {
+  input_data: "xl/worksheets/sheet1.xml",
+  result: "xl/worksheets/sheet2.xml",
+  score_table: "xl/worksheets/sheet3.xml",
+  safety_indicators: "xl/worksheets/sheet4.xml",
+};
+
+function getExportConfig(workbook: string) {
+  const isCompanyRating = workbook === "company_rating";
+  return {
+    templatePath: path.join(
+      process.cwd(),
+      isCompanyRating ? "templates/template-company-rating.xlsx" : "templates/template.xlsx"
+    ),
+    sheetPaths: isCompanyRating ? COMPANY_RATING_SHEET_PATHS : PDCA_SHEET_PATHS,
+    filename: isCompanyRating ? "会社の格付.pdf" : "短期計画PDCA.pdf",
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Utility: Modify Excel XML directly
@@ -255,13 +276,15 @@ End Sub
 // Main export logic
 export const exportPDF = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    const workbook: WorkbookExport = req.query.workbook === "company_rating" ? "company_rating" : "pdca";
     const userId = req.user!.id;
+    const { templatePath, sheetPaths, filename } = getExportConfig(workbook);
 
-    // Query dynamic data
     const data4Exp: CellData[] = (
       await Data.find(
         {
           user: userId,
+          workbook,
           $or: [
             { value: { $type: "number", $ne: 0 } },
             { value: { $type: "string", $not: /^=/, $nin: ["0", ""] } },
@@ -278,11 +301,8 @@ export const exportPDF = async (req: AuthenticatedRequest, res: Response) => {
           : item.value,
     }));
 
-    // Load Excel template
-    const templatePath = path.join(process.cwd(), "templates/template.xlsx");
     const zip = new AdmZip(templatePath);
 
-    // Inject new data into Excel XML
     for (const item of data4Exp) {
       const sheetPath = sheetPaths[item.sheet];
       if (!sheetPath) continue;
@@ -416,7 +436,7 @@ export const exportPDF = async (req: AuthenticatedRequest, res: Response) => {
     // Serve PDF
     const pdfBuffer = readFileSync(tempPdfPath);
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="result.pdf"');
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(pdfBuffer);
 
     // Cleanup temporary files

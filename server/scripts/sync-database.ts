@@ -3,21 +3,18 @@ dotenv.config()
 
 import mongoose from 'mongoose'
 import { Data } from '@/models/data'
-import { sheetsData } from './sheets'
-
-const isFormula = (v: unknown): v is string => typeof v === 'string' && v.trim().startsWith('=')
+import { getSheetsData, type WorkbookType } from './sheets'
 
 interface SyncOptions {
-  // Whether to remove records that are no longer in sheets.ts
   removeOrphaned?: boolean
-  // Whether to force update all records (even if they haven't changed)
   forceUpdate?: boolean
-  // Specific user ID to sync (if not provided, syncs all users)
   userId?: string
+  workbook?: WorkbookType
 }
 
 async function syncDatabase(options: SyncOptions = {}) {
-  const { removeOrphaned = false, forceUpdate = false, userId } = options
+  const { removeOrphaned = false, forceUpdate = false, userId, workbook: optWorkbook } = options
+  const workbooks: WorkbookType[] = optWorkbook ? [optWorkbook] : ['pdca', 'company_rating']
   
   const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI
   if (!mongoUri) {
@@ -27,11 +24,25 @@ async function syncDatabase(options: SyncOptions = {}) {
   
   await mongoose.connect(mongoUri)
   console.log('Connected to MongoDB')
+  try {
+    for (const workbook of workbooks) {
+      await syncDatabaseForWorkbook(workbook, { removeOrphaned, forceUpdate, userId })
+    }
+  } finally {
+    await mongoose.disconnect()
+    console.log('Disconnected from MongoDB')
+  }
+}
+
+async function syncDatabaseForWorkbook(
+  workbook: WorkbookType,
+  options: { removeOrphaned: boolean; forceUpdate: boolean; userId?: string }
+) {
+  const { removeOrphaned, forceUpdate, userId } = options
+  const sheetsData = getSheetsData(workbook)
 
   try {
-    // Build a map of all expected data from sheets.ts
     const expectedData = new Map<string, { sheet: string; cell: string; value: string | number }>()
-    
     Object.entries(sheetsData).forEach(([sheetName, cells]) => {
       Object.entries(cells).forEach(([cell, value]) => {
         const key = `${sheetName}:${cell}`
@@ -39,16 +50,15 @@ async function syncDatabase(options: SyncOptions = {}) {
       })
     })
 
-    console.log(`Found ${expectedData.size} expected records in sheets.ts`)
+    console.log(`\n[${workbook}] Found ${expectedData.size} expected records`)
 
-    // Get all existing data
-    const query = userId ? { user: userId } : {}
+    const query: any = { workbook }
+    if (userId) query.user = userId
     const existingData = await Data.find(query).lean()
-    console.log(`Found ${existingData.length} existing records in database`)
+    console.log(`[${workbook}] Found ${existingData.length} existing records in database`)
 
-    // Build maps for efficient lookup
     const existingByUser = new Map<string, Map<string, any>>()
-    existingData.forEach(doc => {
+    existingData.forEach((doc: any) => {
       if (!existingByUser.has(doc.user)) {
         existingByUser.set(doc.user, new Map())
       }
@@ -57,7 +67,7 @@ async function syncDatabase(options: SyncOptions = {}) {
     })
 
     const usersToSync = userId ? [userId] : Array.from(existingByUser.keys())
-    console.log(`Syncing ${usersToSync.length} users`)
+    console.log(`[${workbook}] Syncing ${usersToSync.length} users`)
 
     let totalUpdates = 0
     let totalInserts = 0
@@ -77,11 +87,11 @@ async function syncDatabase(options: SyncOptions = {}) {
         const existingRecord = userData.get(key)
         
         if (!existingRecord) {
-          // Insert new record
           bulkOps.push({
             insertOne: {
               document: {
                 user: currentUserId,
+                workbook,
                 sheet: expectedRecord.sheet,
                 cell: expectedRecord.cell,
                 value: expectedRecord.value
@@ -117,13 +127,12 @@ async function syncDatabase(options: SyncOptions = {}) {
         }
       }
 
-      // Handle orphaned records (if removeOrphaned is true)
       if (removeOrphaned) {
         for (const [key, existingRecord] of userData) {
           if (!expectedData.has(key)) {
             bulkOps.push({
               deleteOne: {
-                filter: { _id: existingRecord._id }
+                filter: { _id: (existingRecord as any)._id }
               }
             })
             removalsToDisplay.push({
@@ -169,15 +178,10 @@ async function syncDatabase(options: SyncOptions = {}) {
       }
     }
 
-    console.log(`\n=== Sync Summary ===`)
-    console.log(`Total inserts: ${totalInserts}`)
-    console.log(`Total updates: ${totalUpdates}`)
-    console.log(`Total removals: ${totalRemovals}`)
-    console.log(`Users synced: ${usersToSync.length}`)
-
-  } finally {
-    await mongoose.disconnect()
-    console.log('Disconnected from MongoDB')
+    console.log(`\n[${workbook}] Sync Summary: inserts=${totalInserts}, updates=${totalUpdates}, removals=${totalRemovals}, users=${usersToSync.length}`)
+  } catch (err) {
+    console.error(`Sync failed for workbook ${workbook}:`, err)
+    throw err
   }
 }
 
@@ -198,10 +202,17 @@ async function main() {
       case '--user':
         if (i + 1 < args.length) {
           options.userId = args[i + 1]
-          i++ // Skip next argument as it's the user ID
+          i++
         } else {
           console.error('--user requires a user ID')
           process.exit(1)
+        }
+        break
+      case '--workbook':
+        if (i + 1 < args.length) {
+          const w = args[i + 1]
+          if (w === 'pdca' || w === 'company_rating') options.workbook = w
+          i++
         }
         break
       case '--help':
@@ -212,6 +223,7 @@ Options:
   --remove-orphaned    Remove records that are no longer in sheets.ts
   --force-update        Force update all records even if they haven't changed
   --user <userId>       Sync only specific user (default: sync all users)
+  --workbook <name>     Sync only pdca or company_rating (default: both)
   --help               Show this help message
 
 Examples:

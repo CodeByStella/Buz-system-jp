@@ -15,6 +15,7 @@ import {
 } from "../transformers/dataTransformer";
 import { userService } from "../services";
 import { cellToIndices, indicesToCell } from "../utils/cellHelpers";
+import { useOptionalWorkbookContext } from "./WorkbookContext";
 
 interface DataContextType {
   data: FrontendDataType;
@@ -38,6 +39,8 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const workbookContext = useOptionalWorkbookContext();
+  const workbook = workbookContext?.workbook ?? "pdca";
   const [userInput, setUserInput] = useState<FrontendDataType>({});
   const [saving, setSaving] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -69,7 +72,6 @@ export const DataProvider: React.FC<{
     return trimmed.length > 0 && trimmed.startsWith("=");
   };
 
-  // Initialize HyperFormula instance
   useEffect(() => {
     if (!hfInstanceRef.current) {
       hfInstanceRef.current = HyperFormula.buildEmpty({
@@ -77,7 +79,6 @@ export const DataProvider: React.FC<{
       });
     }
 
-    // Fetch initial data
     fetchUserInputs();
 
     return () => {
@@ -85,7 +86,7 @@ export const DataProvider: React.FC<{
         hfInstanceRef.current = null;
       }
     };
-  }, []);
+  }, [workbook]);
 
   const fetchUserInputs = async () => {
     console.log("fetching user input.............")
@@ -93,8 +94,20 @@ export const DataProvider: React.FC<{
       setLoading(true);
       setErrorMessage(null);
 
-      const backendData: BackendDataType[] = await userService.getUserInputs();
+      const backendData: BackendDataType[] = await userService.getUserInputs(workbook);
       console.log("Backend data received:", backendData.length, "items");
+
+      // [DEBUG] Result sheet: did backend send result!E6, C6, etc.?
+      if (workbook === "company_rating") {
+        const resultItems = backendData.filter((i) => i.sheet === "result");
+        const sampleCells = ["C6", "E6", "C7", "E7", "E26", "J26"];
+        console.log("[ResultSheet DEBUG] Backend result sheet items:", resultItems.length);
+        sampleCells.forEach((cell) => {
+          const item = resultItems.find((i) => i.cell === cell);
+          const isForm = item && isFormula(item.value);
+          console.log(`[ResultSheet DEBUG] Backend result!${cell}:`, item ? (isForm ? "FORMULA" : item.value) : "MISSING");
+        });
+      }
 
       // Store original data for change tracking
       originalDataRef.current = JSON.parse(JSON.stringify(backendData));
@@ -120,9 +133,36 @@ export const DataProvider: React.FC<{
       const frontendData = transformBe2Fe(backendData);
       console.log("Frontend data transformed:", Object.keys(frontendData));
 
+      // Company_rating result: ensure key formula cells exist so E26, E42, J26, J42 (and display) always work
+      if (workbook === "company_rating" && frontendData.result) {
+        const resultSheet = frontendData.result;
+        const ensureResultCell = (cell: string, formula: string) => {
+          const { row, col } = cellToIndices(cell);
+          while (resultSheet.length <= row) resultSheet.push([]);
+          while (resultSheet[row].length <= col) resultSheet[row].push("");
+          const cur = resultSheet[row][col];
+          const isEmpty = cur === undefined || cur === "";
+          const isError = typeof cur === "string" && /#(CYCLE|ERROR|REF|VALUE|NAME|DIV\/0|N\/A|NUM|NULL)!?/.test(cur);
+          const isNotFormula = typeof cur !== "string" || !String(cur).trim().startsWith("=");
+          if (isEmpty || isError || isNotFormula) resultSheet[row][col] = formula;
+        };
+        ensureResultCell("E26", "=SUM(E5:E25)");
+        ensureResultCell("E40", "=SUM(E28:E38)");
+        ensureResultCell("E42", "=E26+E40");
+        ensureResultCell("J26", "=E26");
+        ensureResultCell("J42", "=E42+E26");
+      }
+
+      // [DEBUG] After transform: does frontendData.result have formulas at E6 (row 5, col 4)?
+      if (workbook === "company_rating" && frontendData.result) {
+        const r5 = frontendData.result[5];
+        console.log("[ResultSheet DEBUG] After transform result row 5 (Excel row 6):", r5 ? [r5[2], r5[4]] : "no row 5");
+        console.log("[ResultSheet DEBUG] result[5][4] (E6) is formula?", typeof r5?.[4] === "string" && (r5?.[4] as string).startsWith("="));
+      }
+
       // Initialize HyperFormula with the data
       console.log("Initializing HyperFormula...");
-      initializeHyperFormula(frontendData);
+      initializeHyperFormula(frontendData, workbook);
 
       // Get calculated values from HyperFormula
       console.log("Getting calculated data...");
@@ -162,8 +202,19 @@ export const DataProvider: React.FC<{
     }
   };
 
+  // Sheet order for company_rating: input_data first (result formulas depend on it)
+  const COMPANY_RATING_SHEET_ORDER = [
+    "input_data",
+    "result",
+    "score_table",
+    "safety_indicators",
+  ];
+
   // Initialize HyperFormula with sheets and formulas
-  const initializeHyperFormula = (frontendData: FrontendDataType) => {
+  const initializeHyperFormula = (
+    frontendData: FrontendDataType,
+    currentWorkbook?: string
+  ) => {
     const hf = hfInstanceRef.current;
     if (!hf) return;
 
@@ -177,7 +228,16 @@ export const DataProvider: React.FC<{
     });
     sheetIdsRef.current.clear();
 
-    Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
+    const sheetNames = Object.keys(frontendData);
+    // For company_rating, add sheets in dependency order so result can reference input_data
+    const orderedNames =
+      currentWorkbook === "company_rating"
+        ? COMPANY_RATING_SHEET_ORDER.filter((n) => sheetNames.includes(n)).concat(
+            sheetNames.filter((n) => !COMPANY_RATING_SHEET_ORDER.includes(n))
+          )
+        : sheetNames;
+
+    orderedNames.forEach((sheetName) => {
       try {
         hf.addSheet(sheetName);
         const sheetId = hf.getSheetId(sheetName);
@@ -189,32 +249,80 @@ export const DataProvider: React.FC<{
       }
     });
 
-    // Then, set cell values (content) for all sheets
-    Object.entries(frontendData).forEach(([sheetName, sheetData]) => {
+    // Normalize 2D array to rectangular grid (HyperFormula expects consistent dimensions)
+    const toRectangular = (grid: (string | number)[][]): (string | number)[][] => {
+      if (!grid.length) return grid;
+      const safeRow = (row: (string | number)[] | undefined) => row ?? [];
+      const maxCols = Math.max(...grid.map((r) => safeRow(r).length));
+      return grid.map((row) => {
+        const padded = [...safeRow(row)];
+        while (padded.length < maxCols) padded.push("");
+        return padded;
+      });
+    };
+
+    // Company-rating result sheet: ensure min 42 rows x 10 cols so E26/E42/J26/J42 and all 配点 cells are in range
+    const RESULT_SHEET_MIN_ROWS = 42;
+    const RESULT_SHEET_MIN_COLS = 10;
+
+    // HyperFormula does not recognize bare TRUE/FALSE in formula text (only TRUE()/FALSE() or named expressions)
+    const rewriteTrueFalseInFormula = (formula: string): string =>
+      formula
+        .replace(/([,(])TRUE([,)])/g, "$1TRUE()$2")
+        .replace(/([,(])FALSE([,)])/g, "$1FALSE()$2");
+
+    // Set cell values in same dependency order so result formulas see input_data
+    orderedNames.forEach((sheetName) => {
+      let sheetData = frontendData[sheetName];
       const sheetId = hf.getSheetId(sheetName);
-      if (sheetId === undefined) return;
+      if (sheetId === undefined || !sheetData || sheetData.length === 0) return;
 
-      // Set sheet content directly from transformed data
-      if (sheetData && sheetData.length > 0) {
-        // Additional sanitization before sending to HyperFormula
-        const sanitizedSheetData = sheetData.map((row) =>
-          row.map((cell) => {
-            // Ensure no error values slip through
-            if (typeof cell === "string" && cell.includes("#")) {
-              console.warn(
-                `Found error value in ${sheetName}: ${cell}, replacing with empty string`
-              );
-              return "";
-            }
-            return cell;
-          })
-        );
-
-        try {
-          hf.setSheetContent(sheetId, sanitizedSheetData);
-        } catch (error) {
-          console.error(`Error setting content for sheet ${sheetName}:`, error);
+      // Company_rating result: ensure min dimensions so E26, E42, J26, J42 (and E19, etc.) are in grid
+      if (currentWorkbook === "company_rating" && sheetName === "result") {
+        const rows = sheetData.length;
+        const needRows = Math.max(0, RESULT_SHEET_MIN_ROWS - rows);
+        if (needRows > 0) {
+          sheetData = [...sheetData] as (string | number)[][];
+          for (let i = 0; i < needRows; i++) sheetData.push([]);
         }
+      }
+
+      const rectangular = toRectangular(sheetData);
+      let grid = rectangular.map((row) =>
+        row.map((cell) => {
+          if (typeof cell === "string" && cell.includes("#")) {
+            console.warn(
+              `Found error value in ${sheetName}, replacing with empty string`
+            );
+            return "";
+          }
+          if (typeof cell === "string" && cell.trim().startsWith("=")) {
+            return rewriteTrueFalseInFormula(cell);
+          }
+          return cell;
+        })
+      );
+
+      if (currentWorkbook === "company_rating" && sheetName === "result") {
+        const minCols = Math.max(grid[0]?.length ?? 0, RESULT_SHEET_MIN_COLS);
+        grid = grid.map((row) => {
+          const r = [...row];
+          while (r.length < minCols) r.push("");
+          return r;
+        });
+      }
+
+      try {
+        hf.setSheetContent(sheetId, grid);
+        if (currentWorkbook === "company_rating" && sheetName === "result") {
+          const dims = hf.getSheetDimensions(sheetId);
+          console.log("[ResultSheet DEBUG] setSheetContent result OK. Dimensions:", dims.height, "x", dims.width);
+          const e6Val = hf.getCellValue({ sheet: sheetId, row: 5, col: 4 });
+          const c6Val = hf.getCellValue({ sheet: sheetId, row: 5, col: 2 });
+          console.log("[ResultSheet DEBUG] Right after set, HF result!C6:", c6Val, "result!E6:", e6Val);
+        }
+      } catch (error) {
+        console.error(`Error setting content for sheet ${sheetName}:`, error);
       }
     });
   };
@@ -233,13 +341,24 @@ export const DataProvider: React.FC<{
       for (let row = 0; row < sheetSize.height; row++) {
         sheetData[row] = [];
         for (let col = 0; col < sheetSize.width; col++) {
-          // Only get calculated value (optimized - single call per cell)
           const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
-          sheetData[row][col] = cellValue ?? "";
+          // HyperFormula returns DetailedCellError for formula errors; store .value (e.g. "#NAME?") so UI can show "—"
+          const normalized =
+            cellValue != null && typeof cellValue === "object" && "value" in cellValue && typeof (cellValue as { value: string }).value === "string"
+              ? (cellValue as { value: string }).value
+              : cellValue ?? "";
+          sheetData[row][col] = normalized;
         }
       }
 
       result[sheetName] = sheetData;
+
+      if (sheetName === "result") {
+        console.log("[ResultSheet DEBUG] getCalculatedData result sheet size:", sheetSize.height, "x", sheetSize.width);
+        console.log("[ResultSheet DEBUG] getCalculatedData result!C6 (row5 col2):", sheetData[5]?.[2]);
+        console.log("[ResultSheet DEBUG] getCalculatedData result!E6 (row5 col4):", sheetData[5]?.[4]);
+        console.log("[ResultSheet DEBUG] getCalculatedData result!E26 (row25 col4):", sheetData[25]?.[4]);
+      }
     });
 
     return result;
@@ -434,12 +553,10 @@ export const DataProvider: React.FC<{
         value: cell.value,
       }));
 
-      // Send bulk update to backend
-      await userService.saveMultipleInputs(bulkData);
+      await userService.saveMultipleInputs(bulkData, workbook);
 
-      // Update original data to reflect saved state
       const updatedBackendData: BackendDataType[] =
-        await userService.getUserInputs();
+        await userService.getUserInputs(workbook);
       originalDataRef.current = JSON.parse(JSON.stringify(updatedBackendData));
 
       // Clear user-edited cells since they're now saved
@@ -511,15 +628,26 @@ export const DataProvider: React.FC<{
   };
 
   // Helper to get cell value by reference
-  const getCell = (sheet: string, cell: string): string | number => {
+  const getCell = (sheet: string, cell: string): string | number | undefined => {
     const sheetData = userInput[sheet];
-    if (!sheetData) return cell; // Return the text itself if sheet doesn't exist
+    if (!sheetData) {
+      if (sheet === "result" && ["E6", "E7", "E26", "J26"].includes(cell)) {
+        console.log("[ResultSheet DEBUG] getCell", sheet, cell, "-> no sheetData, returning ''");
+      }
+      return "";
+    }
 
     try {
       const { row, col } = cellToIndices(cell);
-      return sheetData[row]?.[col];
-    } catch {
-      return cell; // Return the text itself if it's not a valid cell reference
+      const val = sheetData[row]?.[col];
+      const out = val !== undefined && val !== null ? val : "";
+      if (sheet === "result" && ["E6", "E7", "E26", "J26"].includes(cell)) {
+        console.log("[ResultSheet DEBUG] getCell", sheet, cell, "row", row, "col", col, "->", out);
+      }
+      return out;
+    } catch (e) {
+      if (sheet === "result") console.log("[ResultSheet DEBUG] getCell", sheet, cell, "throw", e);
+      return "";
     }
   };
 
@@ -543,8 +671,7 @@ export const DataProvider: React.FC<{
 
       console.log("Starting full data reset...");
       
-      // Call backend reset endpoint
-      const response = await userService.resetUserData();
+      const response = await userService.resetUserData(workbook);
       
       if (response.success && response.resetCompleted) {
         console.log("Reset successful, refetching data...");

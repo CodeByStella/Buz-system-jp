@@ -3,21 +3,20 @@ dotenv.config()
 
 import mongoose from 'mongoose'
 import { Data } from '@/models/data'
-import { sheetsData } from './sheets'
+import { getSheetsData, type WorkbookType } from './sheets'
 
 const isFormula = (v: unknown): v is string => typeof v === 'string' && v.trim().startsWith('=')
 
 interface SyncOptions {
-  // Whether to remove formula records that are no longer in sheets.ts
   removeOrphaned?: boolean
-  // Whether to force update all formula records (even if they haven't changed)
   forceUpdate?: boolean
-  // Specific user ID to sync (if not provided, syncs all users)
   userId?: string
+  workbook?: WorkbookType
 }
 
 async function syncFormulas(options: SyncOptions = {}) {
-  const { removeOrphaned = false, forceUpdate = false, userId } = options
+  const { removeOrphaned = true, forceUpdate = false, userId, workbook: optWorkbook } = options
+  const workbooks: WorkbookType[] = optWorkbook ? [optWorkbook] : ['pdca', 'company_rating']
   
   const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI
   if (!mongoUri) {
@@ -27,40 +26,51 @@ async function syncFormulas(options: SyncOptions = {}) {
   
   await mongoose.connect(mongoUri)
   console.log('Connected to MongoDB')
-
   try {
-    // Build a map of only formula data from sheets.ts
-    const expectedFormulas = new Map<string, { sheet: string; cell: string; value: string | number }>()
-    
-    Object.entries(sheetsData).forEach(([sheetName, cells]) => {
-      Object.entries(cells).forEach(([cell, value]) => {
-        // Only include formulas (values starting with "=")
-        if (isFormula(value)) {
-          const key = `${sheetName}:${cell}`
-          expectedFormulas.set(key, { sheet: sheetName, cell, value })
-        }
-      })
-    })
+    for (const workbook of workbooks) {
+      await syncFormulasForWorkbook(workbook, { removeOrphaned, forceUpdate, userId })
+    }
+  } finally {
+    await mongoose.disconnect()
+    console.log('Disconnected from MongoDB')
+  }
+}
 
-    console.log(`Found ${expectedFormulas.size} expected formulas in sheets.ts`)
+async function syncFormulasForWorkbook(
+  workbook: WorkbookType,
+  options: { removeOrphaned: boolean; forceUpdate: boolean; userId?: string }
+) {
+  const { removeOrphaned, forceUpdate, userId } = options
+  const sheetsData = getSheetsData(workbook)
 
-    // Get all existing data
-    const query = userId ? { user: userId } : {}
-    const existingData = await Data.find(query).lean()
-    console.log(`Found ${existingData.length} existing records in database`)
-
-    // Build maps for efficient lookup
-    const existingByUser = new Map<string, Map<string, any>>()
-    existingData.forEach(doc => {
-      if (!existingByUser.has(doc.user)) {
-        existingByUser.set(doc.user, new Map())
+  const expectedFormulas = new Map<string, { sheet: string; cell: string; value: string | number }>()
+  Object.entries(sheetsData).forEach(([sheetName, cells]) => {
+    Object.entries(cells).forEach(([cell, value]) => {
+      if (isFormula(value)) {
+        const key = `${sheetName}:${cell}`
+        expectedFormulas.set(key, { sheet: sheetName, cell, value })
       }
-      const userData = existingByUser.get(doc.user)!
-      userData.set(`${doc.sheet}:${doc.cell}`, doc)
     })
+  })
 
-    const usersToSync = userId ? [userId] : Array.from(existingByUser.keys())
-    console.log(`Syncing formulas for ${usersToSync.length} users`)
+  console.log(`\n[${workbook}] Found ${expectedFormulas.size} expected formulas`)
+
+  const query: any = { workbook }
+  if (userId) query.user = userId
+  const existingData = await Data.find(query).lean()
+  console.log(`[${workbook}] Found ${existingData.length} existing records in database`)
+
+  const existingByUser = new Map<string, Map<string, any>>()
+  existingData.forEach((doc: any) => {
+    if (!existingByUser.has(doc.user)) {
+      existingByUser.set(doc.user, new Map())
+    }
+    const userData = existingByUser.get(doc.user)!
+    userData.set(`${doc.sheet}:${doc.cell}`, doc)
+  })
+
+  const usersToSync = userId ? [userId] : Array.from(existingByUser.keys())
+  console.log(`[${workbook}] Syncing formulas for ${usersToSync.length} users`)
 
     let totalUpdates = 0
     let totalInserts = 0
@@ -80,11 +90,11 @@ async function syncFormulas(options: SyncOptions = {}) {
         const existingRecord = userData.get(key)
         
         if (!existingRecord) {
-          // Insert new formula record
           bulkOps.push({
             insertOne: {
               document: {
                 user: currentUserId,
+                workbook,
                 sheet: expectedFormula.sheet,
                 cell: expectedFormula.cell,
                 value: expectedFormula.value
@@ -173,16 +183,7 @@ async function syncFormulas(options: SyncOptions = {}) {
       }
     }
 
-    console.log(`\n=== Formula Sync Summary ===`)
-    console.log(`Total formula inserts: ${totalInserts}`)
-    console.log(`Total formula updates: ${totalUpdates}`)
-    console.log(`Total formula removals: ${totalRemovals}`)
-    console.log(`Users synced: ${usersToSync.length}`)
-
-  } finally {
-    await mongoose.disconnect()
-    console.log('Disconnected from MongoDB')
-  }
+    console.log(`\n[${workbook}] Formula Sync Summary: inserts=${totalInserts}, updates=${totalUpdates}, removals=${totalRemovals}, users=${usersToSync.length}`)
 }
 
 // CLI interface
@@ -196,33 +197,52 @@ async function main() {
       case '--remove-orphaned':
         options.removeOrphaned = true
         break
+      case '--no-remove-orphaned':
+        options.removeOrphaned = false
+        break
       case '--force-update':
         options.forceUpdate = true
         break
       case '--user':
         if (i + 1 < args.length) {
           options.userId = args[i + 1]
-          i++ // Skip next argument as it's the user ID
+          i++
         } else {
           console.error('--user requires a user ID')
           process.exit(1)
+        }
+        break
+      case '--workbook':
+        if (i + 1 < args.length) {
+          const w = args[i + 1]
+          if (w === 'pdca' || w === 'company_rating') options.workbook = w
+          i++
         }
         break
       case '--help':
         console.log(`
 Usage: npm run db:formula [options]
 
+Sync formulas from sheets.ts / sheets-company-rating.ts into the database.
+- Inserts missing formula cells.
+- Updates formula cells that differ from seed (e.g. damaged or old TRUE -> TRUE()).
+- Removes formula records that are no longer in the seed (e.g. C18 removed from file -> removed from DB).
+- Does NOT touch non-formula (user-saved) values. Safe for production.
+
 Options:
-  --remove-orphaned    Remove formula records that are no longer in sheets.ts
-  --force-update        Force update all formula records even if they haven't changed
-  --user <userId>       Sync only specific user (default: sync all users)
-  --help               Show this help message
+  --no-remove-orphaned  Do NOT remove formulas that are no longer in the seed (default: remove them)
+  --remove-orphaned     Remove formula records that are no longer in the seed (default: on)
+  --force-update        Force update all formula cells to match seed (default: only update when value differs)
+  --user <userId>       Sync only this user (default: all users)
+  --workbook <name>     Sync only pdca or company_rating (default: both)
+  --help                Show this help message
 
 Examples:
-  npm run db:formula                           # Sync all users' formulas, keep orphaned records
-  npm run db:formula --remove-orphaned        # Sync all users' formulas, remove orphaned records
-  npm run db:formula --user user123            # Sync only user123's formulas
-  npm run db:formula --force-update --user user123  # Force update user123's formulas
+  npm run db:formula                              # Full sync: add/update/remove formulas to match seed
+  npm run db:formula --workbook company_rating    # Only company_rating workbook
+  npm run db:formula --user <userId>             # Only one user
+  npm run db:formula --no-remove-orphaned         # Only add/update, never delete
+  npm run db:formula --force-update              # Overwrite every formula with seed
         `)
         process.exit(0)
         break

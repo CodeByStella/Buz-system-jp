@@ -325,16 +325,22 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     }, [isFocused, tip, updateTooltipPosition]);
 
     // Initialize local value when context value changes (but not when focused)
+    // When renderValue is provided, use the displayed value so focus shows the same as blur
     React.useEffect(() => {
       if (!isFocused) {
         const currentValue = hasContext && contextValue !== undefined ? contextValue : value;
-        if (currentValue !== undefined && currentValue !== null) {
-          setLocalValue(String(currentValue));
+        let valueToShow: string;
+        if (currentValue === undefined || currentValue === null) {
+          valueToShow = "";
+        } else if (renderValue && (typeof currentValue === "string" || typeof currentValue === "number")) {
+          const rendered = renderValue(currentValue);
+          valueToShow = rendered !== undefined && rendered !== null ? String(rendered) : "";
         } else {
-          setLocalValue("");
+          valueToShow = String(currentValue);
         }
+        setLocalValue(valueToShow);
       }
-    }, [contextValue, value, hasContext, isFocused]);
+    }, [contextValue, value, hasContext, isFocused, renderValue]);
 
     // Handle change event - only update local state, don't trigger context changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

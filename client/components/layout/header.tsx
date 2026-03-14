@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { authService } from "@/lib/services";
 import { useDataContext, useOptionalDataContext } from "@/lib/contexts";
+import type { WorkbookType } from "@/lib/transformers/dataTransformer";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 
 interface User {
@@ -16,7 +17,11 @@ interface User {
   role?: "ADMIN" | "USER";
 }
 
-export function Header() {
+interface HeaderProps {
+  workbook?: WorkbookType;
+}
+
+export function Header({ workbook = "pdca" }: HeaderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -24,7 +29,7 @@ export function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const optionalCtx = useOptionalDataContext();
-  const companyName = optionalCtx?.getCell("start", "C1");
+  const companyName = workbook === "pdca" ? optionalCtx?.getCell("start", "C1") : undefined;
 
   useEffect(() => {
     fetchUser();

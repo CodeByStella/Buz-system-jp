@@ -5,12 +5,16 @@ import { useRouter } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { authService } from "@/lib/services";
-import { useDataContext } from "@/lib/contexts/DataContext";
-import { DataProvider } from "@/lib/contexts";
+import { useDataContext, DataProvider, WorkbookProvider, useWorkbookContext } from "@/lib/contexts";
 import { Toast } from "@/components/ui/toast";
 import { Menu } from "lucide-react";
 
-// Import all sheet components
+import InputDataSheet from "@/components/sheets/company-rating/input-data-sheet";
+import ResultSheet from "@/components/sheets/company-rating/result-sheet";
+import ScoreTableSheet from "@/components/sheets/company-rating/score-table-sheet";
+import SafetyIndicatorsSheet from "@/components/sheets/company-rating/safety-indicators-sheet";
+
+// Import all PDCA sheet components
 import MQCurrentSheet from "@/components/sheets/mq-current-sheet";
 import ProfitSheet from "@/components/sheets/profit-sheet";
 import MQFutureSheet from "@/components/sheets/mq-future-sheet";
@@ -24,7 +28,12 @@ import SalesPlanSheet from "@/components/sheets/sales-plan-sheet";
 import ProfitPlanSheet from "@/components/sheets/profit-plan-sheet";
 import ProgressResultInputSheet from "@/components/sheets/progress-result-input-sheet";
 import StartSheet from "@/components/sheets/start-sheet";
-import { SheetNameType } from "@/lib/transformers/dataTransformer";
+import {
+  SheetNameType,
+  CompanyRatingSheetNameType,
+  type ActiveTabType,
+  type WorkbookType,
+} from "@/lib/transformers/dataTransformer";
 
 interface User {
   id: string;
@@ -33,7 +42,7 @@ interface User {
   role?: "ADMIN" | "USER";
 }
 
-const VALID_TABS: SheetNameType[] = [
+const PDCA_TABS: SheetNameType[] = [
   "start",
   "mq_current_status",
   "profit",
@@ -47,35 +56,32 @@ const VALID_TABS: SheetNameType[] = [
   "progress_result_input",
   "sales_plan_by_department",
   "profit_planing_table",
-] as const;
+];
+
+const COMPANY_RATING_TABS: CompanyRatingSheetNameType[] = [
+  "input_data",
+  "result",
+  "score_table",
+  "safety_indicators",
+];
+
+function getValidTabs(workbook: WorkbookType): ActiveTabType[] {
+  return workbook === "company_rating" ? [...COMPANY_RATING_TABS] : [...PDCA_TABS];
+}
+
+function getDefaultTab(workbook: WorkbookType): ActiveTabType {
+  return workbook === "company_rating" ? "input_data" : "start";
+}
 
 export default function DashboardLayout() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState(() => {
-    // Load last visited tab from localStorage on initial mount
-    if (typeof window !== "undefined") {
-      const savedTab = localStorage.getItem("lastVisitedTab");
-      // Validate that the saved tab is a valid tab
-      if (savedTab && VALID_TABS.includes(savedTab as any)) {
-        return savedTab;
-      }
-    }
-    return "start";
-  });
   const router = useRouter();
 
   useEffect(() => {
     fetchUser();
   }, []);
-
-  // Save active tab to localStorage whenever it changes
-  useEffect(() => {
-    if (typeof window !== "undefined" && activeTab) {
-      localStorage.setItem("lastVisitedTab", activeTab);
-    }
-  }, [activeTab]);
 
   const fetchUser = async () => {
     try {
@@ -88,7 +94,7 @@ export default function DashboardLayout() {
     }
   };
 
-  const renderContent = () => {
+  const renderContent = (activeTab: ActiveTabType) => {
     switch (activeTab) {
       case "start":
         return <StartSheet />;
@@ -116,6 +122,14 @@ export default function DashboardLayout() {
         return <SalesPlanSheet />;
       case "profit_planing_table":
         return <ProfitPlanSheet />;
+      case "input_data":
+        return <InputDataSheet />;
+      case "result":
+        return <ResultSheet />;
+      case "score_table":
+        return <ScoreTableSheet />;
+      case "safety_indicators":
+        return <SafetyIndicatorsSheet />;
       default:
         return (
           <div className="p-6">
@@ -161,51 +175,96 @@ export default function DashboardLayout() {
   }
 
   return (
-    <DataProvider>
-      <DashboardContent
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        renderContent={renderContent}
-      />
-    </DataProvider>
+    <WorkbookProvider>
+      <DataProvider>
+        <DashboardContent
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          renderContent={renderContent}
+        />
+      </DataProvider>
+    </WorkbookProvider>
   );
 }
 
-// Separate component to access DataContext
 function DashboardContent({
-  activeTab,
-  setActiveTab,
   sidebarOpen,
   setSidebarOpen,
   renderContent,
 }: {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
-  renderContent: () => React.ReactNode;
+  renderContent: (activeTab: ActiveTabType) => React.ReactNode;
 }) {
+  const { workbook, setWorkbook } = useWorkbookContext();
+  const validTabs = getValidTabs(workbook);
+  const defaultTab = getDefaultTab(workbook);
+  const [activeTab, setActiveTab] = useState<ActiveTabType>(() => {
+    if (typeof window !== "undefined") {
+      const savedTab = localStorage.getItem("lastVisitedTab");
+      const savedWorkbook = localStorage.getItem("lastWorkbook");
+      if (savedWorkbook === workbook && savedTab && validTabs.includes(savedTab as ActiveTabType)) {
+        return savedTab as ActiveTabType;
+      }
+    }
+    return defaultTab;
+  });
   const { errorMessage, successMessage, clearMessages } = useDataContext();
 
+  useEffect(() => {
+    if (!validTabs.includes(activeTab)) {
+      setActiveTab(defaultTab);
+    }
+  }, [workbook]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && activeTab) {
+      localStorage.setItem("lastVisitedTab", activeTab);
+    }
+  }, [activeTab]);
+
   return (
-    <div className="h-screen bg-gray-50  flex flex-col">
-      <Header />
-      <div className="flex-1  flex justify-center relative custom_main_container" >
-        <div className="w-full max-w-[1440px] h-full p-4">
-          <div className="h-full border border-gray-200 bg-white ">
-            <div className="flex h-full">
-              <Sidebar
-                activeTab={activeTab as SheetNameType}
-                onTabChange={setActiveTab}
-                isOpen={sidebarOpen}
-                onClose={() => setSidebarOpen(false)}
-              />
-              <div className="w-full flex-1 flex flex-col  transition-all duration-300">
-                <main className="flex-1 p-6 lg:p-6 md:p-4 sm:p-4 overflow-auto">
-                  {renderContent()}
-                </main>
+    <div className="h-screen bg-gray-50 flex flex-col">
+      <Header workbook={workbook} />
+      <div className="flex-1 flex flex-col min-h-0 relative custom_main_container">
+        <div className="flex-1 flex justify-center min-h-0 w-full">
+          <div className="w-full max-w-[1440px] h-full flex flex-col min-h-0 p-4">
+            <div className="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-2 flex gap-2">
+              <button
+                onClick={() => setWorkbook("pdca")}
+                className={`px-4 py-2 rounded text-sm font-medium ${
+                  workbook === "pdca"
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                短期計画PDCA
+              </button>
+              <button
+                onClick={() => setWorkbook("company_rating")}
+                className={`px-4 py-2 rounded text-sm font-medium ${
+                  workbook === "company_rating"
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                会社評価
+              </button>
+            </div>
+            <div className="flex-1 min-h-0 border border-gray-200 bg-white border-t-0 flex flex-col">
+              <div className="flex flex-1 min-h-0 min-w-0">
+                <Sidebar
+                  workbook={workbook}
+                  activeTab={activeTab}
+                  onTabChange={(tab) => setActiveTab(tab as ActiveTabType)}
+                  isOpen={sidebarOpen}
+                  onClose={() => setSidebarOpen(false)}
+                />
+                <div className="min-w-0 w-full flex-1 flex flex-col min-h-0 transition-all duration-300">
+                  <main className="flex-1 min-h-0 min-w-0 p-6 lg:p-6 md:p-4 sm:p-4 overflow-auto">
+                    {renderContent(activeTab)}
+                  </main>
+                </div>
               </div>
             </div>
           </div>

@@ -1,14 +1,20 @@
 import express from 'express'
 import { authenticateToken, AuthenticatedRequest } from '../middleware/auth'
 import { Data } from '@/models/data'
-import { seedSheetsForUser, sheetsData } from '@/scripts/sheets'
+import { seedSheetsForUser, getSheetsData, type WorkbookType } from '@/scripts/sheets'
+
+
+function parseWorkbook(w: unknown): WorkbookType {
+  if (w === 'pdca' || w === 'company_rating') return w
+  return 'pdca'
+}
 
 // Helper function to check if a value is a formula
 const isFormula = (v: unknown): v is string => typeof v === 'string' && v.trim().startsWith('=')
 
-// Check if a cell is supposed to be a formula according to sheetsData
-const isFormulaCell = (sheet: string, cell: string): boolean => {
-  const sheetData = sheetsData[sheet]
+// Check if a cell is supposed to be a formula according to sheetsData for the workbook
+const isFormulaCell = (workbook: WorkbookType, sheet: string, cell: string): boolean => {
+  const sheetData = getSheetsData(workbook)[sheet]
   if (!sheetData) return false
   const value = sheetData[cell]
   return isFormula(value)
@@ -23,30 +29,54 @@ router.use(authenticateToken)
 router.get('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
     const startTime = Date.now()
-  
+    const workbook = parseWorkbook(req.query.workbook)
     const userId = req.user!.id
-    let userInputs = await Data.find({ user: userId }).lean() // Use lean() for better performance
+    let userInputs = await Data.find({ user: userId, workbook }).lean()
+    
+    // If user has no data for this workbook yet, seed and refetch
+    if (userInputs.length === 0) {
+      await seedSheetsForUser(userId, workbook)
+      userInputs = await Data.find({ user: userId, workbook }).lean()
+    } else {
+      // Do NOT merge "missing formula cells from seed" here. The running server caches the seed
+      // module; after you remove a formula from sheets-company-rating.ts and run db:formula, a
+      // refresh would re-add it because getSheetsData() would still return the old seed. Formula
+      // sync (add/remove) is done only via npm run db:formula. New users are seeded above.
+      const toUpsert: any[] = []
+      // Fix known mistaken value: result!E25 was "定量要因" in old extraction; cell should be empty
+      const badE25 = userInputs.find((i: any) => i.sheet === 'result' && i.cell === 'E25' && i.value === '定量要因')
+      if (badE25) {
+        toUpsert.push({ sheet: 'result', cell: 'E25', value: '', user: userId, workbook })
+      }
+      // Fix J42 formula that causes #CYCLE!: use E26 instead of J26 so HyperFormula doesn't see a cycle
+      const badJ42 = userInputs.find((i: any) => i.sheet === 'result' && i.cell === 'J42' && i.value === '=E42+J26')
+      if (badJ42) {
+        toUpsert.push({ sheet: 'result', cell: 'J42', value: '=E42+E26', user: userId, workbook })
+      }
+      if (toUpsert.length > 0) {
+        await Data.bulkWrite(toUpsert.map((item) => ({
+          updateOne: {
+            filter: { user: userId, workbook, sheet: item.sheet, cell: item.cell },
+            update: { $set: item },
+            upsert: true,
+          },
+        })))
+        userInputs = await Data.find({ user: userId, workbook }).lean()
+      }
+    }
     
     // Clean up any error values from the database
     const errorValues = ['#ERROR!', '#REF!', '#VALUE!', '#NAME?', '#DIV/0!', '#N/A', '#NUM!', '#NULL!']
-    const itemsWithErrors = userInputs.filter(item => 
-      typeof item.value === 'string' && errorValues.some(errorValue => item.value.includes(errorValue))
+    const itemsWithErrors = userInputs.filter((item: any) => 
+      typeof item.value === 'string' && errorValues.some((errorValue: string) => item.value.includes(errorValue))
     )
-    
-    // If user has no data yet (race condition), seed now and refetch
-    if (userInputs.length === 0) {
-      await seedSheetsForUser(userId)
-      userInputs = await Data.find({ user: userId }).lean()
-    }
 
     if (itemsWithErrors.length > 0) {
       console.log(`Found ${itemsWithErrors.length} items with error values, cleaning up...`)
-      
-      // For formula cells, restore from seed data; for non-formula cells, set to empty string
-      const updatePromises = itemsWithErrors.map(async (item) => {
-        if (isFormulaCell(item.sheet, item.cell)) {
-          // This is a formula cell - restore it from seed data
-          const seedValue = sheetsData[item.sheet]?.[item.cell]
+      const sheetsDataForWorkbook = getSheetsData(workbook)
+      const updatePromises = itemsWithErrors.map(async (item: any) => {
+        if (isFormulaCell(workbook, item.sheet, item.cell)) {
+          const seedValue = sheetsDataForWorkbook[item.sheet]?.[item.cell]
           if (seedValue) {
             return Data.updateOne(
               { _id: item._id },
@@ -54,18 +84,14 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
             )
           }
         }
-        // Non-formula cell with error - set to empty string
         return Data.updateOne(
           { _id: item._id },
           { $set: { value: '' } }
         )
       })
-      
       await Promise.all(updatePromises)
       console.log(`Cleaned up ${itemsWithErrors.length} error values`)
-      
-      // Refetch the cleaned data
-      const cleanedInputs = await Data.find({ user: userId }).lean()
+      const cleanedInputs = await Data.find({ user: userId, workbook }).lean()
       const endTime = Date.now()
       console.log(`User inputs fetched and cleaned successfully in ${endTime - startTime}ms, ${cleanedInputs.length} items`)
       res.json(cleanedInputs)
@@ -98,18 +124,16 @@ router.get('/inputs', async (req: AuthenticatedRequest, res) => {
 // Save user input (create or update)
 router.post('/inputs', async (req: AuthenticatedRequest, res) => {
   try {
-    const { sheet, cell, value } = req.body
+    const { sheet, cell, value, workbook: bodyWorkbook } = req.body
+    const workbook = parseWorkbook(bodyWorkbook ?? req.query.workbook)
     const userId = req.user!.id
     
-    // Reject attempts to save formulas
     if (typeof value === 'string' && value.trim().startsWith('=')) {
       return res.status(400).json({ error: '数式セルは更新できません' })
     }
     
-    // Check if this cell is supposed to be a formula cell
-    if (isFormulaCell(sheet, cell)) {
-      // Check if the existing record is a formula
-      const existing = await Data.findOne({ user: userId, sheet, cell }).lean()
+    if (isFormulaCell(workbook, sheet, cell)) {
+      const existing = await Data.findOne({ user: userId, workbook, sheet, cell }).lean()
       if (existing && isFormula(existing.value)) {
         return res.status(400).json({ 
           error: 'このセルは数式セルのため、値を直接更新することはできません' 
@@ -117,20 +141,16 @@ router.post('/inputs', async (req: AuthenticatedRequest, res) => {
       }
     }
     
-    // Use findOneAndUpdate with upsert option to update if exists, create if not
     const userInput = await Data.findOneAndUpdate(
-      { user: userId, sheet, cell },
+      { user: userId, workbook, sheet, cell },
       { 
         user: userId,
+        workbook,
         sheet,
         cell,
         value,
       },
-      { 
-        new: true, // Return the updated document
-        upsert: true, // Create if doesn't exist
-        runValidators: true
-      }
+      { new: true, upsert: true, runValidators: true }
     )
     
     res.json(userInput)
@@ -143,15 +163,14 @@ router.post('/inputs', async (req: AuthenticatedRequest, res) => {
 // Bulk save user inputs (create or update multiple cells)
 router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
   try {
-    const { inputs } = req.body // Array of { sheet, cell, value, formula }
+    const { inputs, workbook: bodyWorkbook } = req.body
+    const workbook = parseWorkbook(bodyWorkbook ?? (inputs?.[0]?.workbook) ?? req.query.workbook)
     
     if (!Array.isArray(inputs)) {
       return res.status(400).json({ error: '入力データは配列である必要があります' })
     }
     
-    // Filter out formula values (users can't save formulas)
     const sanitizedInputs = inputs.filter((i: any) => {
-      // Reject formula values
       return !(typeof i.value === 'string' && String(i.value).trim().startsWith('='))
     })
     
@@ -159,32 +178,24 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
       return res.json({ success: true, modified: 0, inserted: 0, total: 0 })
     }
     
-    // Get existing formula cells to prevent overwriting them
     const userId = req.user!.id
     const existingData = await Data.find({ 
       user: userId, 
+      workbook,
       $or: sanitizedInputs.map((i: any) => ({ sheet: i.sheet, cell: i.cell }))
     }).lean()
     
     const existingFormulaCells = new Set<string>()
-    existingData.forEach((doc) => {
+    existingData.forEach((doc: any) => {
       if (isFormula(doc.value)) {
         existingFormulaCells.add(`${doc.sheet}:${doc.cell}`)
       }
     })
     
-    // Filter out cells that are currently formulas (protect formulas from being overwritten)
-    // Also filter out cells that are supposed to be formulas (according to sheetsData)
     const finalInputs = sanitizedInputs.filter((input: any) => {
       const key = `${input.sheet}:${input.cell}`
-      // Don't overwrite existing formulas
-      if (existingFormulaCells.has(key)) {
-        return false
-      }
-      // Don't overwrite cells that should be formulas (they might be temporarily overwritten but should be restored)
-      if (isFormulaCell(input.sheet, input.cell)) {
-        return false
-      }
+      if (existingFormulaCells.has(key)) return false
+      if (isFormulaCell(workbook, input.sheet, input.cell)) return false
       return true
     })
     
@@ -198,13 +209,13 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
       })
     }
     
-    // Use bulkWrite for efficient upsert operations
     const bulkOps = finalInputs.map((input: any) => ({
       updateOne: {
-        filter: { user: userId, sheet: input.sheet, cell: input.cell },
+        filter: { user: userId, workbook, sheet: input.sheet, cell: input.cell },
         update: {
           $set: {
             user: userId,
+            workbook,
             sheet: input.sheet,
             cell: input.cell,
             value: input.value,
@@ -229,26 +240,22 @@ router.post('/inputs/bulk', async (req: AuthenticatedRequest, res) => {
   }
 })
 
-// Reset all user data to initial seed values
+// Reset all user data to initial seed values (per workbook)
 router.post('/reset', async (req: AuthenticatedRequest, res) => {
-  // Set a longer timeout for this operation (30 seconds)
   req.setTimeout(30000)
   
   try {
+    const workbook = parseWorkbook(req.body?.workbook ?? req.query.workbook)
     const userId = req.user!.id
-    console.log(`Starting full data reset for user ${userId}`)
+    console.log(`Starting data reset for user ${userId}, workbook ${workbook}`)
     
-    // Use a more efficient approach: delete and re-seed in one transaction-like operation
     const startTime = Date.now()
+    const deleteResult = await Data.deleteMany({ user: userId, workbook })
+    console.log(`Deleted ${deleteResult.deletedCount} existing records for user ${userId}, workbook ${workbook}`)
     
-    // Delete all existing data for this user (this is fast)
-    const deleteResult = await Data.deleteMany({ user: userId })
-    console.log(`Deleted ${deleteResult.deletedCount} existing records for user ${userId}`)
-    
-    // Re-seed the user with initial data (this is the heavy part)
-    console.log(`Starting to re-seed data for user ${userId}...`)
-    await seedSheetsForUser(userId)
-    console.log(`Re-seeded initial data for user ${userId}`)
+    console.log(`Starting to re-seed data for user ${userId}, workbook ${workbook}...`)
+    await seedSheetsForUser(userId, workbook)
+    console.log(`Re-seeded initial data for user ${userId}, workbook ${workbook}`)
     
     // Instead of fetching all data again, we can return a success response
     // The frontend will refetch the data after reset

@@ -1,27 +1,30 @@
 import axiosService from "../axios-service";
+import type { WorkbookType } from "../transformers/dataTransformer";
 
-// PDF Service
+const defaultWorkbook: WorkbookType = "pdca";
+
 class PDFService {
   private isExporting = false;
 
-  async exportPDF(): Promise<void> {
+  async exportPDF(workbook: WorkbookType = defaultWorkbook): Promise<void> {
     if (this.isExporting) {
       console.log("PDF export already in progress");
       return;
     }
 
     this.isExporting = true;
-    
+    const filename = workbook === "company_rating" ? "company-rating.pdf" : "短期計画PDCA.pdf";
+
     try {
-      // Use axiosService.get with { responseType: "blob" } to properly handle file downloads
       const blob = await axiosService.get<Blob>("/api/export-pdf", {
         responseType: "blob",
-        timeout: 180000, // allow up to 3 minutes for conversion
+        timeout: 180000,
+        params: { workbook },
       });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "短期計画PDCA.pdf";
+      a.download = filename;
       a.style.display = "none";
       document.body.appendChild(a);
       a.click();

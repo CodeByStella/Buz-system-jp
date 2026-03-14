@@ -1,14 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { SheetNameType } from "@/lib/transformers/dataTransformer";
-import { Menu, X } from "lucide-react";
+import type { SheetNameType, CompanyRatingSheetNameType, WorkbookType, ActiveTabType } from "@/lib/transformers/dataTransformer";
+import { X } from "lucide-react";
 
-const navigationItems: { 
-  name: string; 
-  key: SheetNameType;
-}[] = [
+const PDCA_ITEMS: { name: string; key: SheetNameType }[] = [
   { name: "スタート", key: "start" },
   { name: "MQ(現状)", key: "mq_current_status" },
   { name: "①利益", key: "profit" },
@@ -24,15 +20,25 @@ const navigationItems: {
   { name: "利益計画表", key: "profit_planing_table" },
 ];
 
+const COMPANY_RATING_ITEMS: { name: string; key: CompanyRatingSheetNameType }[] = [
+  { name: "入力データ", key: "input_data" },
+  { name: "結果", key: "result" },
+  { name: "スコア表", key: "score_table" },
+  { name: "安全指標について", key: "safety_indicators" },
+];
+
 interface SidebarProps {
-  activeTab: SheetNameType;
+  workbook: WorkbookType;
+  activeTab: ActiveTabType;
   onTabChange: (tab: string) => void;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function Sidebar({ activeTab, onTabChange, isOpen, onClose }: SidebarProps) {
-  const handleItemClick = (key: SheetNameType) => {
+export function Sidebar({ workbook, activeTab, onTabChange, isOpen, onClose }: SidebarProps) {
+  const navigationItems = workbook === "company_rating" ? COMPANY_RATING_ITEMS : PDCA_ITEMS;
+
+  const handleItemClick = (key: ActiveTabType) => {
     onTabChange(key as string);
     // Close sidebar on mobile after selection
     if (window.innerWidth < 1024) {
@@ -42,8 +48,8 @@ export function Sidebar({ activeTab, onTabChange, isOpen, onClose }: SidebarProp
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block w-64 bg-white border-r border-gray-200 h-full overflow-auto">
+      {/* Desktop Sidebar - shrink-0 so wide content (e.g. スコア表) does not push it off */}
+      <div className="hidden lg:block lg:shrink-0 w-64 bg-white border-r border-gray-200 h-full overflow-auto">
         <div className="p-4 sticky top-0 bg-white border-b border-gray-100 z-10">
           <h2 className="text-lg font-semibold text-gray-900">メニュー</h2>
         </div>
@@ -51,7 +57,7 @@ export function Sidebar({ activeTab, onTabChange, isOpen, onClose }: SidebarProp
           {navigationItems.map((item) => (
             <button
               key={item.key}
-              onClick={() => handleItemClick(item.key)}
+              onClick={() => handleItemClick(item.key as ActiveTabType)}
               className={cn(
                 "block w-full text-left px-4 py-2 text-sm font-medium transition-colors",
                 activeTab === item.key
@@ -97,7 +103,7 @@ export function Sidebar({ activeTab, onTabChange, isOpen, onClose }: SidebarProp
             {navigationItems.map((item) => (
               <button
                 key={item.key}
-                onClick={() => handleItemClick(item.key)}
+                onClick={() => handleItemClick(item.key as ActiveTabType)}
                 className={cn(
                   "block w-full text-left px-4 py-2 text-sm font-medium transition-colors",
                   activeTab === item.key

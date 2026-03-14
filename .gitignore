@@ -27,6 +27,8 @@
 # Misc
 .DS_Store
 *.pem
+index.tmp
+index.tmp.lock
 
 # Debug
 npm-debug.log*

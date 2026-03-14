@@ -13,16 +13,25 @@
 //利益計画表 ProfitPlaningTable
 
 import { Data, DataType } from "@/models/data";
+import { sheetsDataCompanyRating } from "./sheets-company-rating";
+
+export type WorkbookType = "pdca" | "company_rating";
+
+export function getSheetsData(workbook: WorkbookType): Record<string, { [cell: string]: string | number }> {
+  return workbook === "company_rating" ? sheetsDataCompanyRating : sheetsData;
+}
 
 // Helper function to build sheet data
 const buildSheetData = (
   sheetName: string,
   data: { [cell: string]: string | number },
-  userId: string
+  userId: string,
+  workbook: string
 ): DataType[] => {
   return Object.entries(data).map(
     ([cell, val]): DataType => ({
       user: userId,
+      workbook,
       sheet: sheetName,
       cell,
       value: val,
@@ -1646,15 +1655,16 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
   },
 };
 
-export const seedSheetsForUser = async (userId: string) => {
-  const allData: DataType[] = Object.entries(sheetsData).flatMap(
-    ([sheetName, data]) => buildSheetData(sheetName, data, userId)
+export const seedSheetsForUser = async (userId: string, workbook: WorkbookType = "pdca") => {
+  const dataForWorkbook = getSheetsData(workbook);
+  const allData: DataType[] = Object.entries(dataForWorkbook).flatMap(
+    ([sheetName, data]) => buildSheetData(sheetName, data, userId, workbook)
   );
 
-  // Always upsert all seed data - sheets.ts is the authoritative source
+  // Always upsert all seed data - sheets definition is the authoritative source
   const bulkOps = allData.map((item) => ({
     updateOne: {
-      filter: { user: userId, sheet: item.sheet, cell: item.cell },
+      filter: { user: userId, workbook: item.workbook, sheet: item.sheet, cell: item.cell },
       update: { $set: item },
       upsert: true,
     },

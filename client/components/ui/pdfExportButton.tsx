@@ -4,8 +4,13 @@ import { FileText, Loader2 } from "lucide-react";
 import { Button } from "./button";
 import { pdfService } from "@/lib/services/pdfService";
 import { useState, useEffect } from "react";
+import type { WorkbookType } from "@/lib/transformers/dataTransformer";
 
-export const PDFExportButton = () => {
+interface PDFExportButtonProps {
+  workbook?: WorkbookType;
+}
+
+export const PDFExportButton = ({ workbook }: PDFExportButtonProps) => {
   const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
@@ -13,18 +18,16 @@ export const PDFExportButton = () => {
       setIsExporting(pdfService.getIsExporting());
     };
 
-    // Check status every 100ms
     const interval = setInterval(checkExportStatus, 100);
-    
     return () => clearInterval(interval);
   }, []);
 
   const handleExport = async () => {
     if (isExporting) return;
-    
+
     setIsExporting(true);
     try {
-      await pdfService.exportPDF();
+      await pdfService.exportPDF(workbook);
     } catch (error) {
       console.error("PDF export failed:", error);
     } finally {

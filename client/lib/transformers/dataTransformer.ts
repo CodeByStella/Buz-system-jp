@@ -4,7 +4,10 @@ export interface BackendDataType {
   cell: string;
   sheet: string;
   value: number | string;
+  workbook?: string;
 }
+
+export type WorkbookType = "pdca" | "company_rating";
 
 // Type for a single cell value - can be string or number
 type CellValue = string | number;
@@ -29,6 +32,14 @@ export type SheetNameType =
   | "sales_plan_by_department"
   | "profit_planing_table";
 
+export type CompanyRatingSheetNameType =
+  | "input_data"
+  | "result"
+  | "score_table"
+  | "safety_indicators";
+
+export type ActiveTabType = SheetNameType | CompanyRatingSheetNameType;
+
 // Sanitize value to handle error states and invalid data
 const sanitizeValue = (value: any): string | number => {
   // Handle null/undefined
@@ -47,7 +58,8 @@ const sanitizeValue = (value: any): string | number => {
       value.includes("#DIV/0!") ||
       value.includes("#N/A") ||
       value.includes("#NUM!") ||
-      value.includes("#NULL!")
+      value.includes("#NULL!") ||
+      value.includes("#CYCLE!")
     ) {
       console.warn(
         `Detected error value in data: ${value}, converting to empty string`

@@ -9,11 +9,11 @@ export interface ResultRowType {
   label: string;
   /** Cell for 結果 (calculated value) */
   resultCell: string;
-  /** Cell for 配点 (points); formula or editable */
+  /** Cell for 配点 (points); user enters manually, sum is calculated */
   pointsCell: string;
   /** Cell for 評価 (editable text input, column G in Excel) */
   evaluationCell: string;
-  /** If true, 配点 is user-editable (主観項目) */
+  /** If true, 配点 is user-editable (all 配点 are now manual entry; this flag is kept for compatibility) */
   pointsEditable: boolean;
   /** Optional suffix for 結果 display e.g. "%", "年", "倍" */
   resultSuffix?: string;

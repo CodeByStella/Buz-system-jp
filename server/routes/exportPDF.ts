@@ -59,6 +59,17 @@ function getExportConfig(workbook: string) {
   };
 }
 
+/** Build Content-Disposition header value (ASCII-safe). Uses filename* UTF-8 for non-ASCII names. */
+function contentDispositionAttachment(filename: string): string {
+  const asciiOnly = /^[\x20-\x7E]+$/.test(filename);
+  if (asciiOnly) {
+    return `attachment; filename="${filename}"`;
+  }
+  const fallback = filename.includes("格付") ? "company-rating.pdf" : "pdca.pdf";
+  const encoded = encodeURIComponent(filename);
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`;
+}
+
 // ---------------------------------------------------------------------------
 // Utility: Modify Excel XML directly
 function setCellValueInSheetXml(
@@ -433,10 +444,10 @@ export const exportPDF = async (req: AuthenticatedRequest, res: Response) => {
 
     console.log(`PDF conversion successful: ${tempPdfPath}`);
 
-    // Serve PDF
+    // Serve PDF (Content-Disposition must be ASCII-safe; use filename*=UTF-8'' for non-ASCII names)
     const pdfBuffer = readFileSync(tempPdfPath);
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Disposition", contentDispositionAttachment(filename));
     res.send(pdfBuffer);
 
     // Cleanup temporary files

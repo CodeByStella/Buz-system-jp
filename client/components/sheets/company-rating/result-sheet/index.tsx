@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import * as ReactDOM from "react-dom";
 import { Save, Loader2 } from "lucide-react";
 import { Button } from "../../../ui/button";
 import { CustomInput } from "../../../ui/customInput";
@@ -75,82 +74,6 @@ function formatPointsValue(value: string | number | undefined): string {
 function getUnitDisplay(suffix?: string): string {
   if (!suffix || !suffix.trim()) return "";
   return suffix.trim();
-}
-
-/** Yellow tooltip above cell on hover (same style as start-sheet / CustomInput tip) */
-function RatingCellWithTooltip({
-  display,
-  tooltip,
-  className,
-}: {
-  display: string;
-  tooltip: string;
-  className?: string;
-}) {
-  const [hover, setHover] = React.useState(false);
-  const [position, setPosition] = React.useState<{ top: number; left: number } | null>(null);
-  const ref = React.useRef<HTMLDivElement>(null);
-
-  const updatePosition = React.useCallback(() => {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setPosition({
-        top: rect.top,
-        left: rect.left + rect.width / 2,
-      });
-    }
-  }, []);
-
-  const onEnter = () => {
-    if (tooltip) {
-      updatePosition();
-      setHover(true);
-    }
-  };
-  const onLeave = () => setHover(false);
-
-  React.useEffect(() => {
-    if (hover && tooltip) {
-      window.addEventListener("scroll", updatePosition, true);
-      window.addEventListener("resize", updatePosition);
-      return () => {
-        window.removeEventListener("scroll", updatePosition, true);
-        window.removeEventListener("resize", updatePosition);
-      };
-    }
-  }, [hover, tooltip, updatePosition]);
-
-  const tipElement =
-    tooltip &&
-    hover &&
-    position &&
-    typeof document !== "undefined" &&
-    ReactDOM.createPortal(
-      <div
-        className="fixed z-[99999] w-max max-w-xs bg-yellow-200 text-gray-900 text-xs px-3 py-2 rounded shadow-xl border border-yellow-400 pointer-events-none whitespace-normal text-left"
-        style={{
-          top: `${position.top - 8}px`,
-          left: `${position.left}px`,
-          transform: "translate(-50%, -100%)",
-        }}
-      >
-        {tooltip}
-        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-yellow-200" />
-      </div>,
-      document.body
-    );
-
-  return (
-    <div
-      ref={ref}
-      className={className}
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      {display}
-      {tipElement}
-    </div>
-  );
 }
 
 export default function ResultSheet() {
@@ -233,8 +156,15 @@ export default function ResultSheet() {
                           <TableCell className="py-1.5 text-center text-muted-foreground text-sm w-9 bg-green-100">
                             {getUnitDisplay(row.resultSuffix)}
                           </TableCell>
-                          <TableCell className="py-1.5 text-center bg-green-100">
-                            {formatPointsValue(getCell(sheetName, row.pointsCell))}
+                          <TableCell className="p-0 align-middle bg-green-100">
+                            <div className="relative min-h-[2rem] w-full max-w-[4rem] mx-auto">
+                              <CustomInput
+                                type="number"
+                                sheet={sheetName}
+                                cell={row.pointsCell}
+                                className="border-transparent text-center py-1 h-8 text-sm bg-green-100"
+                              />
+                            </div>
                           </TableCell>
                           <TableCell className="p-0 align-middle bg-green-100">
                             <div className="relative min-h-[2rem] w-full">
@@ -314,42 +244,47 @@ export default function ResultSheet() {
             </div>
           </div>
 
-          {/* Right: Rating tables (with tooltips for 格付け tips like リスクなし) - shared col widths */}
-          <div className="lg:w-[320px] space-y-4 shrink-0">
+          {/* Right: Rating tables with スコア | 格付け | 説明. 格付け col fixed width to align with 格付け判定 input; 説明 col white. */}
+          <div className="lg:w-[400px] space-y-4 shrink-0">
             <div className="rounded border border-gray-200 overflow-hidden bg-white">
               <Table className="table-fixed">
                 <colgroup>
-                  <col style={{ width: "72%" }} />
-                  <col style={{ width: "28%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "5.5rem", minWidth: "5.5rem" }} />
+                  <col />
                 </colgroup>
                 <TableHeader>
                   <TableRow className="bg-yellow-200">
                     <TableHead className="py-2">スコア</TableHead>
-                    <TableHead className="py-2">格付け</TableHead>
+                    <TableHead className="py-2 w-[5.5rem] min-w-[5.5rem] text-center whitespace-nowrap">格付け</TableHead>
+                    <TableHead className="py-2 bg-white">説明</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {ratingTableQuantitative.map((r) => (
                     <TableRow key={r.score} className="border-b bg-white">
                       <TableCell className="py-1.5 text-sm bg-yellow-100">{r.score}</TableCell>
-                      <TableCell className="py-1.5 text-sm bg-yellow-100">
-                        <RatingCellWithTooltip
-                          display={r.display}
-                          tooltip={r.tooltip}
-                          className="cursor-help"
-                        />
-                      </TableCell>
+                      <TableCell className="py-1.5 text-sm bg-yellow-100 text-center w-[5.5rem] min-w-[5.5rem]">{r.display}</TableCell>
+                      <TableCell className="py-1.5 text-sm bg-white text-left">{r.tooltip || "\u00A0"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
                 <TableFooter className="[&_tr]:bg-transparent [&_tr]:border-t">
                   <TableRow>
-                    <TableCell className="py-2 pl-3 pr-2 text-sm text-muted-foreground bg-white">
-                      定量要因 格付け判定:
+                    <TableCell className="py-1.5 pl-3 pr-2 text-sm text-muted-foreground bg-white">
+                      格付け判定
                     </TableCell>
-                    <TableCell className="py-2 px-3 text-sm font-semibold bg-yellow-200 text-center">
-                      {String(getCell(sheetName, quantitativeRatingCell) ?? "—")}
+                    <TableCell className="relative py-1.5 px-2 text-sm font-semibold bg-yellow-200 text-center p-0 align-middle w-[5.5rem] min-w-[5.5rem]">
+                      <div className="absolute inset-0 w-full h-full">
+                        <CustomInput
+                          type="number"
+                          sheet={sheetName}
+                          cell={quantitativeRatingCell}
+                          className="!p-0 border-transparent text-center text-sm bg-yellow-200 font-semibold w-full h-full min-h-0 rounded-none box-border"
+                        />
+                      </div>
                     </TableCell>
+                    <TableCell className="py-1.5 bg-white" />
                   </TableRow>
                 </TableFooter>
               </Table>
@@ -358,37 +293,42 @@ export default function ResultSheet() {
             <div className="rounded border border-gray-200 overflow-hidden bg-white">
               <Table className="table-fixed">
                 <colgroup>
-                  <col style={{ width: "72%" }} />
-                  <col style={{ width: "28%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "5.5rem", minWidth: "5.5rem" }} />
+                  <col />
                 </colgroup>
                 <TableHeader>
                   <TableRow className="bg-yellow-200">
                     <TableHead className="py-2">スコア</TableHead>
-                    <TableHead className="py-2">格付け</TableHead>
+                    <TableHead className="py-2 w-[5.5rem] min-w-[5.5rem] text-center whitespace-nowrap">格付け</TableHead>
+                    <TableHead className="py-2 bg-white">説明</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {ratingTableCombined.map((r) => (
                     <TableRow key={r.score} className="border-b bg-white">
                       <TableCell className="py-1.5 text-sm bg-yellow-100">{r.score}</TableCell>
-                      <TableCell className="py-1.5 text-sm bg-yellow-100">
-                        <RatingCellWithTooltip
-                          display={r.display}
-                          tooltip={r.tooltip}
-                          className="cursor-help"
-                        />
-                      </TableCell>
+                      <TableCell className="py-1.5 text-sm bg-yellow-100 text-center w-[5.5rem] min-w-[5.5rem]">{r.display}</TableCell>
+                      <TableCell className="py-1.5 text-sm bg-white text-left">{r.tooltip || "\u00A0"}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
                 <TableFooter className="[&_tr]:bg-transparent [&_tr]:border-t">
                   <TableRow>
-                    <TableCell className="py-2 pl-3 pr-2 text-sm text-muted-foreground bg-white">
-                      定量・定性要因 格付け判定:
+                    <TableCell className="py-1.5 pl-3 pr-2 text-sm text-muted-foreground bg-white">
+                      格付け判定
                     </TableCell>
-                    <TableCell className="py-2 px-3 text-sm font-semibold bg-yellow-200 text-center">
-                      {String(getCell(sheetName, combinedRatingCell) ?? "—")}
+                    <TableCell className="relative py-1.5 px-2 text-sm font-semibold bg-yellow-200 text-center p-0 align-middle w-[5.5rem] min-w-[5.5rem]">
+                      <div className="absolute inset-0 w-full h-full">
+                        <CustomInput
+                          type="number"
+                          sheet={sheetName}
+                          cell={combinedRatingCell}
+                          className="!p-0 border-transparent text-center text-sm bg-yellow-200 font-semibold w-full h-full min-h-0 rounded-none box-border"
+                        />
+                      </div>
                     </TableCell>
+                    <TableCell className="py-1.5 bg-white" />
                   </TableRow>
                 </TableFooter>
               </Table>

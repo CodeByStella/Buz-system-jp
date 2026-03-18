@@ -90,7 +90,7 @@ export const inputDataRows: InputDataRowType[] = [
     numCell: "C18",
     denomLabel: "経常利益＋減価償却費－法人税等",
     denomCell: "E18",
-    times100: false,
+    times100: true,
   },
   {
     ratioName: "インタレスト・カバレッジ・レシオ",
@@ -98,7 +98,7 @@ export const inputDataRows: InputDataRowType[] = [
     numCell: "C20",
     denomLabel: "支払利息・割引き料",
     denomCell: "E20",
-    times100: false,
+    times100: true,
   },
   {
     ratioName: "キャッシュフロー額",

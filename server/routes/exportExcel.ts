@@ -49,6 +49,17 @@ function getExportConfig(workbook: string) {
   };
 }
 
+/** Build Content-Disposition header value (ASCII-safe). Uses filename* UTF-8 for non-ASCII names. */
+function contentDispositionAttachment(filename: string): string {
+  const asciiOnly = /^[\x20-\x7E]+$/.test(filename);
+  if (asciiOnly) {
+    return `attachment; filename="${filename}"`;
+  }
+  const fallback = filename.includes("格付") ? "company-rating.xlsx" : "pdca.xlsx";
+  const encoded = encodeURIComponent(filename);
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`;
+}
+
 function setCellValueInSheetXml(
   sheetXml: string,
   cellRef: string,
@@ -182,7 +193,7 @@ export const exportExcel = async (req: AuthenticatedRequest, res: Response) => {
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Disposition", contentDispositionAttachment(filename));
     res.send(buffer);
   } catch (error) {
     console.error("Excel export failed:", error);

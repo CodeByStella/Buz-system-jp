@@ -79,6 +79,10 @@ export const DataProvider: React.FC<{
       });
     }
 
+    // Clear edit tracking when switching workbooks so getChangedCells() never uses stale sheet ids
+    userEditedCellsRef.current.clear();
+    formulaCellsRef.current.clear();
+
     fetchUserInputs();
 
     return () => {
@@ -149,8 +153,7 @@ export const DataProvider: React.FC<{
         ensureResultCell("E26", "=SUM(E5:E25)");
         ensureResultCell("E40", "=SUM(E28:E38)");
         ensureResultCell("E42", "=E26+E40");
-        ensureResultCell("J26", "=E26");
-        ensureResultCell("J42", "=E42+E26");
+        // J26, J42 (格付け判定) are manual entry — not ensured as formulas
       }
 
       // [DEBUG] After transform: does frontendData.result have formulas at E6 (row 5, col 4)?
@@ -364,6 +367,15 @@ export const DataProvider: React.FC<{
     return result;
   };
 
+  // Company-rating result manual cells: 配点 (E6–E25, E28–E38) and 格付け判定 (J26, J42). Allow overwrite/save even if DB had old formulas.
+  const isResultManualCell = (cell: string): boolean => {
+    if (cell === "J26" || cell === "J42") return true;
+    const m = cell.match(/^E(\d+)$/);
+    if (!m) return false;
+    const row = parseInt(m[1], 10);
+    return (row >= 6 && row <= 25) || (row >= 28 && row <= 38);
+  };
+
   // Handle cell change
   const handleChangeCell = (
     sheet: string,
@@ -380,8 +392,14 @@ export const DataProvider: React.FC<{
     const cellKey = `${sheet}:${cell}`;
 
     try {
-      // CRITICAL FIX: Prevent overwriting formula cells with non-formula values
-      if (formulaCellsRef.current.has(cellKey) && !isFormula(value)) {
+      // Prevent overwriting formula cells with non-formula values, except company_rating result manual cells (配点 + 格付け判定)
+      const isEditableResultCell =
+        workbook === "company_rating" && sheet === "result" && isResultManualCell(cell);
+      if (
+        formulaCellsRef.current.has(cellKey) &&
+        !isFormula(value) &&
+        !isEditableResultCell
+      ) {
         console.warn(
           `Attempted to overwrite formula cell ${cellKey} with non-formula value: ${value}. Ignoring change to preserve formula.`
         );
@@ -457,7 +475,7 @@ export const DataProvider: React.FC<{
       originalDataMap.set(key, item);
     });
 
-    // Only process user-edited cells
+    // Only process user-edited cells (skip cells whose sheet no longer exists, e.g. after tab switch before refs cleared)
     userEditedCellsRef.current.forEach((cellKey) => {
       const [sheetName, cellRef] = cellKey.split(":");
       const sheetId = sheetIdsRef.current.get(sheetName);
@@ -466,14 +484,28 @@ export const DataProvider: React.FC<{
 
       const { row, col } = cellToIndices(cellRef);
 
-      // Guard: never send updates for cells that were formulas in the original data
+      // Guard: never send updates for cells that were formulas in the original data (except company_rating result manual cells: 配点 + 格付け判定)
       const originalData = originalDataMap.get(cellKey);
-      if (originalData && typeof originalData.value === "string" && originalData.value.trim().startsWith("=")) {
+      const isEditableResultCell =
+        workbook === "company_rating" && sheetName === "result" && isResultManualCell(cellRef);
+      if (
+        originalData &&
+        typeof originalData.value === "string" &&
+        originalData.value.trim().startsWith("=") &&
+        !isEditableResultCell
+      ) {
         return; // skip updates to originally-formula cells entirely
       }
 
-      // Get the cell contents (formula or value)
-      const cellContents = hf.getCellSerialized({ sheet: sheetId, row, col });
+      let cellContents: string | number | null = null;
+      let cellValue: unknown = null;
+      try {
+        cellContents = hf.getCellSerialized({ sheet: sheetId, row, col }) as string | number | null;
+        cellValue = hf.getCellValue({ sheet: sheetId, row, col });
+      } catch (err) {
+        // Sheet may no longer exist after switching workbooks (e.g. "There's no sheet with id = 12")
+        return;
+      }
 
       // Determine the value to save
       let valueToSave: number | string | null = null;
@@ -483,9 +515,6 @@ export const DataProvider: React.FC<{
         return; // user entered a formula or kept a formula; do not send
       } else {
         // This is a regular value - get the actual value
-        const cellValue = hf.getCellValue({ sheet: sheetId, row, col });
-
-        // If cell is empty, mark for deletion
         if (cellValue === null || cellValue === undefined || cellValue === "") {
           valueToSave = "";
         } else {

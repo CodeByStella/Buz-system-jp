@@ -98,10 +98,54 @@ export default function InputDataSheet() {
                       type="text"
                       sheet={sheetName}
                       cell="C1"
-                      placeholder="YYYY/MM/DD"
-                      renderValue={(v) =>
-                        v === "日付" ? "" : (v as string | number)
-                      }
+                      placeholder="2024/04/01"
+                      tip="日付形式: YYYY/MM/DD (例: 2024/04/01)"
+                      tipClassName="text-red-500"
+                      renderValue={(val) => {
+                        if (val === "日付") return "";
+                        if (typeof val === "string" && val && val.length >= 4) {
+                          if (val.includes("/")) return val;
+                          const digitsOnly = val.replace(/[^\d]/g, "");
+                          if (digitsOnly.length >= 4) {
+                            let formatted = digitsOnly.substring(0, 4);
+                            if (digitsOnly.length >= 6) formatted += "/" + digitsOnly.substring(4, 6);
+                            if (digitsOnly.length >= 8) formatted += "/" + digitsOnly.substring(6, 8);
+                            return formatted;
+                          }
+                        }
+                        return val as string | number;
+                      }}
+                      onKeyDown={(e) => {
+                        const allowedKeys = ["Backspace", "Delete", "Tab", "Enter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+                        if (!allowedKeys.includes(e.key) && !/[\d/]/.test(e.key)) e.preventDefault();
+                      }}
+                      onInput={(e) => {
+                        const value = e.currentTarget.value;
+                        const digitsOnly = value.replace(/[^\d]/g, "");
+                        let formatted = digitsOnly;
+                        if (digitsOnly.length >= 4) formatted = digitsOnly.substring(0, 4) + "/" + digitsOnly.substring(4);
+                        if (digitsOnly.length >= 6) {
+                          formatted = digitsOnly.substring(0, 4) + "/" + digitsOnly.substring(4, 6) + "/" + digitsOnly.substring(6, 8);
+                        }
+                        if (digitsOnly.length > 8) {
+                          formatted = digitsOnly.substring(0, 4) + "/" + digitsOnly.substring(4, 6) + "/" + digitsOnly.substring(6, 8);
+                        }
+                        if (formatted.length >= 7) {
+                          let parts = formatted.split("/");
+                          let month = parseInt(parts[1], 10);
+                          let day = parseInt(parts[2] || "0", 10);
+                          if (month > 12) {
+                            formatted = parts[0] + "/12/" + (parts[2] || "");
+                            parts = formatted.split("/");
+                            month = parseInt(parts[1], 10);
+                            day = parseInt(parts[2] || "0", 10);
+                          }
+                          if (day > 31) formatted = parts[0] + "/" + parts[1] + "/31";
+                          if (month === 2 && day > 29) formatted = parts[0] + "/02/29";
+                          if ([4, 6, 9, 11].includes(month) && day > 30) formatted = parts[0] + "/" + parts[1] + "/30";
+                        }
+                        if (formatted !== value) e.currentTarget.value = formatted;
+                      }}
                       className={cn(
                         "w-full min-h-[2.5rem] border-transparent text-center p-2",
                         inputDataRowColors.lightGreen

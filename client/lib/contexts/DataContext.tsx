@@ -221,6 +221,16 @@ export const DataProvider: React.FC<{
     const hf = hfInstanceRef.current;
     if (!hf) return;
 
+    // company_rating: backend may return only `result` (or partial sheets). HyperFormula must still
+    // register `input_data`, `score_table`, `safety_indicators` so inputs bind to real sheet ids.
+    if (currentWorkbook === "company_rating") {
+      COMPANY_RATING_SHEET_ORDER.forEach((name) => {
+        if (!frontendData[name]) {
+          frontendData[name] = [];
+        }
+      });
+    }
+
     // Clear existing sheets
     const existingSheets = hf.getSheetNames();
     existingSheets.forEach((sheetName) => {

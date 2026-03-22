@@ -337,7 +337,7 @@ export const sheetsData: Record<string, { [cell: string]: string | number }> = {
     I17: "=SUM(start!D13:D28)+SUM(start!D60:D62)",
 
     L20: "=SUM(L5:L19)",
-    L21: "=SUM(start!D43:D57)",
+    L21: "=SUM(start!D43:D56,start!D58)",
 
     I2: "=L20+I16+F13+C43",
 

@@ -4,6 +4,11 @@ import * as ReactDOM from "react-dom";
 import { cn } from "@/lib/utils";
 import { useDataContext } from "@/lib/contexts/DataContext";
 
+/** Only A1-style addresses use DataContext; other strings in `cell` are shown as literal text. */
+function isExcelCellRef(addr: string): boolean {
+  return /^[A-Za-z]+\d+$/.test(addr.trim());
+}
+
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "prefix"> {
   prefix?: React.ReactNode;
@@ -53,8 +58,8 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     const inputRef = React.useRef<HTMLInputElement>(null);
     const isInteractive = !props.disabled && !props.readOnly;
 
-    // Use DataContext if sheet and cell are provided
-    const hasContext = sheet && cell;
+    // Use DataContext only when `cell` is a real address (e.g. B23), not a label string.
+    const hasContext = !!(sheet && cell && isExcelCellRef(cell));
     let contextValue: string | number | undefined;
     let contextOnChange:
       | ((sheet: string, cell: string, value: number | string) => void)
@@ -71,6 +76,19 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
       contextValue = undefined;
       contextOnChange = undefined;
     }
+
+    const resolvedPrimary =
+      hasContext && contextValue !== undefined
+        ? contextValue
+        : hasContext
+          ? value !== undefined && value !== null
+            ? value
+            : undefined
+          : value !== undefined && value !== null
+            ? value
+            : sheet && cell && !isExcelCellRef(cell)
+              ? cell
+              : value;
 
     // If type is number, add text-right to align number to right
     const numberAlignClass = type === "number" ? "text-right" : "";
@@ -113,8 +131,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     if (isFocused) {
       inputValue = localValue;
     } else {
-      // Priority: contextValue (from DataContext) > value prop
-      const rawValue = hasContext && contextValue !== undefined ? contextValue : value;
+      const rawValue = resolvedPrimary;
       // If value is undefined or null, show blank
       if (rawValue === undefined || rawValue === null) {
         inputValue = "";
@@ -328,7 +345,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
     // When renderValue is provided, use the displayed value so focus shows the same as blur
     React.useEffect(() => {
       if (!isFocused) {
-        const currentValue = hasContext && contextValue !== undefined ? contextValue : value;
+        const currentValue = resolvedPrimary;
         let valueToShow: string;
         if (currentValue === undefined || currentValue === null) {
           valueToShow = "";
@@ -340,7 +357,7 @@ const CustomInput = React.forwardRef<HTMLInputElement, InputProps>(
         }
         setLocalValue(valueToShow);
       }
-    }, [contextValue, value, hasContext, isFocused, renderValue]);
+    }, [resolvedPrimary, isFocused, renderValue]);
 
     // Handle change event - only update local state, don't trigger context changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

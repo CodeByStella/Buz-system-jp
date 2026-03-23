@@ -16,7 +16,6 @@ import {
   TableRow,
 } from "../../../ui/table";
 import { useDataContext } from "../../../../lib/contexts";
-import { cn } from "../../../../lib/utils";
 import {
   resultSectionsQuantitative,
   resultSectionSubjective,
@@ -108,11 +107,10 @@ export default function ResultSheet() {
             <div className="rounded border border-gray-200 overflow-hidden bg-white">
               <Table className="table-fixed w-full">
                 <colgroup>
-                  <col style={{ width: "35%" }} />
-                  <col style={{ width: "20%" }} />
-                  <col style={{ width: "5%" }} />
-                  <col style={{ width: "20%" }} />
-                  <col style={{ width: "20%" }} />
+                  <col style={{ width: "38%" }} />
+                  <col style={{ width: "24%" }} />
+                  <col style={{ width: "6%" }} />
+                  <col style={{ width: "32%" }} />
                 </colgroup>
                 <TableHeader>
                   <TableRow className="bg-green-100">
@@ -120,14 +118,13 @@ export default function ResultSheet() {
                     <TableHead className="text-right py-2">結果</TableHead>
                     <TableHead className="text-center py-2 w-9">位</TableHead>
                     <TableHead className="text-center py-2">配点</TableHead>
-                    <TableHead className="py-2">評価</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {resultSectionsQuantitative.map((section) => (
                     <React.Fragment key={section.title}>
                       <TableRow className="bg-sky-100 font-medium">
-                        <TableCell colSpan={5} className="py-1.5 text-sm">
+                        <TableCell colSpan={4} className="py-1.5 text-sm">
                           {section.title}
                         </TableCell>
                       </TableRow>
@@ -156,23 +153,13 @@ export default function ResultSheet() {
                           <TableCell className="py-1.5 text-center text-muted-foreground text-sm w-9 bg-green-100">
                             {getUnitDisplay(row.resultSuffix)}
                           </TableCell>
-                          <TableCell className="p-0 align-middle bg-green-100">
-                            <div className="relative min-h-[2rem] w-full max-w-[4rem] mx-auto">
+                          <TableCell className="p-0 align-middle bg-green-100 min-w-0">
+                            <div className="relative min-h-[2rem] h-8 w-full min-w-0">
                               <CustomInput
                                 type="number"
                                 sheet={sheetName}
                                 cell={row.pointsCell}
-                                className="border-transparent text-center py-1 h-8 text-sm bg-green-100"
-                              />
-                            </div>
-                          </TableCell>
-                          <TableCell className="p-0 align-middle bg-green-100">
-                            <div className="relative min-h-[2rem] w-full">
-                              <CustomInput
-                                type="text"
-                                sheet={sheetName}
-                                cell={row.evaluationCell}
-                                className="border-transparent w-full py-1 px-2 text-sm min-h-[2rem] bg-green-100"
+                                className="border-transparent text-center py-1 h-8 min-h-[2rem] text-sm bg-green-100 w-full"
                               />
                             </div>
                           </TableCell>
@@ -186,11 +173,10 @@ export default function ResultSheet() {
                     <TableCell className="text-center py-2 bg-yellow-200">
                       {formatPointsValue(getCell(sheetName, quantitativeSubtotalCell))}
                     </TableCell>
-                    <TableCell className="py-2 bg-yellow-200" />
                   </TableRow>
 
                   <TableRow className="bg-sky-100 font-medium">
-                    <TableCell colSpan={5} className="py-1.5 text-sm">
+                    <TableCell colSpan={4} className="py-1.5 text-sm">
                       {resultSectionSubjective.title}
                     </TableCell>
                   </TableRow>
@@ -201,23 +187,13 @@ export default function ResultSheet() {
                       </TableCell>
                       <TableCell className="py-1.5">—</TableCell>
                       <TableCell className="py-1.5 bg-green-100" />
-                      <TableCell className="p-0 align-middle bg-green-100">
-                        <div className="relative min-h-[2rem] w-full max-w-[4rem] mx-auto">
+                      <TableCell className="p-0 align-middle bg-green-100 min-w-0">
+                        <div className="relative min-h-[2rem] h-8 w-full min-w-0">
                           <CustomInput
                             type="number"
                             sheet={sheetName}
                             cell={row.pointsCell}
-                            className="border-transparent text-center py-1 h-8 text-sm bg-green-100"
-                          />
-                        </div>
-                      </TableCell>
-                      <TableCell className="p-0 align-middle bg-green-100">
-                        <div className="relative min-h-[2rem] w-full">
-                          <CustomInput
-                            type="text"
-                            sheet={sheetName}
-                            cell={row.evaluationCell}
-                            className="border-transparent w-full py-1 px-2 text-sm min-h-[2rem] bg-green-100"
+                            className="border-transparent text-center py-1 h-8 min-h-[2rem] text-sm bg-green-100 w-full"
                           />
                         </div>
                       </TableCell>
@@ -229,7 +205,6 @@ export default function ResultSheet() {
                     <TableCell className="text-center py-2 bg-yellow-200">
                       {formatPointsValue(getCell(sheetName, qualitativeSubtotalCell))}
                     </TableCell>
-                    <TableCell className="py-2 bg-yellow-200" />
                   </TableRow>
                   <TableRow className="bg-yellow-300 font-bold">
                     <TableCell className="py-2">スコア合計</TableCell>
@@ -237,7 +212,6 @@ export default function ResultSheet() {
                     <TableCell className="text-center py-2 bg-yellow-300">
                       {formatPointsValue(getCell(sheetName, totalScoreCell))}
                     </TableCell>
-                    <TableCell className="py-2 bg-yellow-300" />
                   </TableRow>
                 </TableBody>
               </Table>

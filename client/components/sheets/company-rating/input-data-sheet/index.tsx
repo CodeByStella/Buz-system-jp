@@ -25,19 +25,24 @@ export default function InputDataSheet() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">入力データ</h1>
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={onSave}
-            disabled={saving || !hasChanges}
-            leftIcon={saving ? <Loader2 className="animate-spin" /> : <Save />}
-          >
-            {saving ? "保存中..." : "保存"}
-          </Button>
-          <ExcelExportButton workbook="company_rating" />
-          <PDFExportButton workbook="company_rating" />
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold">入力データ</h1>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              onClick={onSave}
+              disabled={saving || !hasChanges}
+              leftIcon={saving ? <Loader2 className="animate-spin" /> : <Save />}
+            >
+              {saving ? "保存中..." : "保存"}
+            </Button>
+            <ExcelExportButton workbook="company_rating" />
+            <PDFExportButton workbook="company_rating" />
+          </div>
         </div>
+        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-3">
+          貸借対照表を見ながら以下の項目を入力しましょう。入力後結果に反映されます
+        </p>
       </div>
 
       {loading ? (
@@ -208,12 +213,15 @@ export default function InputDataSheet() {
                           )}
                         </TableCell>
                         <TableCell
-                          colSpan={4}
+                          colSpan={3}
                           className={cn(
                             "p-0 align-middle",
                             inputDataRowColors.lightGreen
                           )}
                         />
+                        <TableCell className="p-2 text-center align-middle">
+                          {row.times100 ? "×100" : ""}
+                        </TableCell>
                       </>
                     ) : (
                       <>

@@ -102,7 +102,7 @@ export default function ResultSheet() {
           {/* Left: Evaluation table */}
           <div className="flex-1 min-w-0">
             <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2 mb-3">
-              スコア表を基にスコアを入力
+              結果の数字を確認し、スコア表をみて対象の配点を入力しましょう
             </p>
             <div className="rounded border border-gray-200 overflow-hidden bg-white">
               <Table className="table-fixed w-full">

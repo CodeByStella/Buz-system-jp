@@ -1,6 +1,7 @@
 /**
  * Row definitions for the company-rating input-data sheet.
  * Matches the layout: [Ratio name (yellow)] [Num label] [Num value (input)] [÷] [Denom label] [Denom value (input)] [×100].
+ * Value-only rows use […] [×100] in the last column when times100 is true.
  */
 
 export interface InputDataRowType {
@@ -106,7 +107,7 @@ export const inputDataRows: InputDataRowType[] = [
     numCell: "C22",
     denomLabel: null,
     denomCell: null,
-    times100: false,
+    times100: true,
   },
   {
     ratioName: "事業者に有利な年数",
@@ -122,6 +123,6 @@ export const inputDataRows: InputDataRowType[] = [
     numCell: "C24",
     denomLabel: "経常利益＋減価償却費－法人税等",
     denomCell: "E24",
-    times100: false,
+    times100: true,
   },
 ];
